@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class AnalizadorLexico {
 
     ///// ATRIBUTOS /////
@@ -17,8 +17,8 @@ public class AnalizadorLexico {
     private boolean codigoLeido = false;    // Variable que verifica si se terminó de leer el código.
     public static int linea = 1;            // Referencia a la línea de código.
 
-    // private Vector<RegistroSimbolo> tablaSimbolos;               // Tabla de símbolos.
-    // private Vector<Token> listaTokens;                           // Tokens resultantes del análisis léxico.
+    private Vector<RegistroSimbolo> tablaSimbolos;               // Tabla de símbolos.
+    private Vector<Token> listaTokens;                           // Tokens resultantes del análisis léxico.
     private ArrayList<String> listaErrores;                         // Lista de errores léxicos.
     // private MatrizTransicionEstados matrizEstados;               // Matriz de transición de estados.
     // private MatrizAccionesSemanticas matrizAccionesSemanticas;   // Matriz de acciones semánticas.
@@ -34,7 +34,7 @@ public class AnalizadorLexico {
 
     }
 
-    /// MÉTODOS --> Getters ///
+    /// MÉTODOS --> Getters & Setters ///
     public String getArchivo() {
         return archivo;
     }
@@ -75,8 +75,6 @@ public class AnalizadorLexico {
         return idTokens;
     }
 
-
-    /// MÉTODOS --> Setters ///
     public void setArchivo(String archivo) {
         this.archivo = archivo;
     }
@@ -116,4 +114,5 @@ public class AnalizadorLexico {
     public void setIdTokens(HashMap<String, Integer> idTokens) {
         this.idTokens = idTokens;
     }
+
 }
