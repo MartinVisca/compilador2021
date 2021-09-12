@@ -9,9 +9,10 @@ import java.util.Vector;
 @SuppressWarnings("all")
 public class AnalizadorLexico {
     ///// CONSTANTES /////
-    public static int LINEA = 1;            // Referencia a la línea de código.
-    public static final int ESTADOS = 18;   // Cantidad de estados del autómata.
-    public static final int SIMBOLOS = 23;  // Cantidad de símbolos aceptados por el compilador.
+    public static int LINEA = 1;                // Referencia a la línea de código.
+    public static final int ESTADOS = 18;       // Cantidad de estados del autómata.
+    public static final int SIMBOLOS = 23;      // Cantidad de símbolos aceptados por el compilador.
+    public static final int NO_ENCONTRADO = -1; // Indicador de falta de símbolo en la tabla que los almacena.
 
 
     ///// ATRIBUTOS /////
@@ -208,12 +209,21 @@ public class AnalizadorLexico {
 
     /**
      * Agrega el token a la tabla de símbolos.
-     * Si el token ya existe en la tabla, se asigna la referencia a la misma.
+     * Si el token ya existe en la tabla, se pasa la referencia en la tabla de símbolos al índice en cuestión.
+     * Si el token no existe, se agrega al final de la tabla.
      * @param lexema
      * @param tipo
      */
     public void agregarTokenATablaSimbolos(String lexema, String tipo) {
-        // TODO: 10/9/21
+        int indiceEnTS = this.getIndiceEnTablaSimbolos(lexema);
+
+        if (indiceEnTS != -1)
+            this.refTablaSimbolos = indiceEnTS;
+        else {
+            RegistroSimbolo nuevo = new RegistroSimbolo(lexema, tipo);
+            this.tablaSimbolos.add(nuevo);
+            this.refTablaSimbolos = this.tablaSimbolos.size() - 1;
+        }
     }
 
     /**
@@ -223,8 +233,11 @@ public class AnalizadorLexico {
      * @return
      */
     public int getIndiceEnTablaSimbolos(String lexema) {
-        // TODO: 10/9/21
-        return -1;
+        for (int i = 0; i < this.tablaSimbolos.size(); i++) {
+            if (lexema.equals(this.tablaSimbolos.get(i).getLexema()))
+                return i;
+        }
+        return this.NO_ENCONTRADO;
     }
 
     /**
@@ -249,8 +262,25 @@ public class AnalizadorLexico {
      * @return
      */
     public boolean esPalabraReservada(String posiblePalabra) {
-        // TODO: 10/9/21
-        return true;
+        switch (posiblePalabra) {
+            case "IF":
+            case "THEN":
+            case "ELSE":
+            case "ENDIF":
+            case "PRINT":
+            case "FUNC":
+            case "RETURN":
+            case "BEGIN":
+            case "END":
+            case "BREAK":
+            case "LONG":
+            case "SINGLE":
+            case "WHILE":
+            case "DO":
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
