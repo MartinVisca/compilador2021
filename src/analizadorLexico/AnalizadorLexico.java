@@ -203,8 +203,7 @@ public class AnalizadorLexico {
      * @return
      */
     public int getIdToken(String tipoToken) {
-        // TODO: 10/9/21
-        return -1;
+        return this.idTokens.get(tipoToken);
     }
 
     /**
@@ -233,7 +232,7 @@ public class AnalizadorLexico {
      * @param error
      */
     public void addErrorLexico(String error) {
-        // TODO: 10/9/21
+        this.listaErrores.add(error);
     }
 
     /**
@@ -241,7 +240,7 @@ public class AnalizadorLexico {
      * @param nuevo
      */
     public void addToken(Token nuevo) {
-        // TODO: 10/9/21
+        this.listaTokens.add(nuevo);
     }
 
     /**
@@ -260,7 +259,16 @@ public class AnalizadorLexico {
      * @return
      */
     public boolean esIdentificador(String stringToken) {
-        // TODO: 10/9/21
+        if (!Character.isLetter(stringToken.charAt(0)))
+            return false;
+
+        for (int i = 0; i < stringToken.length(); i++) {
+            char c = stringToken.charAt(i);
+
+            if (!(c == '_' || Character.isDigit(c) || (Character.isLetter(c) && Character.isLowerCase(c))))
+                return false;
+        }
+
         return true;
     }
 
@@ -309,5 +317,17 @@ public class AnalizadorLexico {
     public int procesarYylex() {
         // TODO: 10/9/21
         return -1;
+    }
+
+    /**
+     * Imprime los errores léxicos del compilador o "Ejecución sin errores" en caso de no existir ninguno.
+     */
+    public void imprimirErrores() {
+        if (this.listaErrores.isEmpty())
+            System.out.println("Ejecución sin errores");
+        else {
+            for (int i = 0; i < this.listaErrores.size(); i++)
+                System.out.println(this.listaErrores.get(i));
+        }
     }
 }
