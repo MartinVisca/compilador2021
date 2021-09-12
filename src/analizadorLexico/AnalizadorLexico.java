@@ -64,20 +64,10 @@ public class AnalizadorLexico {
         // Símbolos de puntuación
         this.idTokens.put("(", (int) '(');
         this.idTokens.put(")", (int) ')');
-        this.idTokens.put("{", (int) '{');
-        this.idTokens.put("}", (int) '}');
         this.idTokens.put(".", (int) '.');
         this.idTokens.put(",", (int) ',');
         this.idTokens.put(";", (int) ';');
         this.idTokens.put(":", (int) ':');
-
-        // Comparadores
-        this.idTokens.put(">", (int) '>');
-        this.idTokens.put("<", (int) '<');
-        this.idTokens.put("==", 277);
-        this.idTokens.put("<>", 278);
-        this.idTokens.put(">=", 276);
-        this.idTokens.put("<=", 275);
 
         // Operadores lógicos
         this.idTokens.put("&&", 254);
@@ -86,7 +76,7 @@ public class AnalizadorLexico {
         // Operador de asignación
         this.idTokens.put(":=", 256);
 
-        //Identificador y constante
+        // Identificador y constante
         this.idTokens.put("ID", 257);
         this.idTokens.put("CTE", 258);
 
@@ -108,6 +98,14 @@ public class AnalizadorLexico {
 
         // Cadena de caracteres
         this.idTokens.put("CADENA", 273);
+
+        // Comparadores
+        this.idTokens.put(">", (int) '>');
+        this.idTokens.put("<", (int) '<');
+        this.idTokens.put("<=", 274);
+        this.idTokens.put(">=", 275);
+        this.idTokens.put("==", 276);
+        this.idTokens.put("<>", 277);
 
 
         //--- ACCIONES SEMÁNTICAS ---//
@@ -308,8 +306,64 @@ public class AnalizadorLexico {
      * @return
      */
     public String getTipoToken(int idToken) {
-        // TODO: 10/9/21
-        return "";
+        String tipo = "";
+
+        switch (idToken) {
+            case (int) '+':
+            case (int) '-':
+            case (int) '*':
+            case (int) '/':
+                tipo = "OPERADOR ARITMETICO";
+                break;
+            case (int) '(':
+            case (int) ')':
+            case (int) '.':
+            case (int) ',':
+            case (int) ';':
+            case (int) ':':
+                tipo = "LITERAL";
+                break;
+            case 256:
+                tipo = "ASIGNACION";
+                break;
+            case 257:
+                tipo = "IDENTIFICADOR";
+                break;
+            case 258:
+                tipo = "CONSTANTE";
+                break;
+            case 259:
+            case 260:
+            case 261:
+            case 262:
+            case 263:
+            case 264:
+            case 265:
+            case 266:
+            case 267:
+            case 268:
+            case 269:
+            case 270:
+            case 271:
+            case 272:
+                tipo = "PALABRA RESERVADA";
+                break;
+            case 273:
+                tipo = "CADENA DE CARACTERES";
+                break;
+            case (int) '<':
+            case (int) '>':
+            case 274:
+            case 275:
+            case 276:
+            case 277:
+                tipo = "COMPARADOR";
+                break;
+            default:
+                break;
+        }
+
+        return tipo;
     }
 
     /**
@@ -347,6 +401,18 @@ public class AnalizadorLexico {
     public int procesarYylex() {
         // TODO: 10/9/21
         return -1;
+    }
+
+    /**
+     * Imprime el contenido de la tabla de símbolos o indica que la misma está vacía.
+     */
+    public void imprimirTablaSimbolos() {
+        if (this.tablaSimbolos.isEmpty())
+            System.out.println("Tabla de símbolos vacía");
+        else {
+            for (RegistroSimbolo simbolo : this.tablaSimbolos)
+                System.out.println("Tipo del simbolo: " + simbolo.getTipoToken() + " - Lexema: " + simbolo.getLexema());
+        }
     }
 
     /**
