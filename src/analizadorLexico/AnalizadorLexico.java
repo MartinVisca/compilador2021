@@ -1,12 +1,17 @@
 package analizadorLexico;
 
+import analizadorLexico.matrices.MatrizAccionesSemanticas;
+import analizadorLexico.matrices.MatrizEstados;
+
 import java.util.HashMap;
 import java.util.Vector;
 
 @SuppressWarnings("all")
 public class AnalizadorLexico {
     ///// CONSTANTES /////
-    public static int LINEA = 1;    // Referencia a la línea de código.
+    public static int LINEA = 1;            // Referencia a la línea de código.
+    public static final int ESTADOS = 18;   // Cantidad de estados del autómata.
+    public static final int SIMBOLOS = 23;  // Cantidad de símbolos aceptados por el compilador.
 
 
     ///// ATRIBUTOS /////
@@ -18,12 +23,12 @@ public class AnalizadorLexico {
     private int refTablaSimbolos;   // Número que indica el índice del token en la tabla de símbolos.
     private boolean codigoLeido;    // Variable que verifica si se terminó de leer el código.
 
-    private Vector<RegistroSimbolo> tablaSimbolos;                  // Tabla de símbolos.
-    private Vector<Token> listaTokens;                              // Tokens resultantes del análisis léxico.
-    private Vector<String> listaErrores;                            // Lista de errores léxicos.
-    // private MatrizTransicionEstados matrizEstados;               // Matriz de transición de estados.
-    // private MatrizAccionesSemanticas matrizAccionesSemanticas;   // Matriz de acciones semánticas.
-    private HashMap<String, Integer> idTokens;                      // Contiene los id de los tokens definidos. Estructura <Token, [ID, Tipo]>.
+    private Vector<RegistroSimbolo> tablaSimbolos;              // Tabla de símbolos.
+    private Vector<Token> listaTokens;                          // Tokens resultantes del análisis léxico.
+    private Vector<String> listaErrores;                        // Lista de errores léxicos.
+    private MatrizEstados matrizEstados;                        // Matriz de transición de estados.
+    private MatrizAccionesSemanticas matrizAccionesSemanticas;  // Matriz de acciones semánticas.
+    private HashMap<String, Integer> idTokens;                  // Contiene los id de los tokens definidos. Estructura <Token, [ID, Tipo]>.
 
 
     ///// MÉTODOS /////
@@ -44,6 +49,8 @@ public class AnalizadorLexico {
         this.listaTokens = new Vector<>();
         this.listaTokens = new Vector<>();
         this.idTokens = new HashMap<>();
+        this.matrizEstados = new MatrizEstados();
+        this.matrizAccionesSemanticas = new MatrizAccionesSemanticas(ESTADOS, SIMBOLOS);
 
 
         //--- CARGA DE TOKENS ---//
@@ -103,6 +110,8 @@ public class AnalizadorLexico {
 
 
         //--- ACCIONES SEMÁNTICAS ---//
+        // Creación de acciones semánticas.
+        // Carga de matriz de acciones semánticas.
     }
 
     /// MÉTODOS --> Getters & Setters ///

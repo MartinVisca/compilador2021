@@ -25,6 +25,13 @@ public class MatrizEstados {
             /*17*/   { 17,17,18,17,17,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18},
     };
 
+    /**
+     * Método de obtención del entero en la posición indicada.
+     * estadoOrigen = fila; simbolo = columna
+     * @param estadoOrigen
+     * @param simbolo
+     * @return
+     */
     public int get(int estadoOrigen, int simbolo) {
         return matriz[estadoOrigen][simbolo];
     }
