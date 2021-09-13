@@ -48,6 +48,9 @@ public class AccionSemanticaCompuesta implements AccionSemantica {
      */
     @Override
     public boolean ejecutar(String buffer, char caracter) {
+        for (AccionSemantica accion : this.accionSemanticas)
+            if (accion.ejecutar(buffer, caracter))
+                return true;
         return false;
     }
 
