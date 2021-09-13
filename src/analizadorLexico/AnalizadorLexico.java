@@ -372,8 +372,37 @@ public class AnalizadorLexico {
      * @return
      */
     public int getColumnaCaracter(Character caracter) {
-        // TODO: 10/9/21
-        return -1;
+        if (caracter == null)
+            return -1;
+        if (caracter == 'S')
+            return 4;
+        if (Character.isLetter(caracter))
+            return 0;
+        if (Character.isDigit(caracter))
+            return 1;
+        switch (caracter) {
+            case '.': return 2;
+            case '_': return 3;
+            case '<': return 5;
+            case '>': return 6;
+            case '=': return 7;
+            case '&': return 8;
+            case '|': return 9;
+            case '+': return 10;
+            case '-': return 11;
+            case '*': return 12;
+            case '/': return 13;
+            case '%': return 14;
+            case '\n': return 15;
+            case ';': return 16;
+            case ':' : return 17;
+            case ',': return 18;
+            case '(': return 19;
+            case ')': return 20;
+            case 9: return 22;      // Tabulación
+            case 32: return 22;     // Espacio en blanco
+        }
+        return 21; //Otros
     }
 
     /**
@@ -381,8 +410,19 @@ public class AnalizadorLexico {
      * @return
      */
     public boolean esFinDeArchivo() {
-        // TODO: 10/9/21
-        return true;
+        if (this.estadoActual == 0) {
+            if (this.posArchivo == (this.archivo.length() - 1)) {
+                this.tokenActual = 0;
+                this.posArchivo = 0;
+                this.LINEA = 1;
+                this.codigoLeido = true;
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+            return false;
     }
 
     /**
