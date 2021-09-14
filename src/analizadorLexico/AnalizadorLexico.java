@@ -1,5 +1,6 @@
 package analizadorLexico;
 
+import accionSemantica.AccionSemantica;
 import analizadorLexico.matrices.MatrizAccionesSemanticas;
 import analizadorLexico.matrices.MatrizEstados;
 
@@ -109,8 +110,8 @@ public class AnalizadorLexico {
 
 
         //--- ACCIONES SEMÁNTICAS ---//
-        // Creación de acciones semánticas.
-        // Carga de matriz de acciones semánticas.
+        // TODO: 13/9/21 Creación de acciones semánticas.
+        // TODO: 13/9/21 Carga de matriz de acciones semánticas.
     }
 
     /// MÉTODOS --> Getters & Setters ///
@@ -235,6 +236,7 @@ public class AnalizadorLexico {
             if (lexema.equals(this.tablaSimbolos.get(i).getLexema()))
                 return i;
         }
+
         return this.NO_ENCONTRADO;
     }
 
@@ -374,12 +376,16 @@ public class AnalizadorLexico {
     public int getColumnaCaracter(Character caracter) {
         if (caracter == null)
             return -1;
+
         if (caracter == 'S')
             return 4;
+
         if (Character.isLetter(caracter))
             return 0;
+
         if (Character.isDigit(caracter))
             return 1;
+
         switch (caracter) {
             case '.': return 2;
             case '_': return 3;
@@ -401,7 +407,9 @@ public class AnalizadorLexico {
             case ')': return 20;
             case 9: return 22;      // Tabulación
             case 32: return 22;     // Espacio en blanco
+            case '$': return 23;
         }
+
         return 21; //Otros
     }
 
@@ -430,7 +438,19 @@ public class AnalizadorLexico {
      * @param caracterActual
      */
     public void sincronizarAnalisis(char caracterActual) {
-        // TODO: 10/9/21
+        String aux = this.buffer;  // Variable para imprimir el error
+        this.buffer = "";
+        while (this.archivo.charAt(this.posArchivo) != ';'
+                && this.archivo.charAt(this.posArchivo) != '\n'
+                && this.archivo.charAt(this.posArchivo) != 9
+                && this.archivo.charAt(this.posArchivo) != 32
+                && this.archivo.charAt(this.posArchivo) != '$'
+                && this.posArchivo < this.archivo.length()) {
+            aux += this.archivo.charAt(this.posArchivo);
+            this.posArchivo++;
+        }
+        this.estadoActual = 0;
+        this.addErrorLexico("ERROR LEXICO (Linea " + this.LINEA + "): \'" + aux + "\' es un token invalido");
     }
 
     /**
@@ -439,8 +459,58 @@ public class AnalizadorLexico {
      * @return
      */
     public int procesarYylex() {
-        // TODO: 10/9/21
-        return -1;
+        this.tokenActual = -1;
+        this.estadoActual = 0;
+        this.buffer = "";
+        this.refTablaSimbolos = -1;
+        char caracterActual;
+        int columnaCaracter = -1;
+        AccionSemantica accion;
+
+        while (this.posArchivo < this.archivo.length() && this.tokenActual != 0 && this.tokenActual == -1) {
+            caracterActual = this.archivo.charAt(this.posArchivo);
+            columnaCaracter = this.getColumnaCaracter(caracterActual);
+            accion = this.matrizAccionesSemanticas.get(this.estadoActual, columnaCaracter);
+
+            if (accion != null)
+                accion.ejecutar(this.buffer, caracterActual);
+
+            if (caracterActual == '\n' && this.estadoActual != 6)    // Si es un salto de línea y no estoy dentro de la cadena
+                this.LINEA++;
+
+            if (caracterActual == '$') {
+                if (esFinDeArchivo())
+                    break;
+                else {
+                    // Si no cerró la cadena o el comentario, y venía el EOF
+                    if (this.posArchivo == this.archivo.length())
+                        if (this.estadoActual == 13 || this.estadoActual == 14) {
+                            this.addErrorLexico("ERROR LEXICO (Linea " + this.LINEA + "): cadena o comentario mal cerrados");
+                            this.tokenActual = 0;
+                            this.posArchivo = 0;
+                            this.LINEA = 1;
+                            this.codigoLeido = true;
+                            break;
+                        }
+                }
+            }
+
+            this.estadoActual = this.matrizEstados.get(this.estadoActual, columnaCaracter);
+
+            if (this.estadoActual == -1)
+                this.sincronizarAnalisis(caracterActual);
+        }
+
+        if (this.tokenActual != 0 && this.tokenActual != -1) {
+            String tipo = getTipoToken(this.tokenActual);
+            Token nuevo = new Token(this.tokenActual, this.buffer, this.LINEA, tipo);
+            this.addToken(nuevo);
+        }
+
+        if (this.posArchivo == this.archivo.length() && this.archivo.charAt(this.archivo.length() - 1) != '$')
+            this.codigoLeido = true;
+
+        return this.tokenActual;
     }
 
     /**

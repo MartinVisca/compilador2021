@@ -20,12 +20,11 @@ public class Token {
      * @param tipo
      * @param registro
      */
-    public Token(int id, String lexema, int nroLinea, String tipo, RegistroSimbolo registro) {
+    public Token(int id, String lexema, int nroLinea, String tipo) {
         this.id = id;
         this.lexema = lexema;
         this.nroLinea = nroLinea;
         this.tipo = tipo;
-        this.registro = registro;
     }
 
     /// MÉTODOS --> Getters & Setters ///
@@ -59,14 +58,6 @@ public class Token {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
-    }
-
-    public RegistroSimbolo getRegistro() {
-        return registro;
-    }
-
-    public void setRegistro(RegistroSimbolo registro) {
-        this.registro = registro;
     }
 
 }
