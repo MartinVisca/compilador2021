@@ -147,8 +147,24 @@ public class AnalizadorLexico {
         return LINEA;
     }
 
+    public Vector<RegistroSimbolo> getTablaSimbolos() {
+        return tablaSimbolos;
+    }
+
+    public Vector<Token> getListaTokens() {
+        return listaTokens;
+    }
+
     public Vector<String> getListaErrores() {
         return listaErrores;
+    }
+
+    public MatrizEstados getMatrizEstados() {
+        return matrizEstados;
+    }
+
+    public MatrizAccionesSemanticas getMatrizAccionesSemanticas() {
+        return matrizAccionesSemanticas;
     }
 
     public HashMap<String, Integer> getIdTokens() {
@@ -187,8 +203,24 @@ public class AnalizadorLexico {
         AnalizadorLexico.LINEA = linea;
     }
 
+    public void setTablaSimbolos(Vector<RegistroSimbolo> tablaSimbolos) {
+        this.tablaSimbolos = tablaSimbolos;
+    }
+
+    public void setListaTokens(Vector<Token> listaTokens) {
+        this.listaTokens = listaTokens;
+    }
+
     public void setListaErrores(Vector<String> listaErrores) {
         this.listaErrores = listaErrores;
+    }
+
+    public void setMatrizEstados(MatrizEstados matrizEstados) {
+        this.matrizEstados = matrizEstados;
+    }
+
+    public void setMatrizAccionesSemanticas(MatrizAccionesSemanticas matrizAccionesSemanticas) {
+        this.matrizAccionesSemanticas = matrizAccionesSemanticas;
     }
 
     public void setIdTokens(HashMap<String, Integer> idTokens) {
