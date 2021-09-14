@@ -1,6 +1,8 @@
 package analizadorLexico;
 
 import accionSemantica.AccionSemantica;
+import accionSemantica.AccionSemanticaCompuesta;
+import accionSemantica.accionSemanticaSimple.*;
 import analizadorLexico.matrices.MatrizAccionesSemanticas;
 import analizadorLexico.matrices.MatrizEstados;
 
@@ -110,8 +112,82 @@ public class AnalizadorLexico {
 
 
         //--- ACCIONES SEMÁNTICAS ---//
-        // TODO: 13/9/21 Creación de acciones semánticas.
+
+        //--------- SIMPLES ---------//
+        
+        // AS4 -> Controla el rango de los enteros largos. Si está en rango, lo agrega a la tabla de símbolos, sino, devuelve error
+        AccionSemanticaSimple AS4 = new ControlarRangoEnteroLargo(this);
+        
+        // AS5 -> Controla el rango de los float. Si está en rango, lo agrega a la tabla de símbolos, sino, devuelve error
+        AccionSemanticaSimple AS5 = new ControlarRangoFlotante(this);
+        
+        // AS7 -> Devolver token de todos los símbolos (op. aritméticos, comparadores, etc.)
+        AccionSemanticaSimple AS7 = new DevolverTokenSimbolos(this);
+
+        //AS9 -> Aumenta el valor de posArchivo para avanzar ignorando el caracter
+        AccionSemanticaSimple AS9 = new AvanzarEnCodigo(this);
+
+        // AS12 -> Controlar si es identificador. Si es identificador y se excede la longitud máxima, se trunca
+        AccionSemanticaSimple AS12 = new ControlarIdentificador(this);
+
+        // AS13 -> Controlar si es palabra reservada
+        AccionSemanticaSimple AS13 = new ControlarPalabraReservada(this);
+
+        // AS14 -> Descarta el buffer (lo pone en vacio)
+        AccionSemanticaSimple AS14 = new DescartarBuffer(this);
+
+        // AS15 -> Inicializa el buffer en vacío
+        AccionSemanticaSimple AS15 = new InicializarBuffer(this);
+
+        // AS16 -> Controla si el token es una cadena de caracteres y la agrega a la tabla de simbolos
+        AccionSemanticaSimple AS16 = new ControlarCadena(this);
+
+        // AS17 -> Agrega un caracter al buffer
+        AccionSemanticaSimple AS17 = new AgregarCaracter(this);
+
+        //------- COMPUESTAS ------- //
+
+        // AS1 -> Inicializar buffer, agregar caracter al buffer y avanzar en código
+        AccionSemanticaCompuesta AS1 = new AccionSemanticaCompuesta();
+        AS1.addAccionSemantica(AS15);
+        AS1.addAccionSemantica(AS17);
+        AS1.addAccionSemantica(AS9);
+
+        // AS2 -> Agregar caracter al buffer y avanzar en código
+        AccionSemanticaCompuesta AS2 = new AccionSemanticaCompuesta();
+        AS2.addAccionSemantica(AS17);
+        AS2.addAccionSemantica(AS9);
+
+        // AS3 -> Inicializa el buffer, agrega el caracter, devuelve el ID token del literal y avanza en código
+        AccionSemanticaCompuesta AS3 = new AccionSemanticaCompuesta();
+        AS3.addAccionSemantica(AS15);
+        AS3.addAccionSemantica(AS17);
+        AS3.addAccionSemantica(AS7);
+        AS3.addAccionSemantica(AS9);
+
+        // AS6 -> Agrega el caracter al buffer, devuelve el ID token del simbolo compuesto y avanza en código
+        AccionSemanticaCompuesta AS6 = new AccionSemanticaCompuesta();
+        AS6.addAccionSemantica(AS17);
+        AS6.addAccionSemantica(AS7);
+        AS6.addAccionSemantica(AS9);
+
+        // AS8 -> Descartar buffer y avanzar en código
+        AccionSemanticaCompuesta AS8 = new AccionSemanticaCompuesta();
+        AS8.addAccionSemantica(AS14);
+        AS8.addAccionSemantica(AS9);
+
+        // AS10 -> Controlar cadena multilínea y avanzar en código
+        AccionSemanticaCompuesta AS10 = new AccionSemanticaCompuesta();
+        AS10.addAccionSemantica(AS16);
+        AS10.addAccionSemantica(AS9);
+
+        // AS11 -> Controla si es palabra reservada o si es identificador. Sino devuelve error
+        AccionSemanticaCompuesta AS11 = new AccionSemanticaCompuesta();
+        AS11.addAccionSemantica(AS13);
+        AS11.addAccionSemantica(AS12);
+
         // TODO: 13/9/21 Carga de matriz de acciones semánticas.
+        
     }
 
     /// MÉTODOS --> Getters & Setters ///
