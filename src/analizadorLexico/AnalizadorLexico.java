@@ -600,7 +600,7 @@ public class AnalizadorLexico {
                     // Si no cerró la cadena o el comentario, y venía el EOF
                     if (this.posArchivo == this.archivo.length())
                         if (this.estadoActual == 13 || this.estadoActual == 14) {
-                            this.addErrorLexico("ERROR LEXICO (Linea " + this.LINEA + "): cadena o comentario mal cerrados");
+                            this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): cadena o comentario mal cerrados");
                             this.tokenActual = 0;
                             this.posArchivo = 0;
                             this.LINEA = 1;
@@ -610,8 +610,8 @@ public class AnalizadorLexico {
                 }
             }
 
-            if (estado = 16 && caracterActual != +) {
-                agregar error lexico por cadena
+            if (this.estadoActual == 16 && caracterActual != '+') {
+                this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): cadena con formato erróneo; luego del salto de línea debe existir un '+'");
             }
 
             this.estadoActual = this.matrizEstados.get(this.estadoActual, columnaCaracter);
