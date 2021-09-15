@@ -145,6 +145,7 @@ public class AnalizadorLexico {
         // AS17 -> Agrega un caracter al buffer
         AccionSemanticaSimple AS17 = new AgregarCaracter(this);
 
+
         //------- COMPUESTAS ------- //
 
         // AS1 -> Inicializar buffer, agregar caracter al buffer y avanzar en código
@@ -580,6 +581,12 @@ public class AnalizadorLexico {
             columnaCaracter = this.getColumnaCaracter(caracterActual);
             accion = this.matrizAccionesSemanticas.get(this.estadoActual, columnaCaracter);
 
+            if (this.estadoActual == 15 && caracterActual != '\n') {
+                // Control para que el caracter '+', si tiene a su derecha un caracter != '\n', pueda formar parte de la cadena.
+                AgregarCaracter agregarCaracterEspecial = new AgregarCaracter(this);
+                agregarCaracterEspecial.ejecutar(this.buffer, '+');
+            }
+
             if (accion != null)
                 accion.ejecutar(this.buffer, caracterActual);
 
@@ -601,6 +608,10 @@ public class AnalizadorLexico {
                             break;
                         }
                 }
+            }
+
+            if (estado = 16 && caracterActual != +) {
+                agregar error lexico por cadena
             }
 
             this.estadoActual = this.matrizEstados.get(this.estadoActual, columnaCaracter);
