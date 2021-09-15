@@ -2,15 +2,25 @@ package accionSemantica.accionSemanticaSimple;
 
 import analizadorLexico.AnalizadorLexico;
 
+@SuppressWarnings("all")
 public class DevolverTokenSimbolos extends AccionSemanticaSimple {
 
+    /**
+     * Constructor de la clase.
+     * @param analizadorLexico
+     */
     public DevolverTokenSimbolos(AnalizadorLexico analizadorLexico) {
         super(analizadorLexico);
     }
 
+    /**
+     * Devuelve el id del token asociado al buffer, el cual se espera que contenga un símbolo.
+     * @param buffer
+     * @param caracter
+     * @return
+     */
     @Override
     public boolean ejecutar(String buffer, char caracter) {
-        
         switch (buffer) {
             case "+":
                 this.getAnalizadorLexico().setTokenActual(43);
@@ -67,6 +77,5 @@ public class DevolverTokenSimbolos extends AccionSemanticaSimple {
         }
 
         return true;
-
     }
 }
