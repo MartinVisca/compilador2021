@@ -21,6 +21,9 @@ public class MatrizAccionesSemanticas {
         return matriz[estadoOrigen][simbolo];
     }
 
+    public void set ( AccionSemantica[][] matriz) {
+        this.matriz = matriz;
+    }
     public void set(int estadoOrigen, int simbolo, AccionSemantica accionSemantica) {
         matriz[estadoOrigen][simbolo] = accionSemantica;
     }

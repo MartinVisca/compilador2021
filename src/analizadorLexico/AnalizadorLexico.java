@@ -114,13 +114,13 @@ public class AnalizadorLexico {
         //--- ACCIONES SEMÁNTICAS ---//
 
         //--------- SIMPLES ---------//
-        
+
         // AS4 -> Controla el rango de los enteros largos. Si está en rango, lo agrega a la tabla de símbolos, sino, devuelve error
         AccionSemanticaSimple AS4 = new ControlarRangoEnteroLargo(this);
-        
+
         // AS5 -> Controla el rango de los float. Si está en rango, lo agrega a la tabla de símbolos, sino, devuelve error
         AccionSemanticaSimple AS5 = new ControlarRangoFlotante(this);
-        
+
         // AS7 -> Devolver token de todos los símbolos (op. aritméticos, comparadores, etc.)
         AccionSemanticaSimple AS7 = new DevolverTokenSimbolos(this);
 
@@ -187,8 +187,28 @@ public class AnalizadorLexico {
         AS11.addAccionSemantica(AS13);
         AS11.addAccionSemantica(AS12);
 
-        // TODO: 13/9/21 Carga de matriz de acciones semánticas.
-        
+        AccionSemantica [][] matriz = {
+                {AS1 ,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS3,  AS3,  AS1,  AS3,  AS1,  AS9,  AS3,  AS1,  AS3,  AS3,  AS3, null,  AS9},
+                {AS4 ,  AS2,  AS2,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4},
+                {null,  AS2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {AS2 ,  AS2,  AS5,  AS5,  AS2,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5},
+                {null,  AS2, null, null, null, null, null, null, null, null,  AS2,  AS2, null, null, null, null, null, null, null, null, null, null, null},
+                {AS5 ,  AS2,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5},
+                {null,  AS2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {AS7 ,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS6,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7},
+                {AS7 ,  AS7,  AS7,  AS7,  AS7,  AS7,  AS6,  AS6,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7},
+                {null, null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {AS7 ,  AS8,  AS9, AS10,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS8,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7},
+                {AS9 ,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9},
+                {AS2 ,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS9,  AS2,  AS2,  AS2, AS10,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  AS9, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null,  AS9, null, null, null, null, null, null, null, null, null, null, null, null},
+                {AS2 ,  AS2, AS11,  AS2, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11},
+        };
+        this.matrizAccionesSemanticas.set(matriz);
+
     }
 
     /// MÉTODOS --> Getters & Setters ///
