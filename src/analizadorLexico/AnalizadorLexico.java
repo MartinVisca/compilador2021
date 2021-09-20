@@ -139,11 +139,14 @@ public class AnalizadorLexico {
         // AS15 -> Inicializa el buffer en vacío
         AccionSemanticaSimple AS15 = new InicializarBuffer(this);
 
-        // AS16 -> Controla si el token es una cadena de caracteres y la agrega a la tabla de simbolos
-        AccionSemanticaSimple AS16 = new ControlarCadena(this);
+        // AS16 -> Agrega el token de tipo cadena de caracteres a la tabla de símbolos y devuelve su identificador
+        AccionSemanticaSimple AS16 = new DevolverCadena(this);
 
         // AS17 -> Agrega un caracter al buffer
         AccionSemanticaSimple AS17 = new AgregarCaracter(this);
+
+        // AS19 -> Elimina el último caracter agregado al buffer
+        AccionSemanticaSimple AS19 = new EliminarUltimoCaracter(this);
 
 
         //------- COMPUESTAS ------- //
@@ -187,25 +190,40 @@ public class AnalizadorLexico {
         AS11.addAccionSemantica(AS13);
         AS11.addAccionSemantica(AS12);
 
+        // AS18 -> Inicializa el buffer en vacio y avanza en el código (se usa en la primer transición de las cadenas multilineas)
+        AccionSemanticaCompuesta AS18 = new AccionSemanticaCompuesta();
+        AS18.addAccionSemantica(AS15);
+        AS18.addAccionSemantica(AS9);
+
+        // AS20 -> Elimina el último caracter agregado al buffer y avanza en el código
+        AccionSemanticaCompuesta AS20 = new AccionSemanticaCompuesta();
+        AS20.addAccionSemantica(AS19);
+        AS20.addAccionSemantica(AS9);
+        
+
+        // ----- MATRIZ DE ACCIONES SEMÁNTICAS ------ //
+
         AccionSemantica [][] matriz = {
-                {AS1 ,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS3,  AS3,  AS1,  AS3,  AS1,  AS9,  AS3,  AS1,  AS3,  AS3,  AS3, null,  AS9},
-                {AS4 ,  AS2,  AS2,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4},
-                {null,  AS2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {AS2 ,  AS2,  AS5,  AS5,  AS2,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5},
-                {null,  AS2, null, null, null, null, null, null, null, null,  AS2,  AS2, null, null, null, null, null, null, null, null, null, null, null},
-                {AS5 ,  AS2,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5},
-                {null,  AS2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {AS7 ,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS6,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7},
-                {AS7 ,  AS7,  AS7,  AS7,  AS7,  AS7,  AS6,  AS6,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7},
-                {null, null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {AS7 ,  AS8,  AS9, AS10,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS8,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7},
-                {AS9 ,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9},
-                {AS2 ,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS9,  AS2,  AS2,  AS2, AS10,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  AS9, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null,  AS9, null, null, null, null, null, null, null, null, null, null, null, null},
-                {AS2 ,  AS2, AS11,  AS2, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11},
+        /*            L       d     .     _     S     <     >     =     &     |     +     -     *     /     %    \n     ;     :     ,     (     )   otro  Bl,Tab  $                  
+        /*0*/        {AS1 ,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS3,  AS3,  AS1,  AS3,  AS1,  AS9,  AS3,  AS1,  AS3,  AS3,  AS3, null,  AS9,  AS9 },
+        /*1*/        {AS4 ,  AS2,  AS2,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4 },
+        /*2*/        {null,  AS2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
+        /*3*/        {AS2 ,  AS2,  AS5,  AS5,  AS2,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5 },
+        /*4*/        {null,  AS2, null, null, null, null, null, null, null, null,  AS2,  AS2, null, null, null, null, null, null, null, null, null, null, null,  null},
+        /*5*/        {AS5 ,  AS2,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5 },
+        /*6*/        {null,  AS2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
+        /*7*/        {AS7 ,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS6,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7 },
+        /*8*/        {AS7 ,  AS7,  AS7,  AS7,  AS7,  AS7,  AS6,  AS6,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7 },
+        /*9*/        {null, null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
+        /*10*/       {null, null, null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
+        /*11*/       {null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
+        /*12*/       {AS7 ,  AS8,  AS9, AS10,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS8,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7 },
+        /*13*/       {AS9 ,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9 },
+        /*14*/       {AS2 ,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2, AS10, null,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2 },
+        /*15*/       {AS2 ,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2, AS10, AS20,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2 },
+        /*16*/       {null, null, null, null, null, null, null, null, null, null,  AS9, null, null, null, null, null, null, null, null, null, null, null,  AS9,  null},
+        /*17*/       {AS2 ,  AS2, AS11,  AS2,  AS2, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11, AS11,  AS11},
+        /*18*/       {null, null, null, null, null, null, null,  AS7, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},   
         };
         this.matrizAccionesSemanticas.set(matriz);
 
@@ -601,12 +619,6 @@ public class AnalizadorLexico {
             columnaCaracter = this.getColumnaCaracter(caracterActual);
             accion = this.matrizAccionesSemanticas.get(this.estadoActual, columnaCaracter);
 
-            if (this.estadoActual == 15 && caracterActual != '\n') {
-                // Control para que el caracter '+', si tiene a su derecha un caracter != '\n', pueda formar parte de la cadena.
-                AgregarCaracter agregarCaracterEspecial = new AgregarCaracter(this);
-                agregarCaracterEspecial.ejecutar(this.buffer, '+');
-            }
-
             if (accion != null)
                 accion.ejecutar(this.buffer, caracterActual);
 
@@ -630,7 +642,9 @@ public class AnalizadorLexico {
                 }
             }
 
-            if (this.estadoActual == 16 && caracterActual != '+') {
+            // FIXME: a esto hay que sacarlo (porque sino se agregan 2 errores, este y el de sincronizarAnalisis) o hay que agregar una variable estadoAnterior y agregar el error dentro de sincronizarAnalisis
+            // Si estoy controlando la cadena multilinea y viene un caracter != a '+', blanco y tab
+            if (this.estadoActual == 16 && caracterActual != '+' && caracterActual != 9 && caracterActual != 32) {
                 this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): cadena con formato erróneo; luego del salto de línea debe existir un '+'");
             }
 

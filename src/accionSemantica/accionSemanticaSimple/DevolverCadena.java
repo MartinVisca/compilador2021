@@ -3,13 +3,13 @@ package accionSemantica.accionSemanticaSimple;
 import analizadorLexico.AnalizadorLexico;
 
 @SuppressWarnings("all")
-public class ControlarCadena extends AccionSemanticaSimple {
+public class DevolverCadena extends AccionSemanticaSimple {
 
     /**
      * Constructor de la clase
      * @param analizadorLexico
      */
-    public ControlarCadena(AnalizadorLexico analizadorLexico) { super(analizadorLexico); }
+    public DevolverCadena(AnalizadorLexico analizadorLexico) { super(analizadorLexico); }
 
     /**
      * Se agrega el token a la tabla de símbolos o se devuelve su referencia si ya se encuentra guardado.
