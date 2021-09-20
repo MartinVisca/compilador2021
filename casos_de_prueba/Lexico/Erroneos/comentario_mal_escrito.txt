@@ -1,0 +1,2 @@
+* A este comentario le falta un *
+** Este comentario no tiene salto de línea
