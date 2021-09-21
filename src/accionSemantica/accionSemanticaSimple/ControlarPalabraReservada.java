@@ -24,9 +24,11 @@ public class ControlarPalabraReservada extends AccionSemanticaSimple {
         if (this.getAnalizadorLexico().esPalabraReservada(buffer)) {
             this.getAnalizadorLexico().setTokenActual(this.getAnalizadorLexico().getIdToken(buffer));
             return true;
-        }
-        else
+        } else if (this.getAnalizadorLexico().esIdentificador(buffer)) {
+            return true; // Retorna true porque si una palabra reservada, deriva su análisis a la acción semántica correspondiente.
+        } else {
             return false;
+        }
     }
     
 }
