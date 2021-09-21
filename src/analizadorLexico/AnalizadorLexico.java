@@ -436,13 +436,13 @@ public class AnalizadorLexico {
      * @return
      */
     public boolean esIdentificador(String stringToken) {
-        if (!Character.isLetter(stringToken.charAt(0)))
+        if (!Character.isLetter(stringToken.charAt(0)) && stringToken.charAt(0) != '_')
             return false;
 
         for (int i = 0; i < stringToken.length(); i++) {
             char c = stringToken.charAt(i);
 
-            if (!(c == '_' || Character.isDigit(c) || (Character.isLetter(c) && Character.isLowerCase(c))))
+            if (!(c == '_' || Character.isDigit(c) || (Character.isLetter(c))))
                 return false;
         }
 
