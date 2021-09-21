@@ -25,8 +25,14 @@ public class ControlarRangoFlotante extends AccionSemanticaSimple {
         if (cadena.equals("0.0") || cadena.equals("0.") || cadena.equals(".0"))
             return true;
 
-        String[] parts = cadena.split("S");
-        float numero = (float) Math.pow(Double.valueOf(parts[0]), Double.valueOf(parts[1]));
+        float numero = 0f; // Inicializo el float para que luego tome el valor de una u otra manera dependiendo el caso.
+
+        if (cadena.contains("S")) {
+            String[] parts = cadena.split("S");
+            numero = (float) Math.pow(Double.valueOf(parts[0]), Double.valueOf(parts[1]));
+        } else {
+            numero = Float.parseFloat(cadena);
+        }
 
         return MINIMO_FLOAT < numero && numero < MAXIMO_FLOAT;
     }
