@@ -34,7 +34,7 @@ public class ControlarRangoEnteroLargo extends AccionSemanticaSimple {
     @Override
     public boolean ejecutar(String buffer, char caracter) {
         if (!enRango(buffer)) {
-            this.getAnalizadorLexico().addErrorLexico("ERROR LÉXICO (Línea " + AnalizadorLexico.LINEA + "): la constante LONGINT está fuera de rango.");
+            this.getAnalizadorLexico().addErrorLexico("ERROR LÉXICO (Línea " + AnalizadorLexico.LINEA + "): la constante LONG " + buffer + " está fuera de rango.");
             return false;
         }
         else {

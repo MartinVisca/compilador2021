@@ -190,7 +190,7 @@ public class AnalizadorLexico {
         AS11.addAccionSemantica(AS13);
         AS11.addAccionSemantica(AS12);
 
-        // AS18 -> Inicializa el buffer en vacio y avanza en el código (se usa en la primer transición de las cadenas multilineas)
+        // AS18 -> Inicializa el buffer en vacio y avanza en el código (se usa en la primer transición de las cadenas multilíneas)
         AccionSemanticaCompuesta AS18 = new AccionSemanticaCompuesta(this);
         AS18.addAccionSemantica(AS15);
         AS18.addAccionSemantica(AS9);
@@ -597,7 +597,7 @@ public class AnalizadorLexico {
             this.posArchivo++;
         }
         this.estadoActual = 0;
-        this.addErrorLexico("ERROR LEXICO (Linea " + this.LINEA + "): \'" + aux + "\' es un token invalido");
+        this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): \'" + aux + "\' es un token inválido");
     }
 
     /**
@@ -644,7 +644,7 @@ public class AnalizadorLexico {
             }
 
             // FIXME: a esto hay que sacarlo (porque sino se agregan 2 errores, este y el de sincronizarAnalisis) o hay que agregar una variable estadoAnterior y agregar el error dentro de sincronizarAnalisis
-            // Si estoy controlando la cadena multilinea y viene un caracter != a '+', blanco y tab
+            // Si estoy controlando la cadena multilínea y viene un caracter != a '+', blanco y tab
             if (this.estadoActual == 16 && caracterActual != '+' && caracterActual != 9 && caracterActual != 32) {
                 this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): cadena con formato erróneo; luego del salto de línea debe existir un '+'");
             }
