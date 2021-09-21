@@ -28,6 +28,7 @@ public class ConsumidorTokens {
 
             if (tokens.isEmpty()) {
                 System.out.println("----------------");
+                System.out.println("TOKENS");
                 System.out.println("No se detectaron tokens.");
             }
 
@@ -46,7 +47,7 @@ public class ConsumidorTokens {
             analizadorLexico.imprimirTablaSimbolos();
 
         } catch(IOException e) {
-            throw new IOException(e);
+            System.out.println("El archivo que se indica en la ruta ingresada no existe.");
         }
     }
 

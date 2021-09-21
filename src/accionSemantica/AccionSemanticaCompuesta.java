@@ -1,5 +1,7 @@
 package accionSemantica;
 
+import analizadorLexico.AnalizadorLexico;
+
 import java.util.Vector;
 
 @SuppressWarnings("unused")
@@ -7,14 +9,19 @@ public class AccionSemanticaCompuesta implements AccionSemantica {
 
     ///// ATRIBUTOS /////
     private Vector<AccionSemantica> accionSemanticas;
+    private AnalizadorLexico analizadorLexico;
 
 
     ///// MÉTODOS /////
 
     /**
      * Constructor de la clase.
+     * @param analizadorLexico
      */
-    public AccionSemanticaCompuesta() { this.accionSemanticas = new Vector<>(); }
+    public AccionSemanticaCompuesta(AnalizadorLexico analizadorLexico) {
+        this.accionSemanticas = new Vector<>();
+        this.analizadorLexico = analizadorLexico;
+    }
 
     /**
      * Getter de accionesSemanticas.
@@ -48,10 +55,12 @@ public class AccionSemanticaCompuesta implements AccionSemantica {
      */
     @Override
     public boolean ejecutar(String buffer, char caracter) {
-        for (AccionSemantica accion : this.accionSemanticas)
-            if (accion.ejecutar(buffer, caracter))
-                return true;
-        return false;
+        for (AccionSemantica accion : this.accionSemanticas) {
+            buffer = this.analizadorLexico.getBuffer(); // Actualizo el buffer con el valor actual presente en el analizador léxico.
+            if (!accion.ejecutar(buffer, caracter))
+                return false;
+        }
+        return true;
     }
 
 }
