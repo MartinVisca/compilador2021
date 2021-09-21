@@ -42,7 +42,7 @@ public class AnalizadorLexico {
      */
     public AnalizadorLexico(String archivo) {
         //--- INICIALIZACIÓN DE ATRIBUTOS ---//
-        this.archivo = archivo;
+        this.archivo = archivo + '$';
         this.buffer = "";
         this.posArchivo = 0;
         this.estadoActual = 0;
@@ -51,7 +51,7 @@ public class AnalizadorLexico {
         this.codigoLeido = false;
         this.tablaSimbolos = new Vector<>();
         this.listaTokens = new Vector<>();
-        this.listaTokens = new Vector<>();
+        this.listaErrores = new Vector<>();
         this.idTokens = new HashMap<>();
         this.matrizEstados = new MatrizEstados();
         this.matrizAccionesSemanticas = new MatrizAccionesSemanticas(ESTADOS, SIMBOLOS);
@@ -152,51 +152,51 @@ public class AnalizadorLexico {
         //------- COMPUESTAS ------- //
 
         // AS1 -> Inicializar buffer, agregar caracter al buffer y avanzar en código
-        AccionSemanticaCompuesta AS1 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS1 = new AccionSemanticaCompuesta(this);
         AS1.addAccionSemantica(AS15);
         AS1.addAccionSemantica(AS17);
         AS1.addAccionSemantica(AS9);
 
         // AS2 -> Agregar caracter al buffer y avanzar en código
-        AccionSemanticaCompuesta AS2 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS2 = new AccionSemanticaCompuesta(this);
         AS2.addAccionSemantica(AS17);
         AS2.addAccionSemantica(AS9);
 
         // AS3 -> Inicializa el buffer, agrega el caracter, devuelve el ID token del literal y avanza en código
-        AccionSemanticaCompuesta AS3 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS3 = new AccionSemanticaCompuesta(this);
         AS3.addAccionSemantica(AS15);
         AS3.addAccionSemantica(AS17);
         AS3.addAccionSemantica(AS7);
         AS3.addAccionSemantica(AS9);
 
         // AS6 -> Agrega el caracter al buffer, devuelve el ID token del simbolo compuesto y avanza en código
-        AccionSemanticaCompuesta AS6 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS6 = new AccionSemanticaCompuesta(this);
         AS6.addAccionSemantica(AS17);
         AS6.addAccionSemantica(AS7);
         AS6.addAccionSemantica(AS9);
 
         // AS8 -> Descartar buffer y avanzar en código
-        AccionSemanticaCompuesta AS8 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS8 = new AccionSemanticaCompuesta(this);
         AS8.addAccionSemantica(AS14);
         AS8.addAccionSemantica(AS9);
 
         // AS10 -> Controlar cadena multilínea y avanzar en código
-        AccionSemanticaCompuesta AS10 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS10 = new AccionSemanticaCompuesta(this);
         AS10.addAccionSemantica(AS16);
         AS10.addAccionSemantica(AS9);
 
         // AS11 -> Controla si es palabra reservada o si es identificador. Sino devuelve error
-        AccionSemanticaCompuesta AS11 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS11 = new AccionSemanticaCompuesta(this);
         AS11.addAccionSemantica(AS13);
         AS11.addAccionSemantica(AS12);
 
         // AS18 -> Inicializa el buffer en vacio y avanza en el código (se usa en la primer transición de las cadenas multilineas)
-        AccionSemanticaCompuesta AS18 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS18 = new AccionSemanticaCompuesta(this);
         AS18.addAccionSemantica(AS15);
         AS18.addAccionSemantica(AS9);
 
         // AS20 -> Elimina el último caracter agregado al buffer y avanza en el código
-        AccionSemanticaCompuesta AS20 = new AccionSemanticaCompuesta();
+        AccionSemanticaCompuesta AS20 = new AccionSemanticaCompuesta(this);
         AS20.addAccionSemantica(AS19);
         AS20.addAccionSemantica(AS9);
         
@@ -205,7 +205,7 @@ public class AnalizadorLexico {
 
         AccionSemantica [][] matriz = {
         /*            L       d     .     _     S     <     >     =     &     |     +     -     *     /     %    \n     ;     :     ,     (     )   otro  Bl,Tab  $                  
-        /*0*/        {AS1 ,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS3,  AS3,  AS1,  AS3,  AS1,  AS9,  AS3,  AS1,  AS3,  AS3,  AS3, null,  AS9,  AS9 },
+        /*0*/        {AS1 ,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS1,  AS3,  AS3,  AS1,  AS3, AS18,  AS9,  AS3,  AS1,  AS3,  AS3,  AS3, null,  AS9,  AS9 },
         /*1*/        {AS4 ,  AS2,  AS2,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4,  AS4 },
         /*2*/        {null,  AS2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
         /*3*/        {AS2 ,  AS2,  AS5,  AS5,  AS2,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5,  AS5 },
@@ -622,7 +622,8 @@ public class AnalizadorLexico {
             if (accion != null)
                 accion.ejecutar(this.buffer, caracterActual);
 
-            if (caracterActual == '\n' && this.estadoActual != 6)    // Si es un salto de línea y no estoy dentro de la cadena
+            if (caracterActual == '\n' && this.estadoActual != 6)
+                // Si es un salto de línea y no estoy dentro de la cadena
                 this.LINEA++;
 
             if (caracterActual == '$') {
@@ -660,7 +661,7 @@ public class AnalizadorLexico {
             this.addToken(nuevo);
         }
 
-        if (this.posArchivo == this.archivo.length() && this.archivo.charAt(this.archivo.length() - 1) != '$')
+        if (this.posArchivo == this.archivo.length())
             this.codigoLeido = true;
 
         return this.tokenActual;
@@ -671,7 +672,7 @@ public class AnalizadorLexico {
      */
     public void imprimirTablaSimbolos() {
         if (this.tablaSimbolos.isEmpty())
-            System.out.println("Tabla de símbolos vacía");
+            System.out.println("Tabla de símbolos vacía.");
         else {
             for (RegistroSimbolo simbolo : this.tablaSimbolos)
                 System.out.println("Tipo del simbolo: " + simbolo.getTipoToken() + " - Lexema: " + simbolo.getLexema());
@@ -683,7 +684,7 @@ public class AnalizadorLexico {
      */
     public void imprimirErrores() {
         if (this.listaErrores.isEmpty())
-            System.out.println("Ejecución sin errores");
+            System.out.println("Ejecución sin errores.");
         else {
             for (int i = 0; i < this.listaErrores.size(); i++)
                 System.out.println(this.listaErrores.get(i));

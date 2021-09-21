@@ -38,7 +38,7 @@ public class ControlarRangoEnteroLargo extends AccionSemanticaSimple {
             return false;
         }
         else {
-            this.getAnalizadorLexico().agregarTokenATablaSimbolos(buffer, "LONGINT");
+            this.getAnalizadorLexico().agregarTokenATablaSimbolos(buffer, "LONG");
             this.getAnalizadorLexico().setTokenActual(this.getAnalizadorLexico().getIdToken("CTE"));
             return true;
         }
