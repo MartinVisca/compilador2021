@@ -590,14 +590,14 @@ public class AnalizadorLexico {
         while (this.archivo.charAt(this.posArchivo) != ';'
                 && this.archivo.charAt(this.posArchivo) != '\n'
                 && this.archivo.charAt(this.posArchivo) != 9
-                && this.archivo.charAt(this.posArchivo) != 32
+                //&& this.archivo.charAt(this.posArchivo) != 32
                 && this.archivo.charAt(this.posArchivo) != '$'
                 && this.posArchivo < this.archivo.length()) {
             aux += this.archivo.charAt(this.posArchivo);
             this.posArchivo++;
         }
         this.estadoActual = 0;
-        this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): \'" + aux + "\' es un token inválido");
+        this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): \'" + aux + "\' es un token inválido, no reconocido por la matriz de transición de estados.");
     }
 
     /**
@@ -641,12 +641,6 @@ public class AnalizadorLexico {
                             break;
                         }
                 }
-            }
-
-            // FIXME: a esto hay que sacarlo (porque sino se agregan 2 errores, este y el de sincronizarAnalisis) o hay que agregar una variable estadoAnterior y agregar el error dentro de sincronizarAnalisis
-            // Si estoy controlando la cadena multilínea y viene un caracter != a '+', blanco y tab
-            if (this.estadoActual == 16 && caracterActual != '+' && caracterActual != 9 && caracterActual != 32) {
-                this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): cadena con formato erróneo; luego del salto de línea debe existir un '+'");
             }
 
             this.estadoActual = this.matrizEstados.get(this.estadoActual, columnaCaracter);
