@@ -216,7 +216,7 @@ public class AnalizadorLexico {
         /*8*/        {AS7 ,  AS7,  AS7,  AS7,  AS7,  AS7,  AS6,  AS6,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7 },
         /*9*/        {null, null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
         /*10*/       {null, null, null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
-        /*11*/       {null, null, null, null, null, null, null,  AS6, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null},
+        /*11*/       {AS7 ,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS6,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7 },
         /*12*/       {AS7 ,  AS8,  AS9, AS10,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS8,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7,  AS7 },
         /*13*/       {AS9 ,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9,  AS9 },
         /*14*/       {AS2 ,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2, AS10, null,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2,  AS2 },
