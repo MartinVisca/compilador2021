@@ -110,6 +110,11 @@ public class AnalizadorLexico {
         this.idTokens.put("==", 276);
         this.idTokens.put("<>", 277);
 
+        // Palabras reservadas para estructura TRY-CATCH
+        this.idTokens.put("CONTRACT", 278);
+        this.idTokens.put("TRY", 279);
+        this.idTokens.put("CATCH", 280);
+
 
         //--- ACCIONES SEMÁNTICAS ---//
 
@@ -424,6 +429,9 @@ public class AnalizadorLexico {
             case "SINGLE":
             case "WHILE":
             case "DO":
+            case "CONTRACT":
+            case "TRY":
+            case "CATCH":
                 return true;
             default:
                 return false;
@@ -495,6 +503,9 @@ public class AnalizadorLexico {
             case 270:
             case 271:
             case 272:
+            case 278:
+            case 279:
+            case 280:
                 tipo = "PALABRA RESERVADA";
                 break;
             case 273:
