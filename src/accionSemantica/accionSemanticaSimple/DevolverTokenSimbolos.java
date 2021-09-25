@@ -37,6 +37,9 @@ public class DevolverTokenSimbolos extends AccionSemanticaSimple {
             case ",":
                 this.getAnalizadorLexico().setTokenActual(44);
                 break;
+            case ":":
+                this.getAnalizadorLexico().setTokenActual(58);
+                break;
             case ";":
                 this.getAnalizadorLexico().setTokenActual(59);
                 break;
