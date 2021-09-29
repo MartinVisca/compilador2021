@@ -10,7 +10,7 @@ import analizadorLexico.RegistroSimbolo;
 
 %}
 
-%token ID CTE IF ELSE THEN END_IF PRINT FUNC RETURN BEGIN END BREAK CONTRACT TRY CATCH LONG SINGLE CADENA MENORIGUAL MAYORIGUAL IGUAL DISTINTO OPASIGNACION
+%token ID CTE IF ELSE THEN END_IF PRINT FUNC RETURN BEGIN END WHILE DO BREAK CONTRACT TRY CATCH LONG SINGLE CADENA MENORIGUAL MAYORIGUAL IGUAL DISTINTO OPASIGNACION
 %start programa
 
 %%
@@ -24,29 +24,65 @@ bloque : sentencias
 
 bloque_de_sentencias : BEGIN bloque END ';'
                      | sentencias
+                     | bloque END ';' error
+                     | BEGIN bloque ';' error
+                     | BEGIN bloque END error
                      ;
+
+bloque_sentencias_while : sentencias_while
+                        | bloque_sentencias_while sentencias_while
 
 bloque_sentencias_ejecutables_funcion : sentencias_ejecutables_func
                                       | bloque_sentencias_ejecutables_funcion sentencias_ejecutables_func
                                       ;
+
+bloque_sentencias_ejecutables : sentencias_ejecutables
+                              | bloque_sentencias_ejecutables sentencias_ejecutables
+                              ;
 
 sentencias : sentencias_declarativas
            | sentencias_ejecutables
            ;
 
 sentencias_declarativas : tipo lista_de_variables ';'
+                        | tipo lista_de_variables error
+                        | tipo error
                         | declaracion_func
                         | FUNC lista_de_variables ';'
+                        | FUNC lista_de_variables error
                         ;
 
 lista_de_variables : ID
                    | lista_de_variables ',' ID
+                   | lista_de_variables ID error
                    ;
 
 encabezado_func : tipo FUNC ID '(' parametro ')'
+                | FUNC ID '(' parametro ')' error
+                | tipo ID '(' parametro ')' error
+                | tipo FUNC ID parametro error
+                | tipo FUNC ID '(' ')' error
+                | tipo FUNC ID '(' parametro error
                 ;
 
 declaracion_func : encabezado_func sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END ';'
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END ';'
+                 | encabezado_func sentencias_declarativas bloque_sentencias_ejecutables_funcion error
+                 | encabezado_func bloque_sentencias_ejecutables_funcion error
+                 | encabezado_func sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion END error
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion END error
+                 | encabezado_func sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN expresion error
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN expresion error
+                 | encabezado_func sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' ')' error
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' ')' error
+                 | encabezado_func sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ';' error
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ';' error
+                 | encabezado_func sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' END error
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' END error
+                 | encabezado_func sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' ';' error
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' ';' error
+                 | encabezado_func sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END error
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END error
                  ;
 
 parametro : tipo ID
@@ -57,23 +93,93 @@ sentencias_ejecutables : asignacion
                        | invocacion_func
                        | sentencia_if
                        | sentencia_while
+                       | sentencia_try_catch
                        ;
+
+asignacion : ID OPASIGNACION expresion ';'
+           | ID OPASIGNACION expresion error
+           | ID expresion error
+           | ID OPASIGNACION error
+           ;
+
+salida : PRINT '(' CADENA ')' ';'
+       | PRINT '(' CADENA ')' error
+       | PRINT '(' CADENA error
+       | PRINT CADENA error
+       | '(' CADENA error
+       | PRINT '(' ')' error
+       ;
+
+invocacion_func : ID '(' parametro ')' ';'
+                | ID parametro error
+                | ID '(' ')' error
+                | ID '(' parametro ';' error
+                | ID '(' parametro ')' error
+                ;
+
+sentencia_if : IF '(' condicion ')' THEN cuerpo_if END_IF ';'
+             | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else END_IF ';' 
+             | IF condicion error
+             | IF '(' condicion  THEN error
+             | IF '(' condicion ')' cuerpo_if error
+             | IF '(' condicion ')' THEN cuerpo_if ';' error
+             | IF '(' condicion ')' THEN cuerpo_if END_IF error
+             | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else ';' error
+             | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else END_IF error
+             ;
+
+cuerpo_if : bloque_de_sentencias
+          ;
+
+cuerpo_else : bloque_de_sentencias
+            ;
+
+sentencia_while : WHILE '(' condicion ')' DO BEGIN bloque_sentencias_while END ';'
+                | WHILE condicion error
+                | WHILE '(' condicion DO error
+                | WHILE '(' condicion ')' BEGIN error
+                | WHILE '(' condicion ')' DO BEGIN bloque_sentencias_while ';' error
+                | WHILE '(' condicion ')' DO BEGIN bloque_sentencias_while END error
+                ;
+
+sentencias_ejecutables_sin_try_catch : asignacion
+                                     | salida
+                                     | invocacion_func
+                                     | sentencia_if
+                                     | sentencia_while
+                                     | sentencia_try_catch error
+                                     ;
+
+sentencia_try_catch : TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables END ';'
+                    | TRY sentencias_ejecutables_sin_try_catch BEGIN error
+                    | TRY sentencias_ejecutables_sin_try_catch CATCH bloque_sentencias_ejecutables error
+                    | TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables ';' error
+                    | TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables END error
+                    ;
 
 sentencias_ejecutables_func : sentencias_ejecutables
                             | contrato
                             ;
 
+sentencias_while : sentencias_ejecutables
+                 | sentencias_declarativas
+                 | sentencia_break
+                 ;
+
 contrato : CONTRACT ':' '(' condicion ')' ';'
+         | ':' error
+         | CONTRACT '(' error
+         | CONTRACT '(' ')' error
+         | CONTRACT '(' condicion ';' error
+         | CONTRACT '(' condicion ')' error
          ;
+
+sentencia_break : BREAK ';'
+                | BREAK error
+                ;
 
 condicion : expresion comparador expresion
           ;
-
-asignacion : ID OPASIGNACION expresion ';'
-           ;
-
-salida : PRINT '(' CADENA ')' ';'
-       ;
 
 expresion : expresion '+' termino
           | expresion '-' termino
