@@ -209,3 +209,21 @@ tipo : LONG
      ;
 
 %%
+
+private AnalizadorLexico lexico;
+private AnalizadorSintactico sintactico;
+
+public void setLexico(AnalizadorLexico lexico) { this.lexico = lexico; }
+
+public void setSintactico(AnalizadorSintactico sintactico) { this.sintactico = sintactico; }
+
+public int yylex() {
+    int token = lexico.procesarYylex();
+    if (lexico.getRefTablaSimbolos() != -1)
+        yylval = new ParserVal(lexico.getRefTablaSimbolos());
+    return token;
+}
+
+public void yyerror(String string) {
+	sintactico.addErrorSintactico("par: " + string);
+}
