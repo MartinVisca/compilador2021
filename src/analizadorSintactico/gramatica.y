@@ -117,15 +117,15 @@ invocacion_func : ID '(' parametro ')' ';'
                 | ID '(' parametro ')' error
                 ;
 
-sentencia_if : IF '(' condicion ')' THEN cuerpo_if END_IF ';'
-             | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else END_IF ';' 
+sentencia_if : IF '(' condicion ')' THEN cuerpo_if ENDIF ';'
+             | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else ENDIF ';' 
              | IF condicion error
              | IF '(' condicion  THEN error
              | IF '(' condicion ')' cuerpo_if error
              | IF '(' condicion ')' THEN cuerpo_if ';' error
-             | IF '(' condicion ')' THEN cuerpo_if END_IF error
+             | IF '(' condicion ')' THEN cuerpo_if ENDIF error
              | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else ';' error
-             | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else END_IF error
+             | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else ENDIF error
              ;
 
 cuerpo_if : bloque_de_sentencias
@@ -178,7 +178,8 @@ sentencia_break : BREAK ';'
                 | BREAK error
                 ;
 
-condicion : expresion comparador expresion
+condicion : expresion
+          | condicion comparador expresion
           ;
 
 expresion : expresion '+' termino
@@ -202,6 +203,8 @@ comparador : '<'
            | MAYORIGUAL
            | IGUAL
            | DISTINTO
+           | AND
+           | OR
            ;
 
 tipo : LONG
