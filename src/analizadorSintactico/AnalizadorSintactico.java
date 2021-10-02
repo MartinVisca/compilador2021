@@ -8,6 +8,7 @@ import analizadorLexico.Token;
 
 import java.util.Vector;
 
+@SuppressWarnings("all")
 public class AnalizadorSintactico {
     ///// ATRIBUTOS /////
     private AnalizadorLexico analizadorLexico;  // Se utiliza para obtener los tokens y poder verificar la sintaxis del código.
@@ -22,7 +23,7 @@ public class AnalizadorSintactico {
      * Constructor de la clase.
      * @param analizadorLexico
      */
-    public AnalizadorSintactico(AnalizadorLexico analizadorLexico/*, Parser parser*/) {
+    public AnalizadorSintactico(AnalizadorLexico analizadorLexico, Parser parser) {
         this.analizadorLexico = analizadorLexico;
         this.parser = parser;
         this.analisisSintactico = new Vector<>();
@@ -118,7 +119,7 @@ public class AnalizadorSintactico {
         // Si el numero es positivo y es mayor que 2^31 - 1
         if (numero == ControlarRangoEnteroLargo.MAXIMO_LONG) {
             this.tablaSimbolos.remove(indice);    // Se elimina la entrada de la tabla de símbolos.
-            this.addErrorSintactico("ERROR SINTÁCTICO (LÍnea " + this.analizadorLexico.getLinea() + "): la constante LONG está fuera de rango.");
+            this.addErrorSintactico("ERROR SINTÁCTICO (Línea " + this.analizadorLexico.getLinea() + "): la constante LONG está fuera de rango.");
         }
     }
 
