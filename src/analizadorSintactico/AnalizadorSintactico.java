@@ -11,7 +11,7 @@ import java.util.Vector;
 public class AnalizadorSintactico {
     ///// ATRIBUTOS /////
     private AnalizadorLexico analizadorLexico;  // Se utiliza para obtener los tokens y poder verificar la sintaxis del código.
-    //private Parser parser;                    // Clase Parser generada por la herramienta YACC.
+    private Parser parser;                    // Clase Parser generada por la herramienta YACC.
     Vector<String> analisisSintactico;          // Contiene las detecciones correctas de reglas de la gramática.
     Vector<String> listaErroresSintacticos;     // Estructura que guarda los errores sintácticos.
     Vector<RegistroSimbolo> tablaSimbolos;      // Estructura que representa a la tabla de símbolos.
@@ -24,7 +24,7 @@ public class AnalizadorSintactico {
      */
     public AnalizadorSintactico(AnalizadorLexico analizadorLexico/*, Parser parser*/) {
         this.analizadorLexico = analizadorLexico;
-        //this.parser = parser;
+        this.parser = parser;
         this.analisisSintactico = new Vector<>();
         this.listaErroresSintacticos = new Vector<>();
         this.tablaSimbolos = new Vector<>();
@@ -34,6 +34,10 @@ public class AnalizadorSintactico {
     /// MÉTODOS --> Getters & Setters ///
     public AnalizadorLexico getAnalizadorLexico() {
         return analizadorLexico;
+    }
+
+    public Parser getParser() {
+        return parser;
     }
 
     public Vector<String> getAnalisisSintactico() {
@@ -50,6 +54,10 @@ public class AnalizadorSintactico {
 
     public void setAnalizadorLexico(AnalizadorLexico analizadorLexico) {
         this.analizadorLexico = analizadorLexico;
+    }
+
+    public void setParser(Parser parser) {
+        this.parser = parser;
     }
 
     public void setAnalisisSintactico(Vector<String> analisisSintactico) {
@@ -109,7 +117,7 @@ public class AnalizadorSintactico {
 
         // Si el numero es positivo y es mayor que 2^31 - 1
         if (numero == ControlarRangoEnteroLargo.MAXIMO_LONG) {
-            this.tablaSimbolos.remove(indice);    // Se elimina la entrada de la tabla de simbolos
+            this.tablaSimbolos.remove(indice);    // Se elimina la entrada de la tabla de símbolos.
             this.addErrorSintactico("ERROR SINTÁCTICO (LÍnea " + this.analizadorLexico.getLinea() + "): la constante LONG está fuera de rango.");
         }
     }
@@ -123,12 +131,12 @@ public class AnalizadorSintactico {
         String lexema = "-" + this.tablaSimbolos.get(indice).getLexema();
         Float numero = Float.parseFloat(lexema.replace('S', 'E'));
 
-        // Si está en rango, modificamos la tabla de simbolos
+        // Si está en rango, modificamos la tabla de símbolos.
         if (numero > -ControlarRangoFlotante.MAXIMO_FLOAT && numero < -ControlarRangoFlotante.MINIMO_FLOAT)
             this.tablaSimbolos.get(indice).setLexema(lexema);
         else {
             this.tablaSimbolos.remove(indice);
-            this.addErrorSintactico("ERROR SINTÁCTICO (Línea " + this.analizadorLexico.getLinea() + "): la constante FLOAT está fuera de rango.");
+            this.addErrorSintactico("ERROR SINTÁCTICO (Línea " + this.analizadorLexico.getLinea() + "): la constante SINGLE está fuera de rango.");
         }
     }
 
@@ -196,7 +204,7 @@ public class AnalizadorSintactico {
     public void start() {
         // parser.setLexico(this.lexico);
         // parser.setSintactico(this);
-        if (true) { //parser.yyparse() == 0) {
+        if (parser.yyparse() == 0) {
             System.out.println("Ejecución del Parser finalizada.");
             imprimirAnalisisSintactico();
             imprimirTablaSimbolos();
