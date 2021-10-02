@@ -55,27 +55,26 @@ public class DevolverTokenSimbolos extends AccionSemanticaSimple {
             case "<":
                 this.getAnalizadorLexico().setTokenActual(60);
                 break;
-            // TODO: check the ID token generated in class Parser and change if needed for cases below this line
             case "<=":
-                this.getAnalizadorLexico().setTokenActual(275);
+                this.getAnalizadorLexico().setTokenActual(274);
                 break;
             case ">=":
-                this.getAnalizadorLexico().setTokenActual(276);
+                this.getAnalizadorLexico().setTokenActual(275);
                 break;
             case "==":
-                this.getAnalizadorLexico().setTokenActual(277);
+                this.getAnalizadorLexico().setTokenActual(276);
                 break;
             case "<>":
-                this.getAnalizadorLexico().setTokenActual(278);
+                this.getAnalizadorLexico().setTokenActual(277);
                 break;
             case ":=":
-                this.getAnalizadorLexico().setTokenActual(279);
+                this.getAnalizadorLexico().setTokenActual(281);
                 break;
             case "&&":
-                this.getAnalizadorLexico().setTokenActual(280);
+                this.getAnalizadorLexico().setTokenActual(282);
                 break;
             case "||":
-                this.getAnalizadorLexico().setTokenActual(281);
+                this.getAnalizadorLexico().setTokenActual(283);
                 break;
         }
 

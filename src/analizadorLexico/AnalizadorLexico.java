@@ -72,13 +72,6 @@ public class AnalizadorLexico {
         this.idTokens.put(";", (int) ';');
         this.idTokens.put(":", (int) ':');
 
-        // Operadores lógicos
-        this.idTokens.put("&&", 254);
-        this.idTokens.put("||", 255);
-
-        // Operador de asignación
-        this.idTokens.put(":=", 256);
-
         // Identificador y constante
         this.idTokens.put("ID", 257);
         this.idTokens.put("CTE", 258);
@@ -114,6 +107,13 @@ public class AnalizadorLexico {
         this.idTokens.put("CONTRACT", 278);
         this.idTokens.put("TRY", 279);
         this.idTokens.put("CATCH", 280);
+
+        // Operador de asignación
+        this.idTokens.put(":=", 281);
+
+        // Operadores lógicos
+        this.idTokens.put("&&", 282);
+        this.idTokens.put("||", 283);
 
 
         //--- ACCIONES SEMÁNTICAS ---//
