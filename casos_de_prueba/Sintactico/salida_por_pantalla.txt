@@ -1,0 +1,4 @@
+PRINT (%¡Hola +
+       +mundo!%);
+
+PRINT (% ¡Hola mundo! %);

@@ -480,7 +480,7 @@ public class AnalizadorLexico {
             case (int) ':':
                 tipo = "LITERAL";
                 break;
-            case 256:
+            case 281:
                 tipo = "ASIGNACION";
                 break;
             case 257:
@@ -518,6 +518,10 @@ public class AnalizadorLexico {
             case 276:
             case 277:
                 tipo = "COMPARADOR";
+                break;
+            case 282:
+            case 283:
+                tipo = "OPERADOR LOGICO";
                 break;
             default:
                 break;
@@ -633,17 +637,16 @@ public class AnalizadorLexico {
             if (accion != null)
                 accion.ejecutar(this.buffer, caracterActual);
 
-            if (caracterActual == '\n' && this.estadoActual != 6)
-                // Si es un salto de línea y no estoy dentro de la cadena
+            if (caracterActual == '\n' && this.estadoActual != 1 && this.estadoActual != 3 && this.estadoActual != 5 && this.estadoActual != 17)
                 this.LINEA++;
 
             if (caracterActual == '$') {
                 if (esFinDeArchivo())
                     break;
                 else {
-                    // Si no cerró la cadena o el comentario, y venía el EOF
+                    // Si no cerró la cadena y venía el EOF
                     if (this.posArchivo == this.archivo.length())
-                        if (this.estadoActual == 13 || this.estadoActual == 14) {
+                        if (this.estadoActual == 14) {
                             this.addErrorLexico("ERROR LÉXICO (Línea " + this.LINEA + "): cadena o comentario mal cerrados");
                             this.tokenActual = 0;
                             this.posArchivo = 0;
@@ -688,6 +691,8 @@ public class AnalizadorLexico {
      * Imprime los errores léxicos del compilador o "Ejecución sin errores" en caso de no existir ninguno.
      */
     public void imprimirErrores() {
+        System.out.println();
+        System.out.println("----------ERRORES LÉXICOS-----------");
         if (this.listaErrores.isEmpty())
             System.out.println("Ejecución sin errores.");
         else {

@@ -1,0 +1,6 @@
+TRY
+    x := y * 4;
+CATCH
+BEGIN
+    x := 10;
+END;

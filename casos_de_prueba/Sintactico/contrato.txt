@@ -1,0 +1,8 @@
+LONG FUNC f(LONG x)
+SINGLE y, z;
+BEGIN
+	x := x + z;
+	CONTRACT: (x > 3);
+	z := x;
+	RETURN (x + 1);
+END;

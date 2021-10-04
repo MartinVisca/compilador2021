@@ -46,10 +46,10 @@ public class ControlarRangoFlotante extends AccionSemanticaSimple {
     @Override
     public boolean ejecutar(String buffer, char caracter) {
         if (!enRango(buffer)) {
-            this.getAnalizadorLexico().addErrorLexico("ERROR LEXICO (Línea " + AnalizadorLexico.LINEA + "): la constante FLOAT " + buffer + " está fuera de rango.");
+            this.getAnalizadorLexico().addErrorLexico("ERROR LEXICO (Línea " + AnalizadorLexico.LINEA + "): la constante SINGLE " + buffer + " está fuera de rango.");
             return false;
         } else {
-            this.getAnalizadorLexico().agregarTokenATablaSimbolos(buffer, "FLOAT");
+            this.getAnalizadorLexico().agregarTokenATablaSimbolos(buffer, "SINGLE");
             this.getAnalizadorLexico().setTokenActual(this.getAnalizadorLexico().getIdToken("CTE"));
             return true;
         }

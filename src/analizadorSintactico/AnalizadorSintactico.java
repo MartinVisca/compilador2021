@@ -28,7 +28,7 @@ public class AnalizadorSintactico {
         this.parser = parser;
         this.analisisSintactico = new Vector<>();
         this.listaErroresSintacticos = new Vector<>();
-        this.tablaSimbolos = new Vector<>();
+        this.tablaSimbolos = analizadorLexico.getTablaSimbolos();
     }
 
 
@@ -109,6 +109,12 @@ public class AnalizadorSintactico {
     public RegistroSimbolo getRegistroFromTS(int indice) { return this.tablaSimbolos.get(indice); }
 
     /**
+     * Método para agregar el signo '-' a una constante negativa
+     * @param indice
+     */
+    public void setNegativoTablaSimb(int indice) { this.tablaSimbolos.get(indice).setLexema('-' + this.tablaSimbolos.get(indice).getLexema()); }
+
+    /**
      * Método para verificar el rango de un LONG positivo.
      * @param indice
      */
@@ -145,6 +151,8 @@ public class AnalizadorSintactico {
      * Método para imprimir la tabla de simbolos luego del análisis sintáctico
      */
     public void imprimirTablaSimbolos() {
+        System.out.println();
+        System.out.println("----------TABLA DE SÍMBOLOS-----------");
         if (this.tablaSimbolos.isEmpty())
             System.out.println("Tabla de símbolos vacía.");
         else {
@@ -157,6 +165,8 @@ public class AnalizadorSintactico {
      * Método para imprimir los errores sintácticos.
      */
     public void imprimirErroresSintacticos() {
+        System.out.println();
+        System.out.println("----------ERRORES SINTÁCTICOS-----------");
         if (this.listaErroresSintacticos.isEmpty())
             System.out.println("Ejecución sin errores.");
         else {
@@ -169,6 +179,7 @@ public class AnalizadorSintactico {
      * Método para imprimir el análisis sintáctico.
      */
     public void imprimirAnalisisSintactico() {
+        System.out.println();
         System.out.println("----------ANÁLIZADOR SINTÁCTICO-----------");
 
         if (!this.analisisSintactico.isEmpty())
@@ -189,6 +200,7 @@ public class AnalizadorSintactico {
      * Método para imprimir el análisis léxico.
      */
     public void imprimirAnalisisLexico() {
+        System.out.println();
         System.out.println("----------ANÁLIZADOR LÉXICO-----------");
         Vector<Token> tokens = this.analizadorLexico.getListaTokens();
 
@@ -203,17 +215,20 @@ public class AnalizadorSintactico {
      * Método start, necesario para la ejecución del Parser sobre la gramática definida.
      */
     public void start() {
-        // parser.setLexico(this.lexico);
-        // parser.setSintactico(this);
+        parser.setLexico(this.analizadorLexico);
+        parser.setSintactico(this);
+        System.out.println();
         if (parser.yyparse() == 0) {
             System.out.println("Ejecución del Parser finalizada.");
+            imprimirAnalisisLexico();
             imprimirAnalisisSintactico();
             imprimirTablaSimbolos();
         }
         else
             System.out.println("Ejecución del Parser no finalizada.");
 
-        imprimirErroresSintacticos();
+        analizadorLexico.imprimirErrores();
+        this.imprimirErroresSintacticos();
         analizadorLexico.setPosArchivo(0);
         analizadorLexico.setBuffer("");
     }
