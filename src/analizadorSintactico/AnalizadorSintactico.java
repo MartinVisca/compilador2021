@@ -79,7 +79,7 @@ public class AnalizadorSintactico {
      * Agrega un nuevo análisis sintáctico a la estructura que los almacena.
      * @param analisis
      */
-    public void addAnalisis(String analisis) { this.analisisSintactico.add(analisis); }
+    public void agregarAnalisis(String analisis) { this.analisisSintactico.add(analisis); }
 
     /**
      * Agrega un nuevo error a la estructura que los almacena.
