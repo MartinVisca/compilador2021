@@ -6,16 +6,19 @@ import analizadorLexico.AnalizadorLexico;
 import analizadorLexico.RegistroSimbolo;
 import analizadorLexico.Token;
 
+import java.util.Stack;
 import java.util.Vector;
 
 @SuppressWarnings("all")
 public class AnalizadorSintactico {
     ///// ATRIBUTOS /////
     private AnalizadorLexico analizadorLexico;  // Se utiliza para obtener los tokens y poder verificar la sintaxis del código.
-    private Parser parser;                    // Clase Parser generada por la herramienta YACC.
+    private Parser parser;                      // Clase Parser generada por la herramienta YACC.
     Vector<String> analisisSintactico;          // Contiene las detecciones correctas de reglas de la gramática.
     Vector<String> listaErroresSintacticos;     // Estructura que guarda los errores sintácticos.
     Vector<RegistroSimbolo> tablaSimbolos;      // Estructura que representa a la tabla de símbolos.
+    private PolacaInversa polaca;               // Estructura de polaca inversa que servirá para poder generar el código assembler.
+    private Stack<Integer> pila;                // Pila para guardar los estados de la polaca inversa
 
 
     ///// MÉTODOS /////
@@ -29,6 +32,8 @@ public class AnalizadorSintactico {
         this.analisisSintactico = new Vector<>();
         this.listaErroresSintacticos = new Vector<>();
         this.tablaSimbolos = analizadorLexico.getTablaSimbolos();
+        this.polaca = new PolacaInversa();
+        this.pila = new Stack<>();
     }
 
 
@@ -86,6 +91,31 @@ public class AnalizadorSintactico {
      * @param error
      */
     public void addErrorSintactico(String error) { this.listaErroresSintacticos.add(error); }
+
+    /**
+     * Agrega un elemento al final de la polaca.
+     * @param elemento
+     */
+    public void agregarAPolaca(String elemento) {
+        this.polaca.addElemento(elemento);
+    }
+
+    /**
+     * Agrega un elemento a la polaca en la posición indicada.
+     * @param elemento
+     * @param pos
+     */
+    public void agregarAPolacaEnPos(String elemento, int pos) {
+        this.polaca.addElementoEnPosicion(elemento, pos);
+    }
+
+    /**
+     * Retorna el tamaño de la polaca.
+     * @return
+     */
+    public int getSizePolaca() {
+        return this.polaca.getSize();
+    }
 
     /**
      * Método para obtener el lexema de un token almacenado en la tabla de símbolos, dado su índice.
@@ -212,6 +242,17 @@ public class AnalizadorSintactico {
     }
 
     /**
+     * Imprime la polaca por pantalla. En caso de esta vacía, se imprime un mensaje indicándolo.
+     */
+    public void imprimirPolaca() {
+        System.out.println("----------POLACA INVERSA-----------");
+        if (!polaca.esVacia())
+            polaca.imprimirPolaca();
+        else
+            System.out.println("Polaca vacia");
+    }
+
+    /**
      * Método start, necesario para la ejecución del Parser sobre la gramática definida.
      */
     public void start() {
@@ -229,6 +270,7 @@ public class AnalizadorSintactico {
 
         analizadorLexico.imprimirErrores();
         this.imprimirErroresSintacticos();
+        this.imprimirPolaca();
         analizadorLexico.setPosArchivo(0);
         analizadorLexico.setBuffer("");
     }
