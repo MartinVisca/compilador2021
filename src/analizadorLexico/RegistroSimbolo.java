@@ -35,6 +35,7 @@ public class RegistroSimbolo {
         this.esParametro = false;
     }
 
+
     /// MÉTODOS --> Getters & Setters ///
     public String getLexema() {
         return lexema;
@@ -93,11 +94,44 @@ public class RegistroSimbolo {
         this.tipoPasaje = this.PASAJE_PARAMETRO_POR_DEFECTO;
     }
 
+
+    /// MÉTODOS --> Funcionales al compilador ///
+    /**
+     * Determina si dos instancias de la clase son iguales en una comparativa por lexema.
+     * @param otroRegistroSimbolo
+     * @return
+     */
+    public boolean equalsByLexema(RegistroSimbolo otroRegistroSimbolo) {
+        return (this.getLexema().equals(otroRegistroSimbolo.getLexema()));
+    }
+
+    /**
+     * Determina si dos instancias de la clase son iguales en una comparativa por uso.
+     * @param otroRegistroSimbolo
+     * @return
+     */
+    public boolean equalsByUso(RegistroSimbolo otroRegistroSimbolo) {
+        return (this.getUso().equals(otroRegistroSimbolo.getUso()));
+    }
+
+    /**
+     * Determina si dos instancias de la clase son iguales en una comparativa por ámbito.
+     * @param otroRegistroSimbolo
+     * @return
+     */
+    public boolean tienenMismoAmbito(RegistroSimbolo otroRegistroSimbolo) {
+        return (this.getAmbito().equals(otroRegistroSimbolo.getAmbito()));
+    }
+
+
     /// MÉTODOS --> Overrides ///
     @Override
     public boolean equals(Object otroRegistroSimbolo) {
         RegistroSimbolo registro = (RegistroSimbolo) otroRegistroSimbolo;
-        return (this.getLexema().equals(registro.getLexema()) && this.getTipoToken().equals(registro.getTipoToken()));
+        return (this.getLexema().equals(registro.getLexema())
+                && this.getTipoToken().equals(registro.getTipoToken())
+                && this.getUso().equals((registro.getUso()))
+                && this.getAmbito().equals(registro.getAmbito()));
     }
 
     @Override

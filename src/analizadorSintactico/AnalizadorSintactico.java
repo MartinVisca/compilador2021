@@ -18,7 +18,9 @@ public class AnalizadorSintactico {
     Vector<String> listaErroresSintacticos;     // Estructura que guarda los errores sintácticos.
     Vector<RegistroSimbolo> tablaSimbolos;      // Estructura que representa a la tabla de símbolos.
     private PolacaInversa polaca;               // Estructura de polaca inversa que servirá para poder generar el código assembler.
-    private Stack<Integer> pila;                // Pila para guardar los estados de la polaca inversa
+    private Stack<Integer> pila;                // Pila para guardar los estados de la polaca inversa.
+    private String ambito;                      // Ámbito principal del programa.
+    private String tipo;                        // Guarda el tipo para que cuando se haga una declaración se actualice el tipo del identificador en la TS
 
 
     ///// MÉTODOS /////
@@ -34,6 +36,8 @@ public class AnalizadorSintactico {
         this.tablaSimbolos = analizadorLexico.getTablaSimbolos();
         this.polaca = new PolacaInversa();
         this.pila = new Stack<>();
+        this.ambito = "main";
+        this.tipo = "";
     }
 
 
@@ -58,6 +62,22 @@ public class AnalizadorSintactico {
         return tablaSimbolos;
     }
 
+    public PolacaInversa getPolaca() {
+        return polaca;
+    }
+
+    public Stack<Integer> getPila() {
+        return pila;
+    }
+
+    public String getAmbito() {
+        return ambito;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
     public void setAnalizadorLexico(AnalizadorLexico analizadorLexico) {
         this.analizadorLexico = analizadorLexico;
     }
@@ -76,6 +96,22 @@ public class AnalizadorSintactico {
 
     public void setTablaSimbolos(Vector<RegistroSimbolo> tablaSimbolos) {
         this.tablaSimbolos = tablaSimbolos;
+    }
+
+    public void setPolaca(PolacaInversa polaca) {
+        this.polaca = polaca;
+    }
+
+    public void setPila(Stack<Integer> pila) {
+        this.pila = pila;
+    }
+
+    public void setAmbito(String ambito) {
+        this.ambito = ambito;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
 
@@ -118,6 +154,22 @@ public class AnalizadorSintactico {
     }
 
     /**
+     * Agrega un elemento a la pila.
+     * @param valor
+     */
+    public void pushElementoPila(int valor) {
+        this.pila.push(valor);
+    }
+
+    /**
+     * Devuelve el tope de la pila, eliminándolo de la misma.
+     * @return
+     */
+    public int popElementoPila() {
+        return this.pila.pop();
+    }
+
+    /**
      * Método para obtener el lexema de un token almacenado en la tabla de símbolos, dado su índice.
      * @param indice
      * @return
@@ -132,11 +184,39 @@ public class AnalizadorSintactico {
     public String getTipoFromTS(int indice) { return this.tablaSimbolos.get(indice).getTipoToken(); }
 
     /**
+     * Devuelve el uso dado para un token almacenado en la tabla de símbolos en el índice indicado.
+     * @param indice
+     * @return
+     */
+    public String getUsoFromTS(int indice) {
+        return this.tablaSimbolos.get(indice).getUso();
+    }
+
+    /**
      * Método para obtener un token de la tabla de símbolos dado su indice.
      * @param indice
      * @return
      */
     public RegistroSimbolo getRegistroFromTS(int indice) { return this.tablaSimbolos.get(indice); }
+
+    /**
+     * Modifica el uso para un elemento de la tabla de símbolos.
+     * @param indice
+     * @param uso
+     */
+    public void setUsoTablaSimb(int indice, String uso) { this.tablaSimbolos.get(indice).setUso(uso); }
+
+    /**
+     * Modifica el ámbito de un elemento de la tabla de símbolos.
+     * @param indice
+     */
+    public void setAmbitoTablaSimb(int indice) { this.tablaSimbolos.get(indice).setAmbito(this.tablaSimbolos.get(indice).getLexema() + "@" + this.ambito); }
+
+    /**
+     * Modifica el tipo de un elemento de la tabla de símbolos.
+     * @param indice
+     */
+    public void setTipoVariableTablaSimb(int indice) { this.tablaSimbolos.get(indice).setTipoVariable(this.tipo); }
 
     /**
      * Método para agregar el signo '-' a una constante negativa
@@ -175,6 +255,38 @@ public class AnalizadorSintactico {
             this.tablaSimbolos.remove(indice);
             this.addErrorSintactico("ERROR SINTÁCTICO (Línea " + this.analizadorLexico.getLinea() + "): la constante SINGLE está fuera de rango.");
         }
+    }
+
+    /**
+     * Determina si una variable ya fue declarada.
+     * @param referenciaATS
+     * @return
+     */
+    public boolean variableFueDeclarada(int referenciaATS) {
+        RegistroSimbolo registroEnReferencia = this.tablaSimbolos.get(referenciaATS);
+
+        for (int i = 0; i < this.tablaSimbolos.size(); i++) {
+            RegistroSimbolo registroEnIPos = this.tablaSimbolos.get(i);
+
+            if (registroEnIPos.equalsByLexema(registroEnReferencia) && i != referenciaATS && registroEnIPos.tienenMismoAmbito(registroEnReferencia)) {
+                if (registroEnIPos.equalsByUso(registroEnReferencia)) {
+                    if (registroEnIPos.getUso().equals("VARIABLE"))
+                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): existe una variable declarada con ese nombre.");
+                    else
+                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): existe una función declarada con ese nombre.");
+                } else {
+                    if (registroEnIPos.getUso().equals("VARIABLE"))
+                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
+                    else
+                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una variable con ese identificador.");
+                }
+
+                this.tablaSimbolos.remove(referenciaATS);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -259,6 +371,7 @@ public class AnalizadorSintactico {
         parser.setLexico(this.analizadorLexico);
         parser.setSintactico(this);
         System.out.println();
+
         if (parser.yyparse() == 0) {
             System.out.println("Ejecución del Parser finalizada.");
             imprimirAnalisisLexico();
