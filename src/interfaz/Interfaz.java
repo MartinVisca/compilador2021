@@ -4,6 +4,7 @@ package interfaz;
 //import de todas las clases que se precisen
 
 import analizadorLexico.AnalizadorLexico;
+import analizadorLexico.Token;
 import analizadorSintactico.Parser;
 
 import javax.swing.*;
@@ -23,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Vector;
 
 public class Interfaz {
 	private JFrame frmCompiler;
@@ -78,7 +80,7 @@ public class Interfaz {
 	 */
 	private void initialize() {
 		frmCompiler = new JFrame();
-		frmCompiler.setIconImage(Toolkit.getDefaultToolkit().getImage(Interfaz.class.getResource("/icons/genericregister_obj.gif")));
+		//frmCompiler.setIconImage(Toolkit.getDefaultToolkit().getImage(Interfaz.class.getResource("/icons/genericregister_obj.gif")));
 		frmCompiler.setTitle("Compiler1.0");
 		frmCompiler.setBounds(100, 100, 980, 628);
 		frmCompiler.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -91,7 +93,7 @@ public class Interfaz {
 		// -------------------------------- PANEL PROBLEMS ------------------------------------------
 		
 		JPanel Problems = new JPanel();
-		tabbedPane.addTab("Problems", new ImageIcon(Interfaz.class.getResource("/icons/errorwarning_tab.gif")), Problems, null);
+		//tabbedPane.addTab("Problems", new ImageIcon(Interfaz.class.getResource("/icons/errorwarning_tab.gif")), Problems, null);
 		
 		JScrollPane scrollPane_Problems = new JScrollPane();
 		scrollPane_Problems.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -115,7 +117,7 @@ public class Interfaz {
 		// -------------------------------- PANEL CONSOLE ------------------------------------------
 		
 		JPanel Console = new JPanel();
-		tabbedPane.addTab("Console", new ImageIcon(Interfaz.class.getResource("/icons/console_view.gif")), Console, null);
+		//tabbedPane.addTab("Console", new ImageIcon(Interfaz.class.getResource("/icons/console_view.gif")), Console, null);
 		
 		JScrollPane scrollPane_Console = new JScrollPane();
 		scrollPane_Console.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -217,14 +219,14 @@ public class Interfaz {
 		menuBar.add(mnFile);
 		
 		JMenuItem triggerOpenFile = new JMenuItem("Open File");
-		triggerOpenFile.setIcon(new ImageIcon(Interfaz.class.getResource("/icons/file_obj.gif")));
+		//triggerOpenFile.setIcon(new ImageIcon(Interfaz.class.getResource("/icons/file_obj.gif")));
 		mnFile.add(triggerOpenFile);
 		
 		JSeparator separator = new JSeparator();
 		mnFile.add(separator);
 		
 		JMenuItem mntmRun = new JMenuItem("Run");
-		mntmRun.setIcon(new ImageIcon(Interfaz.class.getResource("/icons/lrun_obj.gif")));
+		//mntmRun.setIcon(new ImageIcon(Interfaz.class.getResource("/icons/lrun_obj.gif")));
 		mnFile.add(mntmRun);
 		
 		JSeparator separator_1 = new JSeparator();
@@ -237,7 +239,7 @@ public class Interfaz {
 		menuBar.add(mnHelp);
 		
 		JMenuItem triggerHowToUse = new JMenuItem("How to use?");
-		triggerHowToUse.setIcon(new ImageIcon(Interfaz.class.getResource("/icons/help_contents.gif")));
+		//triggerHowToUse.setIcon(new ImageIcon(Interfaz.class.getResource("/icons/help_contents.gif")));
 		mnHelp.add(triggerHowToUse);
 		
 		JMenuItem triggerAbout = new JMenuItem("About");
@@ -322,7 +324,7 @@ public class Interfaz {
 						//assembler.ejecutable();
 						//console.append(assembler.getConsola());
 						//File file = assembler.getArchivo();
-						System.out.println("ss- "+file.getAbsolutePath());							
+						//System.out.println("ss- "+file.getAbsolutePath());
 						
 					}catch (Exception ex){ 
 						ex.printStackTrace(); 
@@ -352,43 +354,43 @@ public class Interfaz {
 				//-----------//
 				
 				//Ininicializo estructuras para mostrar las salidas.
-				AnalizadorLexico analizer = parser.getAnalizer();
+				AnalizadorLexico analizer = parser.getLexico();
 				//LexicalAnalizer analizer = new LexicalAnalizer(program, table);
-				ArrayList<Token> tokens=analizer.getTokens();
+				Vector<Token> tokens = analizer.getListaTokens();
 				
 				System.out.println("CANT TOK: "+tokens.size());
-		        ArrayList<SintacticStructure> structures = parser.getReglas();
-		        System.out.println("CANT REGLAS: "+structures.size());
-				ArrayList<Error> errors = analizer.getErrors();
-				System.out.println("CANT ERRORES: "+errors.size());
-				ArrayList<TableRecord> records = table.getElements();
-				System.out.println("CANT RECORD: "+records.size());
-				ArbolSintactico arbol = parser.getArbol();
-				arbol.imprimirArbol();
+		        //ArrayList<SintacticStructure> structures = parser.getReglas();
+		        //System.out.println("CANT REGLAS: "+structures.size());
+				//ArrayList<Error> errors = analizer.getErrors();
+				//System.out.println("CANT ERRORES: "+errors.size());
+				//ArrayList<TableRecord> records = table.getElements();
+				//System.out.println("CANT RECORD: "+records.size());
+				//ArbolSintactico arbol = parser.getArbol();
+				//arbol.imprimirArbol();
 				
-				errors.addAll(parser.getErrors());
-				Collections.sort(errors);
+				//errors.addAll(parser.getErrors());
+				//Collections.sort(errors);
 				problems.setText(null);
 				
 				
 				
-				for(Error error : errors){
+				/*for(Error error : errors){
 					drawLine(error.nroLine-1, error.severity);
 					problems.setText(problems.getText() + error.description + " En linea: "+error.nroLine+"\n");
-				}
+				}*/
 				
 
 				//Panel tokens agrego filas a la tabla.
 				for(Token token : tokens){
 					String[] data=new String[4];
 					data[0]=""+token.getId();
-					data[1]=token.getType();
+					//data[1]=token.getType();
 					data[2]=token.getLexema();
-					data[3]=""+token.getNroLine();
+					//data[3]=""+token.getNroLine();
 					dtm.addRow(data);
 				}
 				
-				for (SintacticStructure struc : structures){
+				/*for (SintacticStructure struc : structures){
 					String[] data=new String[4];
 					data[0]=""+struc.getLine();
 					data[1]=struc.getType();
@@ -405,7 +407,6 @@ public class Interfaz {
 		            data[4]=tr.getAmbito();
 		            tableDtm.addRow(data);
 				}
-			raiz = parser.getRaiz();
 			funciones = parser.getFunciones();
 			if (errors.size()==0){
 				if (raiz != null){
@@ -417,7 +418,7 @@ public class Interfaz {
 				console.setText("El programa compilo correctamente. \n");
 			}else{
 				console.setText("El programa no pudo compilar ya que tuvo "+errors.size()+" errores \n");
-			}
+			}*/
 			/*
 			for (Nodo n : parser.getFunciones()){
 				System.out.println("******* funcion : "+n.getLexema()+" *******");
@@ -428,7 +429,7 @@ public class Interfaz {
 			
 			}	
 		});
-		btnRun.setIcon(new ImageIcon(CompilerUI.class.getResource("/icons/lrun_obj.gif")));
+		//btnRun.setIcon(new ImageIcon(Interfaz.class.getResource("/icons/lrun_obj.gif")));
 		
 		/**
 		 * ----------- BOTON OPEN ---------------
@@ -468,7 +469,7 @@ public class Interfaz {
 				}
 			}
 		});
-		btnOpen.setIcon(new ImageIcon(CompilerUI.class.getResource("/icons/file_obj.gif")));
+		//btnOpen.setIcon(new ImageIcon(Interfaz.class.getResource("/icons/file_obj.gif")));
 		
 		
 		/**
@@ -559,10 +560,10 @@ public class Interfaz {
 		int startLineText = textArea.getLineStartOffset(numberLine);
 		int endLineText = textArea.getLineEndOffset(numberLine);
 		switch(severity){
-			case Error.error:
+			/*case Error.error:
 				textArea.getHighlighter().addHighlight(startLineText, endLineText,painterTextArea_red);
 			case Error.warning:
-				textArea.getHighlighter().addHighlight(startLineText, endLineText,painterTextArea_yellow);
+				textArea.getHighlighter().addHighlight(startLineText, endLineText,painterTextArea_yellow);*/
 		}
 
 		// PINTA LINEA EN LA COLUMNA LINEA
