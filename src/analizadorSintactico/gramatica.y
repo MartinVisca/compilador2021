@@ -225,6 +225,10 @@ public void setLexico(AnalizadorLexico lexico) { this.lexico = lexico; }
 
 public void setSintactico(AnalizadorSintactico sintactico) { this.sintactico = sintactico; }
 
+public AnalizadorLexico getLexico() { return this.lexico; }
+
+public AnalizadorSintactico getSintactico() { return this.sintactico; }
+
 public int yylex() {
     int token = lexico.procesarYylex();
     if (lexico.getRefTablaSimbolos() != -1)

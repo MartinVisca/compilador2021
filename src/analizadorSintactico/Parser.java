@@ -659,7 +659,7 @@ final static String yyrule[] = {
 "tipo : SINGLE",
 };
 
-//#line 219 "gramatica.y"
+//#line 220 "gramatica.y"
 
 private AnalizadorLexico lexico;
 private AnalizadorSintactico sintactico;
@@ -667,6 +667,10 @@ private AnalizadorSintactico sintactico;
 public void setLexico(AnalizadorLexico lexico) { this.lexico = lexico; }
 
 public void setSintactico(AnalizadorSintactico sintactico) { this.sintactico = sintactico; }
+
+public AnalizadorLexico getLexico() { return this.lexico; }
+
+public AnalizadorSintactico getSintactico() { return this.sintactico; }
 
 public int yylex() {
     int token = lexico.procesarYylex();
@@ -678,7 +682,7 @@ public int yylex() {
 public void yyerror(String string) {
 	//sintactico.addErrorSintactico("par: " + string);
 }
-//#line 610 "Parser.java"
+//#line 614 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -849,299 +853,299 @@ case 8:
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego del bloque."); }
 break;
 case 17:
-//#line 47 "gramatica.y"
+//#line 48 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una declaración de variable. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 18:
-//#line 48 "gramatica.y"
+//#line 49 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' al final de la declaración de variable."); }
 break;
 case 19:
-//#line 49 "gramatica.y"
+//#line 50 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta declarar el/los identificador/es."); }
 break;
 case 21:
-//#line 51 "gramatica.y"
+//#line 52 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una declaración de variable de tipo función. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 22:
-//#line 52 "gramatica.y"
+//#line 53 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego del bloque."); }
 break;
 case 25:
-//#line 57 "gramatica.y"
+//#line 58 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta una ',' entre identificadores."); }
 break;
 case 27:
-//#line 61 "gramatica.y"
+//#line 62 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el tipo de la función."); }
 break;
 case 28:
-//#line 62 "gramatica.y"
+//#line 63 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta FUNC en la definición de la función."); }
 break;
 case 29:
-//#line 63 "gramatica.y"
+//#line 64 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los parámetros deben ser colocados entre paréntesis."); }
 break;
 case 30:
-//#line 64 "gramatica.y"
+//#line 65 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la función debe tener al menos un parámetro."); }
 break;
 case 31:
-//#line 65 "gramatica.y"
+//#line 66 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
 break;
 case 32:
-//#line 68 "gramatica.y"
-{ sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
-break;
-case 33:
 //#line 69 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
-case 34:
+case 33:
 //#line 70 "gramatica.y"
-{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el BEGIN antes del bloque de sentencias ejecutables."); }
+{ sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
-case 35:
+case 34:
 //#line 71 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el BEGIN antes del bloque de sentencias ejecutables."); }
 break;
-case 36:
+case 35:
 //#line 72 "gramatica.y"
-{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el RETURN de la función."); }
+{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el BEGIN antes del bloque de sentencias ejecutables."); }
 break;
-case 37:
+case 36:
 //#line 73 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el RETURN de la función."); }
 break;
-case 38:
+case 37:
 //#line 74 "gramatica.y"
-{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la expresión de RETURN debe estar entre paréntesis."); }
+{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el RETURN de la función."); }
 break;
-case 39:
+case 38:
 //#line 75 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la expresión de RETURN debe estar entre paréntesis."); }
 break;
-case 40:
+case 39:
 //#line 76 "gramatica.y"
-{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): RETURN debe tener al menos una expresión como parámetro."); }
+{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la expresión de RETURN debe estar entre paréntesis."); }
 break;
-case 41:
+case 40:
 //#line 77 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): RETURN debe tener al menos una expresión como parámetro."); }
 break;
-case 42:
+case 41:
 //#line 78 "gramatica.y"
-{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en los parámetros de RETURN."); }
+{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): RETURN debe tener al menos una expresión como parámetro."); }
 break;
-case 43:
+case 42:
 //#line 79 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en los parámetros de RETURN."); }
 break;
-case 44:
+case 43:
 //#line 80 "gramatica.y"
-{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de RETURN (expresión)."); }
+{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en los parámetros de RETURN."); }
 break;
-case 45:
+case 44:
 //#line 81 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de RETURN (expresión)."); }
 break;
-case 46:
+case 45:
 //#line 82 "gramatica.y"
-{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta END luego de ';'."); }
+{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de RETURN (expresión)."); }
 break;
-case 47:
+case 46:
 //#line 83 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta END luego de ';'."); }
 break;
-case 48:
+case 47:
 //#line 84 "gramatica.y"
-{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
+{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta END luego de ';'."); }
 break;
-case 49:
+case 48:
 //#line 85 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
 break;
+case 49:
+//#line 86 "gramatica.y"
+{ sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
+break;
 case 57:
-//#line 99 "gramatica.y"
+//#line 100 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una operación de asignación. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 58:
-//#line 100 "gramatica.y"
+//#line 101 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de la asignación."); }
 break;
 case 59:
-//#line 101 "gramatica.y"
+//#line 102 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el operador de asignación."); }
 break;
 case 60:
-//#line 102 "gramatica.y"
+//#line 103 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta la expresión a asignar."); }
 break;
 case 61:
-//#line 105 "gramatica.y"
+//#line 106 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una impresión por pantalla de una cadena. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 62:
-//#line 106 "gramatica.y"
+//#line 107 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de la impresión de cadena."); }
 break;
 case 63:
-//#line 107 "gramatica.y"
+//#line 108 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cierre erróneo de la lista de parámetros de PRINT."); }
 break;
 case 64:
-//#line 108 "gramatica.y"
+//#line 109 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los parámetros de PRINT deben estar entre paréntesis."); }
 break;
 case 65:
-//#line 109 "gramatica.y"
+//#line 110 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se esperaba PRINT, se encontró '('."); }
 break;
 case 66:
-//#line 110 "gramatica.y"
+//#line 111 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta declarar una cadena para PRINT."); }
 break;
 case 67:
-//#line 113 "gramatica.y"
+//#line 114 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una invocación a una función (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 68:
-//#line 114 "gramatica.y"
+//#line 115 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el parámetro deben estar entre paréntesis."); }
 break;
 case 69:
-//#line 115 "gramatica.y"
+//#line 116 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): número incorrecto de parámetros en la invocación."); }
 break;
 case 70:
-//#line 116 "gramatica.y"
+//#line 117 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
 break;
 case 71:
-//#line 117 "gramatica.y"
+//#line 118 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de la invocación a la función."); }
 break;
 case 72:
-//#line 120 "gramatica.y"
-{ sintactico.agregarAnalisis("Se reconoció una sentencia IF. (Línea " + AnalizadorLexico.LINEA + ")"); }
-break;
-case 73:
 //#line 121 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una sentencia IF. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
-case 74:
+case 73:
 //#line 122 "gramatica.y"
+{ sintactico.agregarAnalisis("Se reconoció una sentencia IF. (Línea " + AnalizadorLexico.LINEA + ")"); }
+break;
+case 74:
+//#line 123 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición de IF debe estar entre paréntesis."); }
 break;
 case 75:
-//#line 123 "gramatica.y"
+//#line 124 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
 break;
 case 76:
-//#line 124 "gramatica.y"
+//#line 125 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta la declaración de THEN."); }
 break;
 case 77:
-//#line 125 "gramatica.y"
+//#line 126 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta cierre de ENDIF."); }
 break;
 case 78:
-//#line 126 "gramatica.y"
+//#line 127 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de ENDIF."); }
 break;
 case 79:
-//#line 127 "gramatica.y"
+//#line 128 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta cierre de ENDIF."); }
 break;
 case 80:
-//#line 128 "gramatica.y"
+//#line 129 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de ENDIF."); }
 break;
 case 83:
-//#line 137 "gramatica.y"
-{ sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
-break;
-case 84:
 //#line 138 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
-case 85:
+case 84:
 //#line 139 "gramatica.y"
+{ sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
+break;
+case 85:
+//#line 140 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición de WHILE debe estar entre paréntesis."); }
 break;
 case 86:
-//#line 140 "gramatica.y"
+//#line 141 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
 break;
 case 87:
-//#line 141 "gramatica.y"
+//#line 142 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se esperaba DO, se leyó BEGIN."); }
 break;
 case 88:
-//#line 142 "gramatica.y"
+//#line 143 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se esperaba END, se leyó ';'."); }
 break;
 case 89:
-//#line 143 "gramatica.y"
+//#line 144 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
 break;
 case 95:
-//#line 151 "gramatica.y"
+//#line 152 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los bloques TRY/CATCH no pueden anidarse"); }
 break;
 case 96:
-//#line 154 "gramatica.y"
+//#line 155 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 97:
-//#line 155 "gramatica.y"
+//#line 156 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se leyó un BEGIN sin previo reconocimiento de CATCH."); }
 break;
 case 98:
-//#line 156 "gramatica.y"
+//#line 157 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el cuerpo de CATCH no se inicializó con BEGIN."); }
 break;
 case 99:
-//#line 157 "gramatica.y"
+//#line 158 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cuerpo de CATCH mal cerrado; falta END."); }
 break;
 case 100:
-//#line 158 "gramatica.y"
+//#line 159 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
 break;
 case 106:
-//#line 170 "gramatica.y"
+//#line 171 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una definición de contrato. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 107:
-//#line 171 "gramatica.y"
+//#line 172 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición debe estar entre paréntesis."); }
 break;
 case 108:
-//#line 172 "gramatica.y"
+//#line 173 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): CONTRACT debe tener al menos una condición como parámetro."); }
 break;
 case 109:
-//#line 173 "gramatica.y"
+//#line 174 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el paréntesis de cierre para los parámetros de CONTRACT."); }
 break;
 case 110:
-//#line 174 "gramatica.y"
+//#line 175 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de los parámetros de CONTRACT."); }
 break;
 case 111:
-//#line 177 "gramatica.y"
+//#line 178 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una sentencia de BREAK. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 112:
-//#line 178 "gramatica.y"
+//#line 179 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de BREAK."); }
 break;
 case 122:
-//#line 196 "gramatica.y"
+//#line 197 "gramatica.y"
 {
                 String tipo = sintactico.getTipoFromTS(val_peek(0).ival);
                 if (tipo.equals("LONG"))
@@ -1149,10 +1153,10 @@ case 122:
              }
 break;
 case 123:
-//#line 201 "gramatica.y"
+//#line 202 "gramatica.y"
 {  sintactico.setNegativoTablaSimb(val_peek(0).ival); }
 break;
-//#line 1079 "Parser.java"
+//#line 1083 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
