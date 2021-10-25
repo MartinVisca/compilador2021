@@ -1,15 +1,19 @@
-LONG FUNC f1 (LONG y)
-LONG x;
-BEGIN
-	x := y;
-	RETURN (x);
-END;
-
+program
 SINGLE FUNC f2 (SINGLE i)
-SINGLE j, k;
+    LONG FUNC f1 (LONG y)
+        LONG x;
+    BEGIN
+	    x := y;
+	    RETURN (x);
+    END;
+    SINGLE j, k;
 BEGIN
     j := 0;
     k := 0;
     j := j + i;
     RETURN (j + k);
+END;
+
+BEGIN
+
 END;

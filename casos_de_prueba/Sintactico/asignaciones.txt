@@ -1,4 +1,7 @@
-x := y;
-z := 1;
-p := r + s;
-a := b / c;
+program
+BEGIN
+    x := y;
+    z := 1;
+    p := r + s;
+    a := b / c;
+END;

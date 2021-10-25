@@ -1,15 +1,18 @@
-WHILE (a > b) DO
-    a := a + 1;
-
-WHILE (a > b) DO
+program
 BEGIN
-	a := a + 1;
-	b := b + a;
-END;
+    WHILE (a > b) DO
+        a := a + 1;
 
-WHILE (a <> 0) DO
-BEGIN
-	a := a + 1;
-	BREAK;
-	b := 1;
+    WHILE (a > b) DO
+    BEGIN
+    	a := a + 1;
+    	b := b + a;
+    END;
+
+    WHILE (a <> 0) DO
+    BEGIN
+    	a := a + 1;
+    	BREAK;
+    	b := 1;
+    END;
 END;

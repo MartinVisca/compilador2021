@@ -1,4 +1,7 @@
-PRINT (%¡Hola +
-       +mundo!%);
+program
+BEGIN
+    PRINT (%¡Hola +
+           +mundo!%);
 
-PRINT (% ¡Hola mundo! %);
+    PRINT (%¡Hola mundo!%);
+END;

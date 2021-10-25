@@ -1,6 +1,10 @@
+program
 FUNC a;
 FUNC x, y, z;
 LONG b;
 LONG c, d;
 SINGLE i;
 SINGLE j, k;
+BEGIN
+
+END;
