@@ -1,20 +1,23 @@
-IF (a > 3 && b <> 10 || j) THEN
-    a := 1;
-ENDIF;
+program
+BEGIN
+    IF (a > 3 && b <> 10 || j) THEN
+        a := 1;
+    ENDIF;
 
-IF (a && b) THEN
-    b := a;
-ELSE
-    b := 1;
-ENDIF;
+    IF (a && b) THEN
+        b := a;
+    ELSE
+        b := 1;
+    ENDIF;
 
-IF (j > z / 2) THEN
-    BEGIN
-        j := 4;
-        z := 1;
-    END;
-ELSE
-        IF (j > 0) THEN
-            z := 3;
-        ENDIF;
-ENDIF;
+    IF (j > z / 2) THEN
+        BEGIN
+            j := 4;
+            z := 1;
+        END;
+    ELSE
+            IF (j > 0) THEN
+                z := 3;
+            ENDIF;
+    ENDIF;
+END;
