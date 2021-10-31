@@ -177,9 +177,18 @@ cuerpo_if : bloque_de_sentencias
 cuerpo_else : bloque_de_sentencias
             ;
 
-sentencia_while : WHILE '(' condicion ')' DO BEGIN bloque_sentencias_while END ';'     { sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
-                | WHILE '(' condicion ')' DO BEGIN END ';'                             { sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
-                | WHILE '(' condicion ')' DO sentencias_while                          { sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
+sentencia_while : WHILE '(' condicion ')' DO BEGIN bloque_sentencias_while END ';'     {
+                                                                                            sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                            while ($3.ival);
+                                                                                       }
+                | WHILE '(' condicion ')' DO BEGIN END ';'                             {
+                                                                                            sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                            while ($3.ival);
+                                                                                       }
+                | WHILE '(' condicion ')' DO sentencias_while                          {
+                                                                                            sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                            while ($3.ival);
+                                                                                       }
                 | WHILE condicion error                                                { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición de WHILE debe estar entre paréntesis."); }
                 | WHILE '(' condicion DO error                                         { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
                 | WHILE '(' condicion ')' BEGIN error                                  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se esperaba DO, se leyó BEGIN."); }
