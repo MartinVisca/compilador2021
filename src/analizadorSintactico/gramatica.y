@@ -126,9 +126,7 @@ declaracion_func : encabezado_func bloque_sentencias_declarativas BEGIN bloque_s
                  | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' bloque_sentencias_ejecutables_funcion error  ';'                                  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): no se permiten sentencias luego del RETURN en la función."); }
                  ;
 
-parametro : tipo ID     {
-                            sintactico.setUsoTablaSimb($2.ival, "NOMBRE DE PARÁMETRO");
-                        }
+parametro : tipo ID  { sintactico.setUsoTablaSimb($2.ival, "NOMBRE DE PARÁMETRO"); }
           ;
 
 sentencias_ejecutables : asignacion
@@ -232,37 +230,62 @@ sentencia_break : BREAK ';'    { sintactico.agregarAnalisis("Se reconoció una s
                 | BREAK error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de BREAK."); }
                 ;
 
-condicion : expresion
-          | condicion comparador expresion
+condicion : expresion                       {
+                                                sintactico.agregarAPolaca(" ");
+                                                sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
+                                                sintactico.agregarAPolaca("BF");
+                                            }
+          | condicion comparador expresion  {
+                                                sintactico.agregarAPolaca($2.ival);
+                                                sintactico.agregarAPolaca(" ");
+                                                sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
+                                                sintactico.agregarAPolaca("BF");
+                                            }
           ;
 
-expresion : expresion '+' termino
-          | expresion '-' termino
+expresion : expresion '+' termino           {
+                                                sintactico.agregarAnalisis("Se reconoció una suma. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca("+");
+                                            }
+          | expresion '-' termino           {
+                                                sintactico.agregarAnalisis("Se reconoció una resta. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca("-");
+                                            }
           | termino
           ;
 
-termino : termino '*' factor
-        | termino '/' factor
+termino : termino '*' factor                {
+                                                sintactico.agregarAnalisis("Se reconoció una multiplicación. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca("*");
+                                            }
+        | termino '/' factor                {
+                                                sintactico.agregarAnalisis("Se reconoció una división. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca("/");
+                                            }
         | factor
         ;
 
-factor : ID
-       | CTE {
-                String tipo = sintactico.getTipoFromTS($1.ival);
-                if (tipo.equals("LONG"))
-                    sintactico.verificarRangoEnteroLargo($1.ival);
-             }
-       | '-' CTE {  sintactico.setNegativoTablaSimb($2.ival); }
+factor : ID         {
+                        if (sintactico.getUsoFromTS($1.ival).equals("VARIABLE"))
+                            sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
+                    }
+       | CTE        {
+                        String tipo = sintactico.getTipoFromTS($1.ival);
+                        if (tipo.equals("LONG"))
+                            sintactico.verificarRangoEnteroLargo($1.ival);
+                        sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
+                    }
+       | '-' CTE    {  sintactico.setNegativoTablaSimb($2.ival); }
        ;
 
-comparador : '<'
-           | '>'
-           | MENORIGUAL
-           | MAYORIGUAL
-           | IGUAL
-           | DISTINTO
-           | AND
-           | OR
+comparador : '<'            { $$.sval = new String("<"); }
+           | '>'            { $$.sval = new String(">"); }
+           | MENORIGUAL     { $$.sval = new String("<="); }
+           | MAYORIGUAL     { $$.sval = new String(">="); }
+           | IGUAL          { $$.sval = new String("=="); }
+           | DISTINTO       { $$.sval = new String("<>"); }
+           | AND            { $$.sval = new String("&&"); }
+           | OR             { $$.sval = new String("||"); }
            ;
 
 tipo : LONG     {
