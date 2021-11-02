@@ -143,7 +143,12 @@ asignacion : ID OPASIGNACION expresion ';'    { sintactico.agregarAnalisis("Se r
            | ID OPASIGNACION error            { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA - 1) + "): falta ';' luego de la asignación."); }
            ;
 
-salida : PRINT '(' CADENA ')' ';'     { sintactico.agregarAnalisis("Se reconoció una impresión por pantalla de una cadena. (Línea " + AnalizadorLexico.LINEA + ")"); }
+salida : PRINT '(' CADENA ')' ';'     {
+                                            sintactico.agregarAnalisis("Se reconoció una impresión por pantalla de una cadena. (Línea " + AnalizadorLexico.LINEA + ")");
+                                            sintactico.setUsoTablaSimb($3.ival, "CADENA DE CARACTERES");
+                                            sintactico.agregarAPolaca(sintactico.getLexemaFromTS($3.ival));
+                                            sintactico.agregarAPolaca("OUT"); ///////////// COMPROBAR //////////////
+                                      }
        | PRINT '(' CADENA ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de la impresión de cadena."); }
        | PRINT '(' CADENA error ';'   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cierre erróneo de la lista de parámetros de PRINT."); }
        | PRINT CADENA error ';'       { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los parámetros de PRINT deben estar entre paréntesis."); }
@@ -213,7 +218,13 @@ sentencias_ejecutables_sin_try_catch : asignacion
                                      | sentencia_try_catch error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los bloques TRY/CATCH no pueden anidarse"); }
                                      ;
 
-sentencia_try_catch : TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables END ';'     { sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")"); }
+sentencia_try_catch : TRY sentencias_ejecutables_sin_try_catch CATCH     {
+                                                                             sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                             sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]"); // Desapila dirección incompleta y completa el destino de BF
+                                                                             sintactico.agregarAPolaca("[" + sintactico.popElementoPila() + "]");    // Desapilar paso de inicio
+                                                                             sintactico.agregarAPolaca("BI"); // Salto desde contrato
+                                                                         }
+                    BEGIN bloque_sentencias_ejecutables END ';'
                     | TRY sentencias_ejecutables_sin_try_catch BEGIN error                                           { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se leyó un BEGIN sin previo reconocimiento de CATCH."); }
                     | TRY sentencias_ejecutables_sin_try_catch CATCH bloque_sentencias_ejecutables error             { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el cuerpo de CATCH no se inicializó con BEGIN."); }
                     | TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables ';' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cuerpo de CATCH mal cerrado; falta END."); }
@@ -229,7 +240,12 @@ sentencias_while : sentencias_ejecutables
                  | sentencia_break
                  ;
 
-contrato : CONTRACT ':' '(' condicion ')' ';'    { sintactico.agregarAnalisis("Se reconoció una definición de contrato. (Línea " + AnalizadorLexico.LINEA + ")"); }
+contrato : CONTRACT ':' '(' condicion ')' ';'    {
+                                                      sintactico.agregarAnalisis("Se reconoció una definición de contrato. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                      sintactico.agregarAPolaca(" "); // COMPROBAR; agrego paso incompleto para hacer el salto al catch.
+                                                      sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
+                                                      sintactico.agregarAPolaca("BF");
+                                                 }
          | CONTRACT ':' condicion error          { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición debe estar entre paréntesis."); }
          | CONTRACT ':' '(' ')' error            { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): CONTRACT debe tener al menos una condición como parámetro."); }
          | CONTRACT ':' '(' condicion ';' error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el paréntesis de cierre para los parámetros de CONTRACT."); }
