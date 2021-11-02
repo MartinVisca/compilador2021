@@ -169,10 +169,15 @@ sentencia_if : IF '(' condicion ')' THEN cuerpo_if ENDIF ';'                    
              | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else ENDIF error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de ENDIF."); }
              ;
 
-cuerpo_if : bloque_de_sentencias
+cuerpo_if : bloque_de_sentencias    {
+                                        sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]");   // Desapila dirección incompleta y completa el destino de BF
+                                        sintactico.agregarAPolaca(" ");                               // Crea paso incompleto
+                                        sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);  // Apila el nro de paso incompleto
+                                        sintactico.agregarAPolaca("BI");                              // Se crea el paso BI
+                                    }
           ;
 
-cuerpo_else : bloque_de_sentencias
+cuerpo_else : bloque_de_sentencias  { sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + sintactico.getSizePolaca() + "]"); }
             ;
 
 sentencia_while : WHILE '(' condicion ')' DO BEGIN bloque_sentencias_while END ';'     {
@@ -208,10 +213,7 @@ sentencias_ejecutables_sin_try_catch : asignacion
                                      | sentencia_try_catch error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los bloques TRY/CATCH no pueden anidarse"); }
                                      ;
 
-sentencia_try_catch : TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables END ';'     {
-                                                                                                                          sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")");
-                                                                                                                          // Dependiendo de la indicación del contrato, se agrega lo del try o el catch a la polaca
-                                                                                                                     }
+sentencia_try_catch : TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables END ';'     { sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")"); }
                     | TRY sentencias_ejecutables_sin_try_catch BEGIN error                                           { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se leyó un BEGIN sin previo reconocimiento de CATCH."); }
                     | TRY sentencias_ejecutables_sin_try_catch CATCH bloque_sentencias_ejecutables error             { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el cuerpo de CATCH no se inicializó con BEGIN."); }
                     | TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables ';' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cuerpo de CATCH mal cerrado; falta END."); }
@@ -227,14 +229,7 @@ sentencias_while : sentencias_ejecutables
                  | sentencia_break
                  ;
 
-contrato : CONTRACT ':' '(' condicion ')' ';'    {
-                                                      sintactico.agregarAnalisis("Se reconoció una definición de contrato. (Línea " + AnalizadorLexico.LINEA + ")");
-                                                      if ($4.ival)
-                                                           // Agregar a la polaca lo necesario para el CATCH
-                                                           // Indicar que el agregado fue correcto y que se puede seguir agregando el resto de la función
-                                                      else
-                                                           // Borrar la función de la polaca y proceder a agregar lo que forme parte del CATCH
-                                                 }
+contrato : CONTRACT ':' '(' condicion ')' ';'    { sintactico.agregarAnalisis("Se reconoció una definición de contrato. (Línea " + AnalizadorLexico.LINEA + ")"); }
          | CONTRACT ':' condicion error          { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición debe estar entre paréntesis."); }
          | CONTRACT ':' '(' ')' error            { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): CONTRACT debe tener al menos una condición como parámetro."); }
          | CONTRACT ':' '(' condicion ';' error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el paréntesis de cierre para los parámetros de CONTRACT."); }
