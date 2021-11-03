@@ -141,7 +141,7 @@ public class AnalizadorSintactico {
      * @param elemento
      * @param pos
      */
-    public void agregarAPolacaEnPos(String elemento, int pos) {
+    public void agregarAPolacaEnPos(int pos, String elemento) {
         this.polaca.addElementoEnPosicion(elemento, pos);
     }
 
@@ -374,14 +374,14 @@ public class AnalizadorSintactico {
 
         if (parser.yyparse() == 0) {
             System.out.println("Ejecución del Parser finalizada.");
-            imprimirAnalisisLexico();
+            //imprimirAnalisisLexico();
             imprimirAnalisisSintactico();
             imprimirTablaSimbolos();
         }
         else
             System.out.println("Ejecución del Parser no finalizada.");
 
-        analizadorLexico.imprimirErrores();
+        //analizadorLexico.imprimirErrores();
         this.imprimirErroresSintacticos();
         this.imprimirPolaca();
         analizadorLexico.setPosArchivo(0);

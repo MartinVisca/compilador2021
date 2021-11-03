@@ -93,7 +93,7 @@ lista_de_variables : ID                             {
 
 encabezado_func : tipo FUNC ID '(' parametro ')'    {
                                                         sintactico.setUsoTablaSimb($3.ival, "NOMBRE DE FUNCIÓN");
-                                                        sintactico.setAmbito($3.ival);
+                                                        sintactico.setAmbito($3.sval);
                                                     }
                 | FUNC ID '(' parametro ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el tipo de la función."); }
                 | tipo ID '(' parametro ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta FUNC en la definición de la función."); }
@@ -218,17 +218,18 @@ sentencias_ejecutables_sin_try_catch : asignacion
                                      | sentencia_try_catch error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los bloques TRY/CATCH no pueden anidarse"); }
                                      ;
 
-sentencia_try_catch : TRY sentencias_ejecutables_sin_try_catch CATCH     {
-                                                                             sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")");
-                                                                             sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]"); // Desapila dirección incompleta y completa el destino de BF
-                                                                             sintactico.agregarAPolaca("[" + sintactico.popElementoPila() + "]");    // Desapilar paso de inicio
-                                                                             sintactico.agregarAPolaca("BI"); // Salto desde contrato
-                                                                         }
-                    BEGIN bloque_sentencias_ejecutables END ';'
-                    | TRY sentencias_ejecutables_sin_try_catch BEGIN error                                           { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se leyó un BEGIN sin previo reconocimiento de CATCH."); }
-                    | TRY sentencias_ejecutables_sin_try_catch CATCH bloque_sentencias_ejecutables error             { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el cuerpo de CATCH no se inicializó con BEGIN."); }
-                    | TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables ';' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cuerpo de CATCH mal cerrado; falta END."); }
-                    | TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables END error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
+encabezado_try_catch: TRY sentencias_ejecutables_sin_try_catch CATCH            {
+                                                                                    sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]"); // Desapila dirección incompleta y completa el destino de BF
+                                                                                    sintactico.agregarAPolaca("[" + sintactico.popElementoPila() + "]");    // Desapilar paso de inicio
+                                                                                    sintactico.agregarAPolaca("BI"); // Salto desde contrato
+                                                                                }
+                    | TRY sentencias_ejecutables_sin_try_catch BEGIN error      { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se leyó un BEGIN sin previo reconocimiento de CATCH."); }
+                    ;
+
+sentencia_try_catch : encabezado_try_catch BEGIN bloque_sentencias_ejecutables END ';'     { sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")"); }
+                    | encabezado_try_catch bloque_sentencias_ejecutables error             { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el cuerpo de CATCH no se inicializó con BEGIN."); }
+                    | encabezado_try_catch BEGIN bloque_sentencias_ejecutables ';' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cuerpo de CATCH mal cerrado; falta END."); }
+                    | encabezado_try_catch BEGIN bloque_sentencias_ejecutables END error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
                     ;
 
 sentencias_ejecutables_func : sentencias_ejecutables
@@ -262,7 +263,7 @@ condicion : expresion                       {
                                                 sintactico.agregarAPolaca("BF");
                                             }
           | condicion comparador expresion  {
-                                                sintactico.agregarAPolaca($2.ival);
+                                                sintactico.agregarAPolaca($2.sval);
                                                 sintactico.agregarAPolaca(" ");
                                                 sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
                                                 sintactico.agregarAPolaca("BF");

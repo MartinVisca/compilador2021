@@ -15,10 +15,22 @@ import analizadorLexico.RegistroSimbolo;
 
 %%
 
-programa : ID bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables END ';'        { sintactico.agregarAnalisis("Se reconoció un programa. (Línea " + AnalizadorLexico.LINEA + ")"); }
-         | ID BEGIN END ';'                                                                     { sintactico.agregarAnalisis("Se reconoció un programa. (Línea " + AnalizadorLexico.LINEA + ")"); }
-         | ID BEGIN bloque_sentencias_ejecutables END ';'                                       { sintactico.agregarAnalisis("Se reconoció un programa. (Línea " + AnalizadorLexico.LINEA + ")"); }
-         | ID bloque_sentencias_declarativas BEGIN END ';'                                      { sintactico.agregarAnalisis("Se reconoció un programa. (Línea " + AnalizadorLexico.LINEA + ")"); }
+programa : ID bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables END ';'        {
+                                                                                                    sintactico.agregarAnalisis("Se reconoció un programa. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                                    sintactico.setUsoTablaSimb($1.ival, "NOMBRE DE PROGRAMA");
+                                                                                                }
+         | ID BEGIN END ';'                                                                     {
+                                                                                                    sintactico.agregarAnalisis("Se reconoció un programa. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                                    sintactico.setUsoTablaSimb($1.ival, "NOMBRE DE PROGRAMA");
+                                                                                                }
+         | ID BEGIN bloque_sentencias_ejecutables END ';'                                       {
+                                                                                                    sintactico.agregarAnalisis("Se reconoció un programa. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                                    sintactico.setUsoTablaSimb($1.ival, "NOMBRE DE PROGRAMA");
+                                                                                                }
+         | ID bloque_sentencias_declarativas BEGIN END ';'                                      {
+                                                                                                    sintactico.agregarAnalisis("Se reconoció un programa. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                                    sintactico.setUsoTablaSimb($1.ival, "NOMBRE DE PROGRAMA");
+                                                                                                }
          | ID bloque_sentencias_declarativas bloque_sentencias_ejecutables error                { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta BEGIN al abrir el bloque de sentencias ejecutables."); }
          | ID bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables ';' error      { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta END al cerrar el bloque de sentencias ejecutables."); }
          | ID bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables END error      { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego del END en el bloque de sentencias ejecutables."); }
@@ -64,17 +76,30 @@ sentencias_declarativas : tipo lista_de_variables ';'        { sintactico.agrega
                         | FUNC lista_de_variables error ';'  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego del bloque."); }
                         ;
 
-lista_de_variables : ID
-                   | lista_de_variables ',' ID
-                   | lista_de_variables ID error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta una ',' entre identificadores."); }
+lista_de_variables : ID                             {
+                                                          sintactico.setAmbitoTablaSimb($1.ival);
+                                                          sintactico.setUsoTablaSimb($1.ival, "VARIABLE");
+                                                          if (!sintactico.variableFueDeclarada($1.ival))
+                                                                sintactico.setTipoVariableTablaSimb($1.ival);
+                                                    }
+                   | lista_de_variables ',' ID      {
+                                                          sintactico.setAmbitoTablaSimb($3.ival);
+                                                          sintactico.setUsoTablaSimb($3.ival, "VARIABLE");
+                                                          if (!sintactico.variableFueDeclarada($3.ival))
+                                                                sintactico.setTipoVariableTablaSimb($3.ival);
+                                                    }
+                   | lista_de_variables ID error    { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta una ',' entre identificadores."); }
                    ;
 
-encabezado_func : tipo FUNC ID '(' parametro ')'
-                | FUNC ID '(' parametro ')' error    { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el tipo de la función."); }
-                | tipo ID '(' parametro ')' error    { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta FUNC en la definición de la función."); }
-                | tipo FUNC ID parametro error       { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los parámetros deben ser colocados entre paréntesis."); }
-                | tipo FUNC ID '(' ')' error         { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la función debe tener al menos un parámetro."); }
-                | tipo FUNC ID '(' parametro error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
+encabezado_func : tipo FUNC ID '(' parametro ')'    {
+                                                        sintactico.setUsoTablaSimb($3.ival, "NOMBRE DE FUNCIÓN");
+                                                        sintactico.setAmbito($3.sval);
+                                                    }
+                | FUNC ID '(' parametro ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el tipo de la función."); }
+                | tipo ID '(' parametro ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta FUNC en la definición de la función."); }
+                | tipo FUNC ID parametro error      { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los parámetros deben ser colocados entre paréntesis."); }
+                | tipo FUNC ID '(' ')' error        { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la función debe tener al menos un parámetro."); }
+                | tipo FUNC ID '(' parametro error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
                 ;
 
 declaracion_func : encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END ';'     { sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
@@ -82,26 +107,26 @@ declaracion_func : encabezado_func bloque_sentencias_declarativas BEGIN bloque_s
                  | encabezado_func bloque_sentencias_declarativas BEGIN RETURN '(' expresion ')' ';' END ';'                                           { sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
                  | encabezado_func BEGIN RETURN '(' expresion ')' ';' END ';'                                                                          { sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
                  | encabezado_func bloque_sentencias_declarativas bloque_sentencias_ejecutables_funcion error                                          { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el BEGIN antes del bloque de sentencias ejecutables."); }
-                 | encabezado_func bloque_sentencias_ejecutables_funcion error                                                                  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el BEGIN antes del bloque de sentencias ejecutables."); }
+                 | encabezado_func bloque_sentencias_ejecutables_funcion error                                                                         { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el BEGIN antes del bloque de sentencias ejecutables."); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion END error                                { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el RETURN de la función."); }
-                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion END error                                                        { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el RETURN de la función."); }
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion END error                                                               { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el RETURN de la función."); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN expresion error                   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la expresión de RETURN debe estar entre paréntesis."); }
-                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN expresion error                                           { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la expresión de RETURN debe estar entre paréntesis."); }
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN expresion error                                                  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la expresión de RETURN debe estar entre paréntesis."); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' ')' error                     { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): RETURN debe tener al menos una expresión como parámetro."); }
-                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' ')' error                                             { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): RETURN debe tener al menos una expresión como parámetro."); }
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' ')' error                                                    { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): RETURN debe tener al menos una expresión como parámetro."); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ';' error           { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en los parámetros de RETURN."); }
-                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ';' error                                   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en los parámetros de RETURN."); }
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ';' error                                          { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en los parámetros de RETURN."); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' END error       { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de RETURN (expresión)."); }
-                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' END error                               { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de RETURN (expresión)."); }
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' END error                                      { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de RETURN (expresión)."); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' ';' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta END luego de ';'."); }
-                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' ';' error                           { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta END luego de ';'."); }
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' ';' error                                  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta END luego de ';'."); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
-                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END error                           { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END error                                  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' bloque_sentencias_ejecutables_funcion error ';'    { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): no se permiten sentencias luego del RETURN en la función."); }
-                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' bloque_sentencias_ejecutables_funcion error  ';'   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): no se permiten sentencias luego del RETURN en la función."); }
+                 | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' bloque_sentencias_ejecutables_funcion error  ';'                                  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): no se permiten sentencias luego del RETURN en la función."); }
                  ;
 
-parametro : tipo ID
+parametro : tipo ID  { sintactico.setUsoTablaSimb($2.ival, "NOMBRE DE PARÁMETRO"); }
           ;
 
 sentencias_ejecutables : asignacion
@@ -118,7 +143,12 @@ asignacion : ID OPASIGNACION expresion ';'    { sintactico.agregarAnalisis("Se r
            | ID OPASIGNACION error            { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA - 1) + "): falta ';' luego de la asignación."); }
            ;
 
-salida : PRINT '(' CADENA ')' ';'     { sintactico.agregarAnalisis("Se reconoció una impresión por pantalla de una cadena. (Línea " + AnalizadorLexico.LINEA + ")"); }
+salida : PRINT '(' CADENA ')' ';'     {
+                                            sintactico.agregarAnalisis("Se reconoció una impresión por pantalla de una cadena. (Línea " + AnalizadorLexico.LINEA + ")");
+                                            sintactico.setUsoTablaSimb($3.ival, "CADENA DE CARACTERES");
+                                            sintactico.agregarAPolaca(sintactico.getLexemaFromTS($3.ival));
+                                            sintactico.agregarAPolaca("OUT"); ///////////// COMPROBAR //////////////
+                                      }
        | PRINT '(' CADENA ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de la impresión de cadena."); }
        | PRINT '(' CADENA error ';'   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cierre erróneo de la lista de parámetros de PRINT."); }
        | PRINT CADENA error ';'       { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los parámetros de PRINT deben estar entre paréntesis."); }
@@ -138,21 +168,41 @@ sentencia_if : IF '(' condicion ')' THEN cuerpo_if ENDIF ';'                    
              | IF condicion error                                                 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición de IF debe estar entre paréntesis."); }
              | IF '(' condicion  THEN error                                       { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
              | IF '(' condicion ')' cuerpo_if error                               { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta la declaración de THEN."); }
-             | IF '(' condicion ')' THEN cuerpo_if error ';'                     { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta cierre de ENDIF."); }
+             | IF '(' condicion ')' THEN cuerpo_if error ';'                      { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta cierre de ENDIF."); }
              | IF '(' condicion ')' THEN cuerpo_if ENDIF error                    { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de ENDIF."); }
              | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else error ';'     { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta cierre de ENDIF."); }
              | IF '(' condicion ')' THEN cuerpo_if ELSE cuerpo_else ENDIF error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de ENDIF."); }
              ;
 
-cuerpo_if : bloque_de_sentencias
+cuerpo_if : bloque_de_sentencias    {
+                                        sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]");   // Desapila dirección incompleta y completa el destino de BF
+                                        sintactico.agregarAPolaca(" ");                               // Crea paso incompleto
+                                        sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);  // Apila el nro de paso incompleto
+                                        sintactico.agregarAPolaca("BI");                              // Se crea el paso BI
+                                    }
           ;
 
-cuerpo_else : bloque_de_sentencias
+cuerpo_else : bloque_de_sentencias  { sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + sintactico.getSizePolaca() + "]"); }
             ;
 
-sentencia_while : WHILE '(' condicion ')' DO BEGIN bloque_sentencias_while END ';'     { sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
-                | WHILE '(' condicion ')' DO BEGIN END ';'                             { sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
-                | WHILE '(' condicion ')' DO sentencias_while                          { sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")"); }
+sentencia_while : WHILE '(' condicion ')' DO BEGIN bloque_sentencias_while END ';'     {
+                                                                                            sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                            sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]"); // Desapila dirección incompleta y completa el destino de BF
+                                                                                            sintactico.agregarAPolaca("[" + sintactico.popElementoPila() + "]");    // Desapilar paso de inicio
+                                                                                            sintactico.agregarAPolaca("BI");
+                                                                                       }
+                | WHILE '(' condicion ')' DO BEGIN END ';'                             {
+                                                                                            sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                            sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]"); // Desapila dirección incompleta y completa el destino de BF
+                                                                                            sintactico.agregarAPolaca("[" + sintactico.popElementoPila() + "]");    // Desapilar paso de inicio
+                                                                                            sintactico.agregarAPolaca("BI");
+                                                                                       }
+                | WHILE '(' condicion ')' DO sentencias_while                          {
+                                                                                            sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                            sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]"); // Desapila dirección incompleta y completa el destino de BF
+                                                                                            sintactico.agregarAPolaca("[" + sintactico.popElementoPila() + "]");    // Desapilar paso de inicio
+                                                                                            sintactico.agregarAPolaca("BI");
+                                                                                       }
                 | WHILE condicion error                                                { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición de WHILE debe estar entre paréntesis."); }
                 | WHILE '(' condicion DO error                                         { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
                 | WHILE '(' condicion ')' BEGIN error                                  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se esperaba DO, se leyó BEGIN."); }
@@ -168,11 +218,18 @@ sentencias_ejecutables_sin_try_catch : asignacion
                                      | sentencia_try_catch error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los bloques TRY/CATCH no pueden anidarse"); }
                                      ;
 
-sentencia_try_catch : TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables END ';'     { sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")"); }
-                    | TRY sentencias_ejecutables_sin_try_catch BEGIN error                                           { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se leyó un BEGIN sin previo reconocimiento de CATCH."); }
-                    | TRY sentencias_ejecutables_sin_try_catch CATCH bloque_sentencias_ejecutables error             { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el cuerpo de CATCH no se inicializó con BEGIN."); }
-                    | TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables ';' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cuerpo de CATCH mal cerrado; falta END."); }
-                    | TRY sentencias_ejecutables_sin_try_catch CATCH BEGIN bloque_sentencias_ejecutables END error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
+encabezado_try_catch: TRY sentencias_ejecutables_sin_try_catch CATCH            {
+                                                                                    sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), "[" + (sintactico.getSizePolaca() + 2) + "]"); // Desapila dirección incompleta y completa el destino de BF
+                                                                                    sintactico.agregarAPolaca("[" + sintactico.popElementoPila() + "]");    // Desapilar paso de inicio
+                                                                                    sintactico.agregarAPolaca("BI"); // Salto desde contrato
+                                                                                }
+                    | TRY sentencias_ejecutables_sin_try_catch BEGIN error      { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se leyó un BEGIN sin previo reconocimiento de CATCH."); }
+                    ;
+
+sentencia_try_catch : encabezado_try_catch BEGIN bloque_sentencias_ejecutables END ';'     { sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")"); }
+                    | encabezado_try_catch bloque_sentencias_ejecutables error             { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el cuerpo de CATCH no se inicializó con BEGIN."); }
+                    | encabezado_try_catch BEGIN bloque_sentencias_ejecutables ';' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cuerpo de CATCH mal cerrado; falta END."); }
+                    | encabezado_try_catch BEGIN bloque_sentencias_ejecutables END error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
                     ;
 
 sentencias_ejecutables_func : sentencias_ejecutables
@@ -184,7 +241,12 @@ sentencias_while : sentencias_ejecutables
                  | sentencia_break
                  ;
 
-contrato : CONTRACT ':' '(' condicion ')' ';'    { sintactico.agregarAnalisis("Se reconoció una definición de contrato. (Línea " + AnalizadorLexico.LINEA + ")"); }
+contrato : CONTRACT ':' '(' condicion ')' ';'    {
+                                                      sintactico.agregarAnalisis("Se reconoció una definición de contrato. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                      sintactico.agregarAPolaca(" "); // COMPROBAR; agrego paso incompleto para hacer el salto al catch.
+                                                      sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
+                                                      sintactico.agregarAPolaca("BF");
+                                                 }
          | CONTRACT ':' condicion error          { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición debe estar entre paréntesis."); }
          | CONTRACT ':' '(' ')' error            { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): CONTRACT debe tener al menos una condición como parámetro."); }
          | CONTRACT ':' '(' condicion ';' error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el paréntesis de cierre para los parámetros de CONTRACT."); }
@@ -195,41 +257,72 @@ sentencia_break : BREAK ';'    { sintactico.agregarAnalisis("Se reconoció una s
                 | BREAK error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de BREAK."); }
                 ;
 
-condicion : expresion
-          | condicion comparador expresion
+condicion : expresion                       {
+                                                sintactico.agregarAPolaca(" ");
+                                                sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
+                                                sintactico.agregarAPolaca("BF");
+                                            }
+          | condicion comparador expresion  {
+                                                sintactico.agregarAPolaca($2.sval);
+                                                sintactico.agregarAPolaca(" ");
+                                                sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
+                                                sintactico.agregarAPolaca("BF");
+                                            }
           ;
 
-expresion : expresion '+' termino
-          | expresion '-' termino
+expresion : expresion '+' termino           {
+                                                sintactico.agregarAnalisis("Se reconoció una suma. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca("+");
+                                            }
+          | expresion '-' termino           {
+                                                sintactico.agregarAnalisis("Se reconoció una resta. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca("-");
+                                            }
           | termino
           ;
 
-termino : termino '*' factor
-        | termino '/' factor
+termino : termino '*' factor                {
+                                                sintactico.agregarAnalisis("Se reconoció una multiplicación. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca("*");
+                                            }
+        | termino '/' factor                {
+                                                sintactico.agregarAnalisis("Se reconoció una división. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca("/");
+                                            }
         | factor
         ;
 
-factor : ID
-       | CTE {
-                String tipo = sintactico.getTipoFromTS($1.ival);
-                if (tipo.equals("LONG"))
-                    sintactico.verificarRangoEnteroLargo($1.ival);
-             }
-       | '-' CTE {  sintactico.setNegativoTablaSimb($2.ival); }
+factor : ID         {
+                        if (sintactico.getUsoFromTS($1.ival).equals("VARIABLE"))
+                            sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
+                    }
+       | CTE        {
+                        String tipo = sintactico.getTipoFromTS($1.ival);
+                        if (tipo.equals("LONG"))
+                            sintactico.verificarRangoEnteroLargo($1.ival);
+                        sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
+                    }
+       | '-' CTE    {  sintactico.setNegativoTablaSimb($2.ival); }
        ;
 
-comparador : '<'
-           | '>'
-           | MENORIGUAL
-           | MAYORIGUAL
-           | IGUAL
-           | DISTINTO
-           | AND
-           | OR
+comparador : '<'            { $$.sval = new String("<"); }
+           | '>'            { $$.sval = new String(">"); }
+           | MENORIGUAL     { $$.sval = new String("<="); }
+           | MAYORIGUAL     { $$.sval = new String(">="); }
+           | IGUAL          { $$.sval = new String("=="); }
+           | DISTINTO       { $$.sval = new String("<>"); }
+           | AND            { $$.sval = new String("&&"); }
+           | OR             { $$.sval = new String("||"); }
            ;
 
-tipo : LONG
-     | SINGLE
+tipo : LONG     {
+                    sintactico.setTipo("LONG");
+                    $$.sval = new String("LONG");
+                }
+     | SINGLE   {
+                    sintactico.setTipo("SINGLE");
+                    $$.sval = new String("SINGLE");
+                }
      ;
 
 %%
