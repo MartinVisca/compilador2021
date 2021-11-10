@@ -80,13 +80,17 @@ lista_de_variables : ID                             {
                                                           sintactico.setAmbitoTablaSimb($1.ival);
                                                           sintactico.setUsoTablaSimb($1.ival, "VARIABLE");
                                                           if (!sintactico.variableFueDeclarada($1.ival))
-                                                                sintactico.setTipoVariableTablaSimb($1.ival);
+                                                                {sintactico.setTipoVariableTablaSimb($1.ival);}
+                                                          else
+                                                               {sintactico.addErrorSintactico("---------------variable ya declarada---------------");}
                                                     }
                    | lista_de_variables ',' ID      {
                                                           sintactico.setAmbitoTablaSimb($3.ival);
                                                           sintactico.setUsoTablaSimb($3.ival, "VARIABLE");
                                                           if (!sintactico.variableFueDeclarada($3.ival))
-                                                                sintactico.setTipoVariableTablaSimb($3.ival);
+                                                                {sintactico.setTipoVariableTablaSimb($3.ival);}
+                                                          else
+                                                                {sintactico.addErrorSintactico("---------------variable ya declarada---------------");}
                                                     }
                    | lista_de_variables ID error    { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta una ',' entre identificadores."); }
                    ;

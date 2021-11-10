@@ -285,7 +285,7 @@ public class AnalizadorSintactico {
                 return true;
             }
         }
-
+        addErrorSintactico("XXXXX Variable re declarada");
         return false;
     }
 

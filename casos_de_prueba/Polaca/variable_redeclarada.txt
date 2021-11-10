@@ -1,0 +1,8 @@
+program
+SINGLE x;
+SINGLE x;
+LONG z;
+BEGIN
+    x := -3.40282346S+38;
+    z := -2147483648;
+END;
