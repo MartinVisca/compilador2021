@@ -55,7 +55,6 @@ public class InstruccionesAssembler {
         codigo.append("MOV EAX, " + a + "\n");
         codigo.append("SUB EAX, " + b + "\n");
         codigo.append("MOV " + auxiliar + ", EAX \n");
-        codigo.append("JO @ERROR_OVERFLOW \n");
 
         return codigo.toString();
     }
@@ -77,6 +76,13 @@ public class InstruccionesAssembler {
         return codigo.toString();
     }
 
+    /**
+     * Multiplicación LONG.
+     * @param a
+     * @param b
+     * @param auxiliar
+     * @return
+     */
     public String multiplicacionLONG(String a, String b, String auxiliar) {
         StringBuffer codigo = new StringBuffer();
 
@@ -88,6 +94,13 @@ public class InstruccionesAssembler {
         return codigo.toString();
     }
 
+    /**
+     * Multiplicación SINGLE.
+     * @param a
+     * @param b
+     * @param auxiliar
+     * @return
+     */
     public String multiplicacionSINGLE(String a, String b, String auxiliar) {
         StringBuffer codigo = new StringBuffer();
 
@@ -98,15 +111,57 @@ public class InstruccionesAssembler {
         return codigo.toString();
     }
 
-    public String divisionLONG() {
+    /**
+     * División LONG.
+     * @param a
+     * @param b
+     * @param auxiliar
+     * @return
+     */
+    public String divisionLONG(String a, String b, String auxiliar) {
         StringBuffer codigo = new StringBuffer();
-        // TODO: Traducción a ASSEMBLER
+
+        // Control de división por cero.
+        codigo.append("MOV EAX, " + b + "\n");
+        codigo.append("CMP " + b + ", 0\n");
+        codigo.append("JE @LABEL_DIVIDEZERO\n");        // Si el divisor es igual a cero, lanzo error.
+
+        // Ejecución de la división.
+        codigo.append("MOV aux_edx, EDX\n");            // Inicializo la variable auxiliar.
+        codigo.append("MOV EAX, " + a + "\n");
+        codigo.append("CDQ\n");                         // Extiendo el signo de EAX en EDX, necesario para efectuar la división contemplando valores negativos.
+        codigo.append("MOV EBX, " + b + "\n");
+        codigo.append("IDIV EBX\n");                    // IDIV por tener que contemplar valores negativos. La operación toma el valor en EAX y lo divide por lo alojado en EBX.
+        codigo.append("MOV EDX, aux_edx\n");            // Guardo el resto de la división en EDX.
+        codigo.append("MOV " + auxiliar + ", EAX/n");
+
         return codigo.toString();
     }
 
-    public String divisionSINGLE() {
+    /**
+     * División SINGLE.
+     * @param a
+     * @param b
+     * @param auxiliar
+     * @return
+     */
+    public String divisionSINGLE(String a, String b, String auxiliar) {
         StringBuffer codigo = new StringBuffer();
-        // TODO: Traducción a ASSEMBLER
+
+        // Control de división por cero.
+        codigo.append("FLD " + b + "\n");
+        codigo.append("FLDZ\n");                    // Carga el número 0 en el tope de la pila.
+        codigo.append("FCOM\n");                    // Compara el tope de ST = 0 con ST(1) = b, a fin de determinar si el divisor es igual a cero.
+        codigo.append("FSTSW aux_mem_2bytes\n");    // Almacena la palabra de estado en memoria, es decir, el determinante de la comparación anterior.
+        codigo.append("MOV EAX, aux_mem_2bytes\n"); // Copio el estado de la comparación en EAX.
+        codigo.append("SAHF\n");                    // Almaceno en los 8 bits menos significativos del registro de indicadores el valor de AH, tomado de EAX (estado de la comparación).
+        codigo.append("JE @ERROR_DIVIDEZERO\n");
+
+        // Ejecución de la división.
+        codigo.append("FLD " + a + "\n");
+        codigo.append("FIDIV " + b + "\n");
+        codigo.append("FSTP " + auxiliar + "\n");
+
         return codigo.toString();
     }
 
