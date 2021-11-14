@@ -151,7 +151,7 @@ public class InstruccionesAssembler {
         // Control de división por cero.
         codigo.append("FLD " + b + "\n");
         codigo.append("FLDZ\n");                    // Carga el número 0 en el tope de la pila.
-        codigo.append("FCOM\n");                    // Compara el tope de ST = 0 con ST(1) = b, a fin de determinar si el divisor es igual a cero.
+        codigo.append("FCOM\n");                    // Compara el tope de ST(0) = 0 con ST(1) = b, a fin de determinar si el divisor es igual a cero.
         codigo.append("FSTSW aux_mem_2bytes\n");    // Almacena la palabra de estado en memoria, es decir, el determinante de la comparación anterior.
         codigo.append("MOV EAX, aux_mem_2bytes\n"); // Copio el estado de la comparación en EAX.
         codigo.append("SAHF\n");                    // Almaceno en los 8 bits menos significativos del registro de indicadores el valor de AH, tomado de EAX (estado de la comparación).
@@ -195,15 +195,37 @@ public class InstruccionesAssembler {
         return codigo.toString();
     }
 
-    public String comparadorLONG() {
+    /**
+     * Comparación entre LONG.
+     * @param a
+     * @param b
+     * @return
+     */
+    public String comparadorLONG(String a, String b) {
         StringBuffer codigo = new StringBuffer();
-        // TODO: Traducción a ASSEMBLER
+
+        codigo.append("MOV EAX, " + a + "\n");
+        codigo.append("CMP EAX, " + b + ", EAX\n");
+
         return codigo.toString();
     }
 
-    public String comparadorSINGLE() {
+    /**
+     * Comparación entre SINGLE.
+     * @param a
+     * @param b
+     * @return
+     */
+    public String comparadorSINGLE(String a, String b) {
         StringBuffer codigo = new StringBuffer();
-        // TODO: Traducción a ASSEMBLER
+
+        codigo.append("FLD " + a + "\n");
+        codigo.append("FLD " + b + "\n");
+        codigo.append("FCOM\n");                    // Cargo los dos valores y realizo la comparación entre el tope y el segundo elemento de la pila ST.
+        codigo.append("FSTSW aux_mem_2bytes\n");    // Al igual que la división, almaceno el estado de memoria o resultado de la comparación.
+        codigo.append("MOV EAX, aux_mem_2bytes\n");
+        codigo.append("SAHF\n");
+
         return codigo.toString();
     }
 }
