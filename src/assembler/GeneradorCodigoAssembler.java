@@ -112,12 +112,14 @@ public class GeneradorCodigoAssembler {
         this.codigoAssembler.append("includelib \\masm32\\lib\\gdi32.lib");
         this.codigoAssembler.append("includelib \\masm32\\lib\\kernel32.lib");
         this.codigoAssembler.append("includelib \\masm32\\lib\\user32.lib");
+        this.codigoAssembler.append("\n");
+
+        this.codigoAssembler.append(";------------ VARIABLES ------------");
         this.codigoAssembler.append(".DATA ");
         this.codigoAssembler.append(this.generarPuntoData());
+
         this.codigoAssembler.append(".CODE");
-        //codigoAssembler.append("START:");
         this.codigoAssembler.append(this.generarPuntoCode());
-        //codigoAssembler.append("END START");
 
         return this.codigoAssembler.toString();
     }
@@ -132,9 +134,15 @@ public class GeneradorCodigoAssembler {
         puntoData.append("overflowSuma db \"Error: El resultado de la suma ejecutada no está dentro del rango permitido\" , 0");
         puntoData.append("divisionPorCero db \"Error: La división por cero no es una operación válida\" , 0");
         puntoData.append("recursionMutua db \"Error: Se encontró una recursión mutua en una invocación a una función.\" , 0");
+        puntoData.append("aux_mem_2bytes dw ?")
 
         if (!this.getVariablesDeclaradas().isEmpty())
             puntoData.append(this.getVariablesDeclaradas());
+
+        puntoData.append(";------------ VARIABLES AUXILIARES ------------");
+
+        if (!this.getVariablesAuxiliaresDeclaradas().isEmpty())
+            puntoData.append(this.getVariablesAuxiliaresDeclaradas());
 
         return puntoData.toString();
     }
@@ -148,8 +156,25 @@ public class GeneradorCodigoAssembler {
 
         puntoCode.append("START:\n");
         puntoCode.append(this.generarStart());
-        // Llamado y seteo de los label de los errores
-        // @ERROR_OVERFLOW es el error del overflow de la suma
+
+        // Seteo de corte por error de overflow en la suma.
+        puntoCode.append("JMP @END_CODE");
+        puntoCode.append("@ERROR_OVERFLOW:");
+        puntoCode.append("invoke MessageBox, NULL, addr overflowSuma, addr overflowSuma, MB_OK\n");
+
+        // Seteo de corte por error de división por cero.
+        puntoCode.append("JMP @END_CODE");
+        puntoCode.append("@ERROR_DIVIDEZERO:");
+        puntoCode.append("invoke MessageBox, NULL, addr divisionPorCero, addr divisionPorCero, MB_OK\n");
+
+        // Seteo de corte por error de overflow en la suma.
+        puntoCode.append("JMP @END_CODE");
+        puntoCode.append("@ERROR_RECURSION_MUTUA:");
+        puntoCode.append("invoke MessageBox, NULL, addr recursionMutua, addr recursionMutua, MB_OK\n");
+
+        // Fin de programa.
+        puntoCode.append("@END_CODE:");
+        puntoCode.append("invoke ExitProcess, 0\n");
         puntoCode.append("END START");
 
         return puntoCode.toString();
@@ -166,27 +191,39 @@ public class GeneradorCodigoAssembler {
         for (RegistroSimbolo entrada : tablaSimbolos) {
             String usoEntrada = entrada.getUso();
 
-            if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (4 bytes para LONGINT, 2 para FLOAT).
+            if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (8 bytes para LONG, 4 para SINGLE).
                 variables.append(entrada.getLexema());
                 if (entrada.getTipoToken().equals("LONG"))
-                    variables.append(" DD ? \n");
+                    variables.append(" dq ? \n");
                 else if (entrada.getTipoToken().equals("SINGLE"))
-                    variables.append(" DW ? \n");
+                    variables.append(" dw ? \n");
             } else if (usoEntrada.equals(this.USO_CONSTANTE)) { // Si es CONSTANTE se agrega CTE y luego el tamaño de la misma, los cuales coinciden con los asignados para las variables.
                 if (entrada.getTipoToken().equals("LONG")) {
                     variables.append("Constante" + this.numeroConstante);
-                    variables.append("DD ");
+                    variables.append("dq ? \n");
                     variables.append(entrada.getLexema() + "\n");
                     this.numeroConstante++;
                 }
             } else if (usoEntrada.equals(this.USO_CADENA_CARACTERES)) { // Si es CADENA se agrega la cadena con un tamaño predefinido de 1 byte.
-                variables.append("Cadena" + this.numeroCadena + " DB ");
+                variables.append("Cadena" + this.numeroCadena + " db ? \n");
                 variables.append(entrada.getLexema() + ", 0 \n");
                 this.numeroCadena++;
             }
         }
 
         return variables.toString();
+    }
+
+    /**
+     *
+     * @return
+     */
+    private String getVariablesAuxiliaresDeclaradas() {
+        StringBuffer variablesAuxiliares = new StringBuffer();
+
+        // TODO: 14/11/21
+
+        return variablesAuxiliares.toString();
     }
 
     /**
