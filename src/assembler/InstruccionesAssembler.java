@@ -165,6 +165,36 @@ public class InstruccionesAssembler {
         return codigo.toString();
     }
 
+    /**
+     * Asignación LONG.
+     * @param a
+     * @param b
+     * @return
+     */
+    public String asignacionLONG(String a, String b) {
+        StringBuffer codigo = new StringBuffer();
+
+        codigo.append("MOV EAX, " + b + "\n");
+        codigo.append("MOV " + a + ", EAX\n");
+
+        return codigo.toString();
+    }
+
+    /**
+     * Asignación SINGLE.
+     * @param a
+     * @param b
+     * @return
+     */
+    public String asignacionSINGLE(String a, String b) {
+        StringBuffer codigo = new StringBuffer();
+
+        codigo.append("FLD " + b + "\n");
+        codigo.append("FSTP " + a + ", EAX\n");
+
+        return codigo.toString();
+    }
+
     public String comparadorLONG() {
         StringBuffer codigo = new StringBuffer();
         // TODO: Traducción a ASSEMBLER
