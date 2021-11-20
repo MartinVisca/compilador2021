@@ -21,6 +21,7 @@ public class AnalizadorSintactico {
     private Stack<Integer> pila;                // Pila para guardar los estados de la polaca inversa.
     private String ambito;                      // Ámbito principal del programa.
     private String tipo;                        // Guarda el tipo para que cuando se haga una declaración se actualice el tipo del identificador en la TS
+    private boolean errorFunc;                  // Sirve para controlar si hubo un error en alguna parte del procedimiento
 
 
     ///// MÉTODOS /////
@@ -78,6 +79,8 @@ public class AnalizadorSintactico {
         return tipo;
     }
 
+    public boolean huboErrorFunc() { return errorFunc;}
+
     public void setAnalizadorLexico(AnalizadorLexico analizadorLexico) {
         this.analizadorLexico = analizadorLexico;
     }
@@ -106,14 +109,13 @@ public class AnalizadorSintactico {
         this.pila = pila;
     }
 
-    public void setAmbito(String ambito) {
-        this.ambito = ambito;
-    }
+    public void setAmbito(String ambito) { this.ambito = ambito; }
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
+    public void setErrorFunc(boolean error) { this.errorFunc = error; }
 
     /// MÉTODOS --> Funcionales al compilador ///
     /**
@@ -263,6 +265,7 @@ public class AnalizadorSintactico {
      * @return
      */
     public boolean variableFueDeclarada(int referenciaATS) {
+        System.out.println(referenciaATS);
         RegistroSimbolo registroEnReferencia = this.tablaSimbolos.get(referenciaATS);
 
         for (int i = 0; i < this.tablaSimbolos.size(); i++) {
@@ -276,17 +279,47 @@ public class AnalizadorSintactico {
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): existe una función declarada con ese nombre.");
                 } else {
                     if (registroEnIPos.getUso().equals("VARIABLE"))
-                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
-                    else
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una variable con ese identificador.");
+                    else
+                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
                 }
 
                 this.tablaSimbolos.remove(referenciaATS);
                 return true;
             }
         }
-
+        System.out.println("Variable no fue declarada");
         return false;
+    }
+
+    /**
+     * Método que busca las referencias a las variables almacenadas en la tabla de símbolos para los identificadores que se usan en asignaciones
+     * @param referenciaATS
+     * @return
+     */
+
+    int referenciaCorrecta(int referenciaATS) {
+        String ambitoIterador = this.ambito;
+        String id = this.tablaSimbolos.get(referenciaATS).getLexema();
+        // Se recorren todas las entradas de la tabla de símbolos buscando la referencia correcta
+        for (int i = 0; i < this.tablaSimbolos.size(); i++)
+            // Si los identificadores son iguales
+            if (this.tablaSimbolos.get(i).getLexema().equals(id))    // Habrá que agregar el uso = VARIABLE?
+                while (ambitoIterador != "")
+                    // Si tienen el mismo ámbito encontré la referencia y se retorna
+                    if (this.tablaSimbolos.get(i).getAmbito().equals(id + "@" + ambitoIterador)) {
+                        this.tablaSimbolos.remove(referenciaATS);
+                        return i;
+                    }
+                    else
+                        // Recorto el ámbito para seguir buscando la referencia
+                        if (ambitoIterador.contains("@"))
+                            ambitoIterador = ambitoIterador.substring(0, ambitoIterador.lastIndexOf("@"));
+                        else
+                            ambitoIterador = "";
+        // No se encontró la referencia, entonces la variable está fuera de alcance
+        this.tablaSimbolos.remove(referenciaATS);
+        return -1;
     }
 
     /**
@@ -299,7 +332,7 @@ public class AnalizadorSintactico {
             System.out.println("Tabla de símbolos vacía.");
         else {
             for (RegistroSimbolo simbolo : this.tablaSimbolos)
-                System.out.println("Tipo del símbolo: " + simbolo.getTipoToken() + " - Lexema: " + simbolo.getLexema());
+                System.out.println("Tipo del símbolo: " + simbolo.getTipoToken() + " - Lexema: " + simbolo.getLexema() + " - Uso: " + simbolo.getUso() + " - Ambito: " + simbolo.getAmbito());
         }
     }
 

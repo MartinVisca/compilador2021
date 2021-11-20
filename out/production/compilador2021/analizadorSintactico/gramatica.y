@@ -137,7 +137,11 @@ sentencias_ejecutables : asignacion
                        | sentencia_try_catch
                        ;
 
-asignacion : ID OPASIGNACION expresion ';'    { sintactico.agregarAnalisis("Se reconoció una operación de asignación. (Línea " + AnalizadorLexico.LINEA + ")"); }
+asignacion : ID OPASIGNACION expresion ';'    {
+                                                sintactico.agregarAnalisis("Se reconoció una operación de asignación. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
+                                                sintactico.agregarAPolaca($2.sval);
+                                              }
            | ID OPASIGNACION expresion error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA - 1) + "): falta ';' luego de la asignación."); }
            | ID expresion error               { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el operador de asignación."); }
            | ID OPASIGNACION error            { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA - 1) + "): falta ';' luego de la asignación."); }

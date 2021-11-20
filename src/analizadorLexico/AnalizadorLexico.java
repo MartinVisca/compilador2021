@@ -366,15 +366,9 @@ public class AnalizadorLexico {
      * @param tipo
      */
     public void agregarTokenATablaSimbolos(String lexema, String tipo) {
-        int indiceEnTS = this.getIndiceEnTablaSimbolos(lexema);
-
-        if (indiceEnTS != -1)
-            this.refTablaSimbolos = indiceEnTS;
-        else {
-            RegistroSimbolo nuevo = new RegistroSimbolo(lexema, tipo);
-            this.tablaSimbolos.add(nuevo);
-            this.refTablaSimbolos = this.tablaSimbolos.size() - 1;
-        }
+        RegistroSimbolo nuevo = new RegistroSimbolo(lexema, tipo);
+        this.tablaSimbolos.add(nuevo);
+        this.refTablaSimbolos = this.tablaSimbolos.size() - 1;
     }
 
     /**
