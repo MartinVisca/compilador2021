@@ -19,6 +19,7 @@ public class GeneradorCodigoAssembler {
     private StringBuffer codigoAssembler;                       // String que va almacenando el código a medida que se va generando
     private static final Stack<String> pila = new Stack<>();    // Por cada entrada, la pila almacenará una 2-upla compuesta por el lexema y el tipo de la variable
     private AnalizadorSintactico analizadorSintactico;
+    private Vector<RegistroSimbolo> tablaSimbolosAux;
 
     // Contadores para las constantes, cadenas y variables auxiliares
     private int numeroConstante;
@@ -45,6 +46,7 @@ public class GeneradorCodigoAssembler {
      * Constructor de la clase.
      */
     public GeneradorCodigoAssembler() {
+        this.tablaSimbolosAux = new Vector<>();
         this.analizadorSintactico = analizadorSintactico;
         this.numeroCadena = 0;
         this.numeroConstante = 0;
@@ -114,7 +116,6 @@ public class GeneradorCodigoAssembler {
         this.codigoAssembler.append("includelib \\masm32\\lib\\user32.lib");
         this.codigoAssembler.append("\n");
 
-        this.codigoAssembler.append(";------------ VARIABLES ------------");
         this.codigoAssembler.append(".DATA ");
         this.codigoAssembler.append(this.generarPuntoData());
 
@@ -134,7 +135,9 @@ public class GeneradorCodigoAssembler {
         puntoData.append("overflowSuma db \"Error: El resultado de la suma ejecutada no está dentro del rango permitido\" , 0");
         puntoData.append("divisionPorCero db \"Error: La división por cero no es una operación válida\" , 0");
         puntoData.append("recursionMutua db \"Error: Se encontró una recursión mutua en una invocación a una función.\" , 0");
-        puntoData.append("aux_mem_2bytes dw ?")
+        puntoData.append("aux_mem_2bytes dw ?\n");
+
+        this.codigoAssembler.append(";------------ VARIABLES ------------");
 
         if (!this.getVariablesDeclaradas().isEmpty())
             puntoData.append(this.getVariablesDeclaradas());
@@ -221,7 +224,34 @@ public class GeneradorCodigoAssembler {
     private String getVariablesAuxiliaresDeclaradas() {
         StringBuffer variablesAuxiliares = new StringBuffer();
 
-        // TODO: 14/11/21
+        variablesAuxiliares.append("aux_edx\n");
+
+        // Ver uso de siguiente variable
+        variablesAuxiliares.append("@0 dw 0\n");
+        //
+
+        for (RegistroSimbolo entrada : this.tablaSimbolosAux) {
+            String usoEntrada = entrada.getUso();
+
+            if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (8 bytes para LONG, 4 para SINGLE).
+                variablesAuxiliares.append(entrada.getLexema());
+                if (entrada.getTipoToken().equals("LONG"))
+                    variablesAuxiliares.append(" dq ? \n");
+                else if (entrada.getTipoToken().equals("SINGLE"))
+                    variablesAuxiliares.append(" dw ? \n");
+            } else if (usoEntrada.equals(this.USO_CONSTANTE)) { // Si es CONSTANTE se agrega CTE y luego el tamaño de la misma, los cuales coinciden con los asignados para las variables.
+                if (entrada.getTipoToken().equals("LONG")) {
+                    variablesAuxiliares.append("Constante" + this.numeroConstante);
+                    variablesAuxiliares.append("dq ? \n");
+                    variablesAuxiliares.append(entrada.getLexema() + "\n");
+                    this.numeroConstante++;
+                }
+            } else if (usoEntrada.equals(this.USO_CADENA_CARACTERES)) { // Si es CADENA se agrega la cadena con un tamaño predefinido de 1 byte.
+                variablesAuxiliares.append("Cadena" + this.numeroCadena + " db ? \n");
+                variablesAuxiliares.append(entrada.getLexema() + ", 0 \n");
+                this.numeroCadena++;
+            }
+        }
 
         return variablesAuxiliares.toString();
     }
