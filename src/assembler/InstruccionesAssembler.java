@@ -38,6 +38,7 @@ public class InstruccionesAssembler {
         codigo.append("FLD " + a + "\n");
         codigo.append("FADD " + b + "\n");
         codigo.append("FSTP " + auxiliar + "\n");
+        // TODO: 15/11/21  Control overflow
 
         return codigo.toString();
     }
@@ -225,6 +226,38 @@ public class InstruccionesAssembler {
         codigo.append("FSTSW aux_mem_2bytes\n");    // Al igual que la división, almaceno el estado de memoria o resultado de la comparación.
         codigo.append("MOV EAX, aux_mem_2bytes\n");
         codigo.append("SAHF\n");
+
+        return codigo.toString();
+    }
+
+    public String andLONG(String a, String b) {
+        StringBuffer codigo = new StringBuffer();
+
+        // TODO: 22/11/21
+
+        return codigo.toString();
+    }
+
+    public String andSINGLE(String a, String b) {
+        StringBuffer codigo = new StringBuffer();
+
+        // TODO: 22/11/21
+
+        return codigo.toString();
+    }
+
+    public String orLONG(String a, String b) {
+        StringBuffer codigo = new StringBuffer();
+
+        // TODO: 22/11/21
+
+        return codigo.toString();
+    }
+
+    public String orSINGLE(String a, String b) {
+        StringBuffer codigo = new StringBuffer();
+
+        // TODO: 22/11/21
 
         return codigo.toString();
     }

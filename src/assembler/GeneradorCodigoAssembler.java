@@ -4,6 +4,7 @@ import analizadorLexico.RegistroSimbolo;
 import analizadorSintactico.AnalizadorSintactico;
 import analizadorSintactico.PolacaInversa;
 
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -15,11 +16,14 @@ public class GeneradorCodigoAssembler {
 
 
     ///// ATRIBUTOS /////
-    private String assemblerGenerado;                           // String con el código assembler ya generado
-    private StringBuffer codigoAssembler;                       // String que va almacenando el código a medida que se va generando
-    private static final Stack<String> pila = new Stack<>();    // Por cada entrada, la pila almacenará una 2-upla compuesta por el lexema y el tipo de la variable
+    private String assemblerGenerado;                                   // String con el código assembler ya generado
+    private StringBuffer codigoAssembler;                               // String que va almacenando el código a medida que se va generando
+    private static final Stack<RegistroSimbolo> pila = new Stack<>();   // Por cada entrada, la pila almacenará una 2-upla compuesta por el lexema y el tipo de la variable
     private AnalizadorSintactico analizadorSintactico;
     private Vector<RegistroSimbolo> tablaSimbolosAux;
+    private InstruccionesAssembler traductorInstrucciones;
+    String proximoSalto;                                                // Determina el próximo tipo de salto a realizar
+    HashMap<String, String> cadenas;                                    // Contiene las cadenas presentes en el código
 
     // Contadores para las constantes, cadenas y variables auxiliares
     private int numeroConstante;
@@ -48,9 +52,12 @@ public class GeneradorCodigoAssembler {
     public GeneradorCodigoAssembler() {
         this.tablaSimbolosAux = new Vector<>();
         this.analizadorSintactico = analizadorSintactico;
+        this.traductorInstrucciones = new InstruccionesAssembler();
         this.numeroCadena = 0;
         this.numeroConstante = 0;
         this.numeroVariableAuxiliar = 0;
+        this.proximoSalto = "";
+        this.cadenas = new HashMap<>();
 
         // Inicialización de estructuras
         this.operadoresBinarios = new Vector<>();
@@ -69,7 +76,7 @@ public class GeneradorCodigoAssembler {
         // Operadores unarios
         this.operadoresUnarios.add("BI");       // Salto de la polaca
         this.operadoresUnarios.add("BF");       // Salto de la polaca
-        this.operadoresUnarios.add("PRINT");    // Debería ser OUT o PRINT? PRINT PAPU
+        this.operadoresUnarios.add("PRINT");
 
         // Comparadores
         this.comparadores.add("==");
@@ -210,6 +217,7 @@ public class GeneradorCodigoAssembler {
             } else if (usoEntrada.equals(this.USO_CADENA_CARACTERES)) { // Si es CADENA se agrega la cadena con un tamaño predefinido de 1 byte.
                 variables.append("Cadena" + this.numeroCadena + " db ? \n");
                 variables.append(entrada.getLexema() + ", 0 \n");
+                this.cadenas.put(entrada.getLexema(), "Cadena" + this.numeroCadena);
                 this.numeroCadena++;
             }
         }
@@ -257,6 +265,16 @@ public class GeneradorCodigoAssembler {
     }
 
     /**
+     * Retorna el nombre a usar en la variable auxiliar a declarar, incrementando el atributo que controla su cantidad.
+     * @return
+     */
+    public String getNombreAuxiliar() {
+        String auxiliar = "@aux" + String.valueOf(this.numeroVariableAuxiliar);
+        this.numeroVariableAuxiliar++;
+        return auxiliar;
+    }
+
+    /**
      * Genera el cuerpo del START, perteneciente a .CODE.
      * @return
      */
@@ -267,11 +285,12 @@ public class GeneradorCodigoAssembler {
         Boolean agregoAPila = false;
 
         for (int i = 0; i < polaca.getSize(); i++) {
-            String simboloPolaca = polaca.getElemento(i);
+            String simboloPolaca = polaca.getElemento(i).toString();
 
+            // To refactor
             for (RegistroSimbolo simboloTabla : tablaSimbolos) {
                 if (simboloTabla.getLexema().equals(simboloPolaca)) {
-                    pila.push(simboloPolaca);
+                    pila.push(simboloTabla);
                     agregoAPila = true;
                     break;
                 }
@@ -279,36 +298,148 @@ public class GeneradorCodigoAssembler {
 
             if (!agregoAPila) {
                 String variableAuxiliar = "";
+                variableAuxiliar = this.getNombreAuxiliar();
+                RegistroSimbolo auxReg = new RegistroSimbolo(variableAuxiliar, String.valueOf(257));
 
                 if (this.operadoresBinarios.contains(simboloPolaca)) {
-                    if (simboloPolaca.equals("+")) {
-                        variableAuxiliar = "@auxiliar" + String.valueOf(this.numeroVariableAuxiliar);
+                    RegistroSimbolo operando1 = pila.pop();
+                    RegistroSimbolo operando2 = pila.pop();
 
+                    switch(simboloPolaca) {
+                        case "+":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG")) { // Si los dos son LONG
+                                start.append(traductorInstrucciones.sumaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                auxReg.setTipoToken("LONG");
+                            } else { // Todos los demás casos se realizando con suma en SINGLE.
+                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                auxReg.setTipoToken("SINGLE");
+                            }
 
-                    } else if (simboloPolaca.equals("-")) {
-                        //Resta
-                    } else if (simboloPolaca.equals("*")) {
-                        //Multiplicación
-                    } else if (simboloPolaca.equals("/")) {
-                        //División
-                    } else if (simboloPolaca.equals(":=")) {
-                        //Asignación
+                            tablaSimbolosAux.add(auxReg);
+                            break;
+
+                        case "-":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG")) {
+                                start.append(traductorInstrucciones.restaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                auxReg.setTipoToken("LONG");
+                            } else {
+                                start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                auxReg.setTipoToken("SINGLE");
+                            }
+
+                            tablaSimbolosAux.add(auxReg);
+                            break;
+
+                        case "*":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG")) {
+                                start.append(traductorInstrucciones.multiplicacionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                auxReg.setTipoToken("LONG");
+                            } else {
+                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                auxReg.setTipoToken("SINGLE");
+                            }
+
+                            tablaSimbolosAux.add(auxReg);
+                            break;
+
+                        case "/":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG")) {
+                                start.append(traductorInstrucciones.divisionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                auxReg.setTipoToken("LONG");
+                            } else {
+                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                auxReg.setTipoToken("SINGLE");
+                            }
+
+                            tablaSimbolosAux.add(auxReg);
+                            break;
+
+                        case ":=":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                                start.append(traductorInstrucciones.asignacionLONG(operando1.getLexema(), operando2.getLexema()));
+                            else
+                                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema()));
+
+                            break;
+
+                        case "||":
+                            // TODO: 22/11/21
+                            break;
+
+                        case "&&":
+                            // TODO: 22/11/21
+                            break;
                     }
                 } else if (this.operadoresUnarios.contains(simboloPolaca)) {
-                    //Evaluar si sólo consideramos las cadenas (PRINT) o también el resto de los operadores unarios.
+                    if (simboloPolaca.equals("PRINT")) {
+                        String nombreCadena = this.cadenas.get(pila.pop().getLexema());
+
+                        start.append("invoke MessageBox, NULL, addr " + nombreCadena + ", addr " + nombreCadena + ", MB_OK\n");
+                        start.append("invoke ExitProcess, 0\n");
+                    }
                 } else if (this.comparadores.contains(simboloPolaca)) {
-                    if (simboloPolaca.equals(">=")) {
+                    RegistroSimbolo operando1 = pila.pop();
+                    RegistroSimbolo operando2 = pila.pop();
 
-                    } else if (simboloPolaca.equals("<=")) {
+                    switch(simboloPolaca) {
+                        case ">=":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
+                            else
+                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                    } else if (simboloPolaca.equals("<>")) {
+                            this.proximoSalto = "JGE";  // Salto para mayor igual
+                            break;
+                            
+                        case "<=":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
+                            else
+                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                    } else if (simboloPolaca.equals("==")) {
+                            this.proximoSalto = "JLE";  // Salto para menor igual
 
-                    } else if (simboloPolaca.equals("<")) {
+                            break;
+                            
+                        case "<>":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
+                            else
+                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                    } else if (simboloPolaca.equals(">")) {
+                            this.proximoSalto = "JNE";  // Salto para distinto
 
+                            break;
+                            
+                        case "==":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
+                            else
+                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
+
+                            this.proximoSalto = "JE";  // Salto para igual
+
+                            break;
+                            
+                        case "<":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
+                            else
+                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
+
+                            this.proximoSalto = "JL";  // Salto para menor
+
+                            break;
+                            
+                        case ">":
+                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
+                            else
+                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
+
+                            this.proximoSalto = "JG";  // Salto para mayor
+
+                            break;
                     }
                 }
             } else
