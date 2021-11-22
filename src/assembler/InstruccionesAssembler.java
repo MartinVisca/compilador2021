@@ -1,5 +1,6 @@
 package assembler;
 
+@SuppressWarnings("all")
 public class InstruccionesAssembler {
     ///// MÉTODOS /////
     /**

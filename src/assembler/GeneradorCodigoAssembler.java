@@ -4,10 +4,12 @@ import analizadorLexico.RegistroSimbolo;
 import analizadorSintactico.AnalizadorSintactico;
 import analizadorSintactico.PolacaInversa;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
 
+@SuppressWarnings("all")
 public class GeneradorCodigoAssembler {
     ///// CONSTANTES /////
     private final static String USO_VARIABLE = "VARIABLE";
@@ -44,12 +46,15 @@ public class GeneradorCodigoAssembler {
     // Estructura para identificar si un registro determinado está o no ocupado
     private final Vector<Boolean> registros;
 
+    // Archivo que contiene el código generado
+    File codigoGenerado;
+
 
     ///// MÉTODOS /////
     /**
      * Constructor de la clase.
      */
-    public GeneradorCodigoAssembler() {
+    public GeneradorCodigoAssembler(AnalizadorSintactico analizadorSintactico) {
         this.tablaSimbolosAux = new Vector<>();
         this.analizadorSintactico = analizadorSintactico;
         this.traductorInstrucciones = new InstruccionesAssembler();
@@ -95,6 +100,30 @@ public class GeneradorCodigoAssembler {
         this.registros.add(false);
         this.registros.add(false);
         this.registros.add(false);
+
+        // Inicialización de archivo
+        this.codigoGenerado = new File("../../codigos_generados");
+    }
+
+    /**
+     * Retorna el código generado por el traductor a Assembler.
+     * @return
+     */
+    public File getCodigoAssembler() {
+        try {
+            // Creo el nuevo archivo y seteo el buffer para poder escribir en el mismo
+            this.codigoGenerado.createNewFile();
+            FileWriter writer = new FileWriter(this.codigoGenerado.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(writer);
+
+            // Escribo el código generado en el archivo y lo cierro
+            bw.write(this.generarAssembler());
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return codigoGenerado;
     }
 
     /**
