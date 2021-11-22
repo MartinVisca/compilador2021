@@ -235,34 +235,37 @@ public class InstruccionesAssembler {
         return codigo.toString();
     }
 
-    public String andLONG(String a, String b) {
+    /**
+     * Operación AND.
+     * @param a
+     * @param b
+     * @param auxiliar
+     * @return
+     */
+    public String AND(String a, String b, String auxiliar) {
         StringBuffer codigo = new StringBuffer();
 
-        // TODO: 22/11/21
+        codigo.append("MOV EAX, " + a + "\n");
+        codigo.append("AND EAX, " + b + "\n");
+        codigo.append("MOV " + auxiliar + ", EAX\n");
 
         return codigo.toString();
     }
 
-    public String andSINGLE(String a, String b) {
+    /**
+     * Operación OR.
+     * @param a
+     * @param b
+     * @param auxiliar
+     * @return
+     */
+    public String OR(String a, String b, String auxiliar) {
         StringBuffer codigo = new StringBuffer();
 
-        // TODO: 22/11/21
-
-        return codigo.toString();
-    }
-
-    public String orLONG(String a, String b) {
-        StringBuffer codigo = new StringBuffer();
-
-        // TODO: 22/11/21
-
-        return codigo.toString();
-    }
-
-    public String orSINGLE(String a, String b) {
-        StringBuffer codigo = new StringBuffer();
-
-        // TODO: 22/11/21
+        codigo.append("MOV EAX, " + a + "\n");
+        codigo.append("MOV EBX, " + b + "\n");
+        codigo.append("OR EAX, EBX\n");
+        codigo.append("MOV " + auxiliar + ", EAX\n");
 
         return codigo.toString();
     }
