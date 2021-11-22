@@ -363,11 +363,11 @@ public class GeneradorCodigoAssembler {
                             break;
 
                         case "||":
-                            // TODO: 22/11/21
+                            start.append(traductorInstrucciones.OR(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                             break;
 
                         case "&&":
-                            // TODO: 22/11/21
+                            start.append(traductorInstrucciones.AND(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                             break;
                     }
                 } else if (this.operadoresUnarios.contains(simboloPolaca)) {
