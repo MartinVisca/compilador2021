@@ -19,8 +19,8 @@ public class InstruccionesAssembler {
 
         codigo.append("MOV EAX, " + b + "\n");
         codigo.append("ADD EAX, " + a + "\n");
-        codigo.append("MOV " + auxiliar + ", EAX \n");
-        codigo.append("JO @ERROR_OVERFLOW \n");
+        codigo.append("MOV " + auxiliar + ", EAX\n");
+        codigo.append("JO @ERROR_OVERFLOW\n");
 
         return codigo.toString();
     }
@@ -38,7 +38,12 @@ public class InstruccionesAssembler {
         codigo.append("FLD " + a + "\n");
         codigo.append("FADD " + b + "\n");
         codigo.append("FSTP " + auxiliar + "\n");
-        // TODO: 15/11/21  Control overflow
+        codigo.append("FXAM\n");
+        codigo.append("FSTSW aux_mem_2bytes\n");
+        codigo.append("MOV EAX, aux_mem_2bytes\n");
+        codigo.append("FWAIT\n");
+        codigo.append("SAHF\n");
+        codigo.append("JO @@ERROR_OVERFLOW\n");
 
         return codigo.toString();
     }
@@ -55,7 +60,7 @@ public class InstruccionesAssembler {
 
         codigo.append("MOV EAX, " + a + "\n");
         codigo.append("SUB EAX, " + b + "\n");
-        codigo.append("MOV " + auxiliar + ", EAX \n");
+        codigo.append("MOV " + auxiliar + ", EAX\n");
 
         return codigo.toString();
     }
@@ -90,7 +95,7 @@ public class InstruccionesAssembler {
         codigo.append("MOV EAX, " + a + "\n");
         codigo.append("MOV EBX, " + b + "\n");
         codigo.append("IMUL EBX"); // IMUL por tener LONG valores negativos en su rango.
-        codigo.append("MOV " + auxiliar + ", EAX \n");
+        codigo.append("MOV " + auxiliar + ", EAX\n");
 
         return codigo.toString();
     }
