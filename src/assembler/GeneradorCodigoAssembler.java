@@ -364,7 +364,7 @@ public class GeneradorCodigoAssembler {
             String simboloPolaca = polaca.getElemento(i).toString();
 
             for (RegistroSimbolo simboloTabla : tablaSimbolos) {
-                if (simboloTabla.getAmbito().equals(simboloPolaca)) {
+                if (simboloTabla.getAmbito().equals(simboloPolaca) || this.isNumber(simboloPolaca)) {
                     pila.push(simboloTabla);
                     agregoAPila = true;
                     break;
@@ -533,7 +533,7 @@ public class GeneradorCodigoAssembler {
                             break;
                             
                         case ">":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));

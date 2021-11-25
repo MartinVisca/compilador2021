@@ -3,6 +3,7 @@ package main;
 import analizadorLexico.AnalizadorLexico;
 import analizadorSintactico.AnalizadorSintactico;
 import analizadorSintactico.Parser;
+import assembler.GeneradorCodigoAssembler;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,6 +22,8 @@ public class Main {
             AnalizadorLexico lexico = new AnalizadorLexico(entrada);
             AnalizadorSintactico sintactico = new AnalizadorSintactico(lexico, parser);
             sintactico.start();
+            GeneradorCodigoAssembler assembler = new GeneradorCodigoAssembler(sintactico);
+            assembler.getCodigoAssembler();
 
         } catch(IOException e) {
             System.out.println("El archivo que se indica en la ruta ingresada no existe.");
