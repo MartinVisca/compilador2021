@@ -15,6 +15,7 @@ public class GeneradorCodigoAssembler {
     private final static String USO_VARIABLE = "VARIABLE";
     private final static String USO_CONSTANTE = "CONSTANTE";
     private final static String USO_CADENA_CARACTERES = "CADENA DE CARACTERES";
+    private final static String LABEL = "@LABEL_";
 
 
     ///// ATRIBUTOS /////
@@ -24,13 +25,15 @@ public class GeneradorCodigoAssembler {
     private AnalizadorSintactico analizadorSintactico;
     private Vector<RegistroSimbolo> tablaSimbolosAux;
     private InstruccionesAssembler traductorInstrucciones;
-    String proximoSalto;                                                // Determina el próximo tipo de salto a realizar
-    HashMap<String, String> cadenas;                                    // Contiene las cadenas presentes en el código
+    private String proximoSalto;                                        // Determina el próximo tipo de salto a realizar
+    private HashMap<String, String> cadenas;                            // Contiene las cadenas presentes en el código
+    private HashMap<String, String> labels;                             // Estructura que contiene las labels que se van creando, a fin de poder identificarlas luego y colocarlas en sus lugares correspondientes
 
     // Contadores para las constantes, cadenas y variables auxiliares
     private int numeroConstante;
     private int numeroCadena;
     private int numeroVariableAuxiliar;
+    private int numeroLabel;
 
     // Mensajes de error correspondientes a los chequeos semánticos asignados
     private final static String ERROR_OVERFLOW_SUMA = "ERROR: overflow en suma; el resultado está fuera del rango permitido para el tipo en cuestión.";
@@ -61,8 +64,10 @@ public class GeneradorCodigoAssembler {
         this.numeroCadena = 0;
         this.numeroConstante = 0;
         this.numeroVariableAuxiliar = 0;
+        this.numeroLabel = 0;
         this.proximoSalto = "";
         this.cadenas = new HashMap<>();
+        this.labels = new HashMap<>();
 
         // Inicialización de estructuras
         this.operadoresBinarios = new Vector<>();
@@ -304,6 +309,34 @@ public class GeneradorCodigoAssembler {
     }
 
     /**
+     * Retorna el label a usar en las diferentes sentencias de control del código.
+     * @return
+     */
+    public String getNombreLabel() {
+        String label = this.LABEL + this.numeroLabel;
+        this.numeroLabel++;
+        return label;
+    }
+
+    /**
+     * Chequea si la cadena es un número entero.
+     * @param cadena
+     * @return
+     */
+    public static boolean isNumber(String cadena) {
+        if (cadena == null)
+            return false;
+
+        try {
+            Integer number = Integer.parseInt(cadena);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Genera el cuerpo del START, perteneciente a .CODE.
      * @return
      */
@@ -313,16 +346,35 @@ public class GeneradorCodigoAssembler {
         Vector<RegistroSimbolo> tablaSimbolos = analizadorSintactico.getTablaSimbolos();
         Boolean agregoAPila = false;
 
+        // Cargo el hash con los labels y las direcciones de salto
+        for (int i = 0; i < polaca.getSize(); i++) {
+            String simboloPolaca = polaca.getElemento(i).toString();
+            String nextSimbolo = "";
+
+            if (i < polaca.getSize() - 1)
+                 nextSimbolo = polaca.getElemento(i + 1).toString();
+
+            if (this.isNumber(simboloPolaca) && (nextSimbolo.equals("BF") || nextSimbolo.equals("BI")) && !nextSimbolo.equals("")) {
+                String label = this.getNombreLabel();
+                this.labels.put(simboloPolaca, label);
+            }
+        }
+
         for (int i = 0; i < polaca.getSize(); i++) {
             String simboloPolaca = polaca.getElemento(i).toString();
 
-            // To refactor
             for (RegistroSimbolo simboloTabla : tablaSimbolos) {
-                if (simboloTabla.getLexema().equals(simboloPolaca)) {
+                if (simboloTabla.getAmbito().equals(simboloPolaca)) {
                     pila.push(simboloTabla);
                     agregoAPila = true;
                     break;
                 }
+            }
+
+            // Seteo la label en su posición
+            if (this.labels.keySet().contains(String.valueOf(i))) {
+                String label = this.labels.get(String.valueOf(i));
+                start.append(label + "\n");
             }
 
             if (!agregoAPila) {
@@ -400,16 +452,37 @@ public class GeneradorCodigoAssembler {
                             break;
                     }
                 } else if (this.operadoresUnarios.contains(simboloPolaca)) {
-                    if (simboloPolaca.equals("PRINT")) {
-                        String nombreCadena = this.cadenas.get(pila.pop().getLexema());
+                    String numeroSalto = "";
+                    String label = "";
 
-                        start.append("invoke MessageBox, NULL, addr " + nombreCadena + ", addr " + nombreCadena + ", MB_OK\n");
-                        start.append("invoke ExitProcess, 0\n");
+                    switch (simboloPolaca) {
+                        case "PRINT":
+                            String nombreCadena = this.cadenas.get(pila.pop().getLexema());
+
+                            start.append("invoke MessageBox, NULL, addr " + nombreCadena + ", addr " + nombreCadena + ", MB_OK\n");
+                            start.append("invoke ExitProcess, 0\n");
+
+                            break;
+
+                        case "BF":
+                            numeroSalto = polaca.getElemento(i - 1).toString();
+                            label = this.labels.get(numeroSalto);
+                            start.append(this.proximoSalto + label + "\n");
+
+                            break;
+
+                        case "BI":
+                            numeroSalto = polaca.getElemento(i - 1).toString();
+                            label = this.labels.get(numeroSalto);
+                            start.append("JMP " + label + "\n");
+
+                            break;
                     }
                 } else if (this.comparadores.contains(simboloPolaca)) {
                     RegistroSimbolo operando1 = pila.pop();
                     RegistroSimbolo operando2 = pila.pop();
 
+                    // Se setea el próximo salto en contra condición para poder traducir los saltos a la rama del else.
                     switch(simboloPolaca) {
                         case ">=":
                             if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
@@ -417,7 +490,7 @@ public class GeneradorCodigoAssembler {
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JGE";  // Salto para mayor igual
+                            this.proximoSalto = "JL";
                             break;
                             
                         case "<=":
@@ -426,7 +499,7 @@ public class GeneradorCodigoAssembler {
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JLE";  // Salto para menor igual
+                            this.proximoSalto = "JG";
 
                             break;
                             
@@ -436,7 +509,7 @@ public class GeneradorCodigoAssembler {
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JNE";  // Salto para distinto
+                            this.proximoSalto = "JE";
 
                             break;
                             
@@ -446,7 +519,7 @@ public class GeneradorCodigoAssembler {
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JE";  // Salto para igual
+                            this.proximoSalto = "JNE";
 
                             break;
                             
@@ -456,7 +529,7 @@ public class GeneradorCodigoAssembler {
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JL";  // Salto para menor
+                            this.proximoSalto = "JGE";
 
                             break;
                             
@@ -466,7 +539,7 @@ public class GeneradorCodigoAssembler {
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JG";  // Salto para mayor
+                            this.proximoSalto = "JLE";
 
                             break;
                     }
