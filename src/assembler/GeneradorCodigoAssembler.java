@@ -378,9 +378,8 @@ public class GeneradorCodigoAssembler {
             }
 
             if (!agregoAPila) {
-                String variableAuxiliar = "";
-                variableAuxiliar = this.getNombreAuxiliar();
-                RegistroSimbolo auxReg = new RegistroSimbolo(variableAuxiliar, String.valueOf(257));
+                String variableAuxiliar = this.getNombreAuxiliar();
+                RegistroSimbolo auxReg = new RegistroSimbolo(variableAuxiliar, "ID");
 
                 if (this.operadoresBinarios.contains(simboloPolaca)) {
                     RegistroSimbolo operando1 = pila.pop();
