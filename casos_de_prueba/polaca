@@ -1,0 +1,14 @@
+program
+    LONG a,b,c,d;
+    LONG FUNC f1(LONG y)
+    LONG x;
+    BEGIN
+        x := y;
+        RETURN(x);
+    END;
+BEGIN
+    d := 1;
+    c := 4;
+    b := d;
+    a := f1(c) + b;
+END;

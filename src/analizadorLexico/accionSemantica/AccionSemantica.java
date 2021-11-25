@@ -1,4 +1,4 @@
-package accionSemantica;
+package analizadorLexico.accionSemantica;
 
 @SuppressWarnings("unused")
 public interface AccionSemantica {

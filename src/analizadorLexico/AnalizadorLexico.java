@@ -1,8 +1,8 @@
 package analizadorLexico;
 
-import accionSemantica.AccionSemantica;
-import accionSemantica.AccionSemanticaCompuesta;
-import accionSemantica.accionSemanticaSimple.*;
+import analizadorLexico.accionSemantica.AccionSemantica;
+import analizadorLexico.accionSemantica.AccionSemanticaCompuesta;
+import analizadorLexico.accionSemantica.accionSemanticaSimple.*;
 import analizadorLexico.matrices.MatrizAccionesSemanticas;
 import analizadorLexico.matrices.MatrizEstados;
 
@@ -366,15 +366,9 @@ public class AnalizadorLexico {
      * @param tipo
      */
     public void agregarTokenATablaSimbolos(String lexema, String tipo) {
-        int indiceEnTS = this.getIndiceEnTablaSimbolos(lexema);
-
-        if (indiceEnTS != -1)
-            this.refTablaSimbolos = indiceEnTS;
-        else {
-            RegistroSimbolo nuevo = new RegistroSimbolo(lexema, tipo);
-            this.tablaSimbolos.add(nuevo);
-            this.refTablaSimbolos = this.tablaSimbolos.size() - 1;
-        }
+        RegistroSimbolo nuevo = new RegistroSimbolo(lexema, tipo);
+        this.tablaSimbolos.add(nuevo);
+        this.refTablaSimbolos = this.tablaSimbolos.size() - 1;
     }
 
     /**

@@ -1,7 +1,7 @@
 package analizadorSintactico;
 
-import accionSemantica.accionSemanticaSimple.ControlarRangoEnteroLargo;
-import accionSemantica.accionSemanticaSimple.ControlarRangoFlotante;
+import analizadorLexico.accionSemantica.accionSemanticaSimple.ControlarRangoEnteroLargo;
+import analizadorLexico.accionSemantica.accionSemanticaSimple.ControlarRangoFlotante;
 import analizadorLexico.AnalizadorLexico;
 import analizadorLexico.RegistroSimbolo;
 import analizadorLexico.Token;
@@ -21,7 +21,13 @@ public class AnalizadorSintactico {
     private Stack<Integer> pila;                // Pila para guardar los estados de la polaca inversa.
     private String ambito;                      // Ámbito principal del programa.
     private String tipo;                        // Guarda el tipo para que cuando se haga una declaración se actualice el tipo del identificador en la TS
+    private Stack<Integer> refFunciones;        // Pila que guarda las referencias a funciones para etiquetas en la polaca
+    private boolean tieneBreak;                 // Sirve para controlar si un loop WHILE contiene una sentencia BREAK
+    private int refInvocacion;                  // Guarda la referencia al ID de la función que se está invocando
 
+    ///// BOOLEANS PARA CONTROLAR ERRORES /////
+    private boolean errorFunc;                  // Sirve para controlar si hubo un error en alguna parte de la declaracion de la funcion
+    private boolean errorInvocacion;            // Sirve para controlar si hubo un error en alguna parte de la invocacion a la funcion
 
     ///// MÉTODOS /////
     /**
@@ -36,8 +42,12 @@ public class AnalizadorSintactico {
         this.tablaSimbolos = analizadorLexico.getTablaSimbolos();
         this.polaca = new PolacaInversa();
         this.pila = new Stack<>();
+        this.refFunciones = new Stack<>();
         this.ambito = "main";
         this.tipo = "";
+        this.errorFunc = false;
+        this.errorInvocacion = false;
+        this.tieneBreak = false;
     }
 
 
@@ -78,6 +88,8 @@ public class AnalizadorSintactico {
         return tipo;
     }
 
+    public boolean huboErrorFunc() { return errorFunc;}
+
     public void setAnalizadorLexico(AnalizadorLexico analizadorLexico) {
         this.analizadorLexico = analizadorLexico;
     }
@@ -106,14 +118,25 @@ public class AnalizadorSintactico {
         this.pila = pila;
     }
 
-    public void setAmbito(String ambito) {
-        this.ambito = ambito;
-    }
+    public void setAmbito(String ambito) { this.ambito = ambito; }
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
+    public void setErrorFunc(boolean error) { this.errorFunc = error; }
+
+    public boolean tieneSentBreak() { return tieneBreak; }
+
+    public void setTieneSentBreak(boolean tieneBreak) { this.tieneBreak = tieneBreak; }
+
+    public boolean huboErrorInvocacion() { return errorInvocacion; }
+
+    public void setErrorInvocacion(boolean errorInvocacion) { this.errorInvocacion = errorInvocacion; }
+
+    public int getRefInvocacion() { return refInvocacion; }
+
+    public void setRefInvocacion(int refInvocacion) {  this.refInvocacion = refInvocacion; }
 
     /// MÉTODOS --> Funcionales al compilador ///
     /**
@@ -127,6 +150,12 @@ public class AnalizadorSintactico {
      * @param error
      */
     public void addErrorSintactico(String error) { this.listaErroresSintacticos.add(error); }
+
+    /**
+     * Agrega una nueva entrada a la tabla de símbolos
+     * @param nuevo
+     */
+    public void agregarRegistroATS(RegistroSimbolo nuevo) { this.tablaSimbolos.add(nuevo); }
 
     /**
      * Agrega un elemento al final de la polaca.
@@ -170,6 +199,24 @@ public class AnalizadorSintactico {
     }
 
     /**
+     * Agrega el índice de la función detectada por el Parser en la pila de referencias a funciones
+     * @param indiceTS
+     */
+    public void agregarReferencia(int indiceTS) { this.refFunciones.push(indiceTS); }
+
+    /**
+     * Devuelve el tope de la pila de referencias a funciones
+     * @return
+     */
+    public int obtenerReferencia() { return this.refFunciones.peek(); }
+
+    /**
+     * Devuelve el tope de la pila de referencias a funciones y se elimina (Usado cuando se llega al final de la generación de código de la función)
+     * @return
+     */
+    public int eliminarReferencia() { return this.refFunciones.pop(); }
+
+    /**
      * Método para obtener el lexema de un token almacenado en la tabla de símbolos, dado su índice.
      * @param indice
      * @return
@@ -191,6 +238,20 @@ public class AnalizadorSintactico {
     public String getUsoFromTS(int indice) {
         return this.tablaSimbolos.get(indice).getUso();
     }
+
+    /**
+     * Devuelve el ambito de un token almacenado en la tabla de símbolos dado su índice
+     * @param indice
+     * @return
+     */
+    public String getAmbitoFromTS(int indice) { return this.tablaSimbolos.get(indice).getAmbito(); }
+
+    /**
+     * Devuelve el tipo de variable de un token almacenado en la tabla de símbolos dado su índice
+     * @param indice
+     * @return
+     */
+    public String getTipoVariableFromTS(int indice) { return this.tablaSimbolos.get(indice).getTipoVariable(); }
 
     /**
      * Método para obtener un token de la tabla de símbolos dado su indice.
@@ -276,17 +337,59 @@ public class AnalizadorSintactico {
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): existe una función declarada con ese nombre.");
                 } else {
                     if (registroEnIPos.getUso().equals("VARIABLE"))
-                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
-                    else
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una variable con ese identificador.");
+                    else
+                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
                 }
 
                 this.tablaSimbolos.remove(referenciaATS);
                 return true;
             }
         }
-
         return false;
+    }
+
+    /**
+     * Método que busca las referencias a las variables almacenadas en la tabla de símbolos para los identificadores que se usan en asignaciones
+     * @param referenciaATS
+     * @return
+     */
+
+    int referenciaCorrecta(int referenciaATS) {
+        String ambitoIterador = this.ambito;
+        String id = this.tablaSimbolos.get(referenciaATS).getLexema();
+        // Se recorren todas las entradas de la tabla de símbolos buscando la referencia correcta
+        for (int i = 0; i < this.tablaSimbolos.size(); i++)
+            // Si los identificadores son iguales
+            if (this.tablaSimbolos.get(i).getLexema().equals(id))    // Habrá que agregar el uso = VARIABLE?
+                while (ambitoIterador != "")
+                    // Si tienen el mismo ámbito encontré la referencia y se retorna
+                    if (this.tablaSimbolos.get(i).getAmbito().equals(id + "@" + ambitoIterador)) {
+                        this.tablaSimbolos.remove(referenciaATS);
+                        return i;
+                    }
+                    else
+                        // Recorto el ámbito para seguir buscando la referencia
+                        if (ambitoIterador.contains("@"))
+                            ambitoIterador = ambitoIterador.substring(0, ambitoIterador.lastIndexOf("@"));
+                        else
+                            ambitoIterador = "";
+        // No se encontró la referencia, entonces la variable está fuera de alcance
+        this.tablaSimbolos.remove(referenciaATS);
+        return -1;
+    }
+
+    /**
+     * Método que busca la referencia a la variable de retorno auxiliar de una función
+     * @param idFunc
+     * @return
+     */
+    int getReferenciaReturn(String idFunc) {
+        for (int i = 0; i < this.tablaSimbolos.size(); i++)
+            // Si coincide el lexema nombreFunc_ret y el uso es VARIABLE RETORNO
+            if (this.tablaSimbolos.get(i).getLexema().equals(idFunc + "_ret") && this.tablaSimbolos.get(i).getUso().equals("VARIABLE RETORNO"))
+                return i;
+        return -1;
     }
 
     /**
@@ -299,7 +402,7 @@ public class AnalizadorSintactico {
             System.out.println("Tabla de símbolos vacía.");
         else {
             for (RegistroSimbolo simbolo : this.tablaSimbolos)
-                System.out.println("Tipo del símbolo: " + simbolo.getTipoToken() + " - Lexema: " + simbolo.getLexema());
+                System.out.println("Tipo del símbolo: " + simbolo.getTipoToken() + " - Lexema: " + simbolo.getLexema() + " - Tipo Token: " + simbolo.getTipoToken() + " - Tipo Variable: " + simbolo.getTipoVariable() + " - Uso: " + simbolo.getUso() + " - Ambito: " + simbolo.getAmbito());
         }
     }
 

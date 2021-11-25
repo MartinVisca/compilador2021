@@ -1,6 +1,6 @@
 package analizadorLexico.matrices;
 
-import accionSemantica.AccionSemantica;
+import analizadorLexico.accionSemantica.AccionSemantica;
 
 @SuppressWarnings("all")
 public class MatrizAccionesSemanticas {
