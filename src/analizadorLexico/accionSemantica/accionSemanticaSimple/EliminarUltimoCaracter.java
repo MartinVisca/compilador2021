@@ -1,29 +1,29 @@
-package accionSemantica.accionSemanticaSimple;
+package analizadorLexico.accionSemantica.accionSemanticaSimple;
 
 import analizadorLexico.AnalizadorLexico;
 
 @SuppressWarnings("all")
-public class InicializarBuffer extends AccionSemanticaSimple {
+public class EliminarUltimoCaracter extends AccionSemanticaSimple{
 
     /**
      * Constructor de la clase.
      * @param analizadorLexico
      */
-    public InicializarBuffer(AnalizadorLexico analizadorLexico) {
+    public EliminarUltimoCaracter(AnalizadorLexico analizadorLexico) {
         super(analizadorLexico);
     }
 
     /**
-     * Se inicializa el buffer del analizador léxico en vacío.
+     * Elimina el último caracter agregado al buffer.
      * @param buffer
      * @param caracter
      * @return
      */
     @Override
     public boolean ejecutar(String buffer, char caracter) {
-        buffer = "";
+        buffer = buffer.substring(0, buffer.length() - 1);
         this.getAnalizadorLexico().setBuffer(buffer);
         return true;
     }
-
+    
 }

@@ -1,6 +1,6 @@
-package accionSemantica.accionSemanticaSimple;
+package analizadorLexico.accionSemantica.accionSemanticaSimple;
 
-import accionSemantica.AccionSemantica;
+import analizadorLexico.accionSemantica.AccionSemantica;
 import analizadorLexico.AnalizadorLexico;
 
 @SuppressWarnings("unused")

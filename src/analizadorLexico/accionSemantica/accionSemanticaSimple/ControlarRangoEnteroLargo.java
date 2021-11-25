@@ -1,4 +1,4 @@
-package accionSemantica.accionSemanticaSimple;
+package analizadorLexico.accionSemantica.accionSemanticaSimple;
 
 import analizadorLexico.AnalizadorLexico;
 

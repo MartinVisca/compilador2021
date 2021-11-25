@@ -1,8 +1,8 @@
 package analizadorLexico;
 
-import accionSemantica.AccionSemantica;
-import accionSemantica.AccionSemanticaCompuesta;
-import accionSemantica.accionSemanticaSimple.*;
+import analizadorLexico.accionSemantica.AccionSemantica;
+import analizadorLexico.accionSemantica.AccionSemanticaCompuesta;
+import analizadorLexico.accionSemantica.accionSemanticaSimple.*;
 import analizadorLexico.matrices.MatrizAccionesSemanticas;
 import analizadorLexico.matrices.MatrizEstados;
 

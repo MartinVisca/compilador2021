@@ -81,19 +81,30 @@ lista_de_variables : ID                             {
                                                           sintactico.setUsoTablaSimb($1.ival, "VARIABLE");
                                                           if (!sintactico.variableFueDeclarada($1.ival))
                                                                 sintactico.setTipoVariableTablaSimb($1.ival);
+                                                          else
+                                                                sintactico.addErrorSintactico("ERROR (Línea " + AnalizadorLexico.LINEA + "): Variable " + $1.ival + " ya declarada.");
                                                     }
                    | lista_de_variables ',' ID      {
                                                           sintactico.setAmbitoTablaSimb($3.ival);
                                                           sintactico.setUsoTablaSimb($3.ival, "VARIABLE");
                                                           if (!sintactico.variableFueDeclarada($3.ival))
                                                                 sintactico.setTipoVariableTablaSimb($3.ival);
+                                                          else
+                                                                sintactico.addErrorSintactico("ERROR (Línea " + AnalizadorLexico.LINEA + "): Variable " + $1.ival + " ya declarada.");
                                                     }
                    | lista_de_variables ID error    { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta una ',' entre identificadores."); }
                    ;
 
-encabezado_func : tipo FUNC ID '(' parametro ')'    {
-                                                        sintactico.setUsoTablaSimb($3.ival, "NOMBRE DE FUNCIÓN");
-                                                        sintactico.setAmbito($3.sval);
+encabezado_func : tipo FUNC ID '(' parametro ')' {
+                                                                                     sintactico.setUsoTablaSimb($3.ival, "FUNC");
+                                                                                     if (sintactico.variableFueDeclarada($3.ival))
+                                                                                         sintactico.setErrorFunc(true);
+                                                                                     else {
+                                                                                         sintactico.setAmbitoTablaSimb($3.ival);
+                                                                                         // Agregar referencia parametro
+                                                                                         sintactico.setAmbito(sintactico.getAmbito() + "@" + sintactico.getLexemaFromTS($3.ival));
+                                                                                }
+
                                                     }
                 | FUNC ID '(' parametro ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el tipo de la función."); }
                 | tipo ID '(' parametro ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta FUNC en la definición de la función."); }
@@ -102,7 +113,14 @@ encabezado_func : tipo FUNC ID '(' parametro ')'    {
                 | tipo FUNC ID '(' parametro error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
                 ;
 
-declaracion_func : encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END ';'     { sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
+declaracion_func : encabezado_func bloque_sentencias_declarativas BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END ';'     {
+                                                                                                                                                            if (!sintactico.huboErrorFunc()) {
+                                                                                                                                                                sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                                                                                                                                sintactico.setAmbito(sintactico.getAmbito().substring(0, sintactico.getAmbito().lastIndexOf("@"));
+                                                                                                                                                            }
+                                                                                                                                                            else
+                                                                                                                                                                sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se produjo un error al declarar la función.");
+                                                                                                                                                       }
                  | encabezado_func BEGIN bloque_sentencias_ejecutables_funcion RETURN '(' expresion ')' ';' END ';'                                    { sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
                  | encabezado_func bloque_sentencias_declarativas BEGIN RETURN '(' expresion ')' ';' END ';'                                           { sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
                  | encabezado_func BEGIN RETURN '(' expresion ')' ';' END ';'                                                                          { sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")"); }
@@ -137,14 +155,25 @@ sentencias_ejecutables : asignacion
                        | sentencia_try_catch
                        ;
 
-asignacion : ID OPASIGNACION expresion ';'    {
-                                                sintactico.agregarAnalisis("Se reconoció una operación de asignación. (Línea " + AnalizadorLexico.LINEA + ")");
-                                                sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
-                                                sintactico.agregarAPolaca($2.sval);
+op_asignacion : OPASIGNACION    { $$.sval = new String(":="); }
+              ;
+
+asignacion : ID op_asignacion expresion ';'    {    if (!sintactico.variableFueDeclarada($1.ival))
+                                                        sintactico.addErrorSintactico("ERROR (Línea " + AnalizadorLexico.LINEA + "): Variable " + $1.ival + " no declarada.");
+                                                    else {
+                                                        int referencia = sintactico.referenciaCorrecta($1.ival);
+                                                        if (referencia == -1)
+                                                            sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA) + "): error en la asignación, la variable se encuentra fuera de alcance.");
+                                                        else {
+                                                            sintactico.agregarAnalisis("Se reconoció una operación de asignación. (Línea " + AnalizadorLexico.LINEA + ")");
+                                                            sintactico.agregarAPolaca(sintactico.getLexemaFromTS(referencia));
+                                                            sintactico.agregarAPolaca($2.sval);
+                                                        }
+                                                    }
                                               }
-           | ID OPASIGNACION expresion error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA - 1) + "): falta ';' luego de la asignación."); }
-           | ID expresion error               { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el operador de asignación."); }
-           | ID OPASIGNACION error            { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA - 1) + "): falta ';' luego de la asignación."); }
+           | ID op_asignacion expresion error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA - 1) + "): falta ';' luego de la asignación."); }
+           | ID expresion error                { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el operador de asignación."); }
+           | ID op_asignacion error            { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + (AnalizadorLexico.LINEA - 1) + "): falta ';' luego de la asignación."); }
            ;
 
 salida : PRINT '(' CADENA ')' ';'     {
@@ -160,8 +189,16 @@ salida : PRINT '(' CADENA ')' ';'     {
        | PRINT '(' ')' error ';'      { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta declarar una cadena para PRINT."); }
        ;
 
-invocacion_func : ID '(' ID ')' ';'     { sintactico.agregarAnalisis("Se reconoció una invocación a una función (Línea " + AnalizadorLexico.LINEA + ")"); }
-                | ID '(' CTE ')' ';'    { sintactico.agregarAnalisis("Se reconoció una invocación a una función (Línea " + AnalizadorLexico.LINEA + ")"); }
+invocacion_func : ID '(' ID ')' ';'     {
+                                            sintactico.agregarAnalisis("Se reconoció una invocación a una función (Línea " + AnalizadorLexico.LINEA + ")");
+                                            if (!sintactico.variableFueDeclarada($1.ival))
+                                                sintactico.addErrorSintactico("ERROR (Línea " + AnalizadorLexico.LINEA + "): Variable " + $1.ival + " no declarada.");
+                                        }
+                | ID '(' CTE ')' ';'    {
+                                            sintactico.agregarAnalisis("Se reconoció una invocación a una función (Línea " + AnalizadorLexico.LINEA + ")");
+                                            if (!sintactico.variableFueDeclarada($1.ival))
+                                                sintactico.addErrorSintactico("ERROR (Línea " + AnalizadorLexico.LINEA + "): Variable " + $1.ival + " no declarada.");
+                                        }
                 | ID '(' ')' error ';'  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta especificar un parámetro al invocar a la función."); }
                 | ID '(' ID ')' error   { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de la invocación a la función."); }
                 | ID '(' CTE ')' error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de la invocación a la función."); }
@@ -261,18 +298,22 @@ sentencia_break : BREAK ';'    { sintactico.agregarAnalisis("Se reconoció una s
                 | BREAK error  { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de BREAK."); }
                 ;
 
-condicion : expresion                       {
-                                                sintactico.agregarAPolaca(" ");
-                                                sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
-                                                sintactico.agregarAPolaca("BF");
-                                            }
-          | condicion comparador expresion  {
-                                                sintactico.agregarAPolaca($2.sval);
-                                                sintactico.agregarAPolaca(" ");
-                                                sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
-                                                sintactico.agregarAPolaca("BF");
-                                            }
+condicion : expresion_or    {   sintactico.agregarAPolaca(" ");
+                                sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
+                                sintactico.agregarAPolaca("BF");
+                            }
           ;
+
+expresion_or : expresion_and
+             | expresion_or comparador_or expresion_and    { sintactico.agregarAPolaca($2.sval); }
+             ;
+
+expresion_and : expresion_relacional
+              | expresion_and comparador_and expresion_relacional  { sintactico.agregarAPolaca($2.sval); }
+              ;
+
+expresion_relacional : expresion
+                     | expresion_relacional comparador expresion    { sintactico.agregarAPolaca($2.sval); }
 
 expresion : expresion '+' termino           {
                                                 sintactico.agregarAnalisis("Se reconoció una suma. (Línea " + AnalizadorLexico.LINEA + ")");
@@ -306,7 +347,11 @@ factor : ID         {
                             sintactico.verificarRangoEnteroLargo($1.ival);
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
                     }
-       | '-' CTE    {  sintactico.setNegativoTablaSimb($2.ival); }
+       | '-' CTE    {
+                        sintactico.agregarAPolaca(sintactico.getLexemaFromTS($2.ival));
+                        sintactico.setNegativoTablaSimb($2.ival);
+                        sintactico.agregarAPolaca("-");
+                    }
        ;
 
 comparador : '<'            { $$.sval = new String("<"); }
@@ -315,9 +360,13 @@ comparador : '<'            { $$.sval = new String("<"); }
            | MAYORIGUAL     { $$.sval = new String(">="); }
            | IGUAL          { $$.sval = new String("=="); }
            | DISTINTO       { $$.sval = new String("<>"); }
-           | AND            { $$.sval = new String("&&"); }
-           | OR             { $$.sval = new String("||"); }
            ;
+
+comparador_and : AND   { $$.sval = new String("&&"); }
+                        ;
+
+comparador_or : OR    { $$.sval = new String("||"); }
+                       ;
 
 tipo : LONG     {
                     sintactico.setTipo("LONG");
