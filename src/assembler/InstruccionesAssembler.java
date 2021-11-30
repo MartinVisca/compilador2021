@@ -44,7 +44,7 @@ public class InstruccionesAssembler {
         codigo.append("MOV EAX, aux_mem_2bytes\n");
         codigo.append("FWAIT\n");
         codigo.append("SAHF\n");
-        codigo.append("JO @@ERROR_OVERFLOW\n");
+        codigo.append("JO @ERROR_OVERFLOW\n");
 
         return codigo.toString();
     }

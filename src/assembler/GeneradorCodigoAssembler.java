@@ -107,7 +107,7 @@ public class GeneradorCodigoAssembler {
         this.registros.add(false);
 
         // Inicialización de archivo
-        this.codigoGenerado = new File("../../codigos_generados");
+        this.codigoGenerado = new File("./codigos_generados.asm");
     }
 
     /**
@@ -138,29 +138,29 @@ public class GeneradorCodigoAssembler {
     public String generarAssembler() {
         this.codigoAssembler = new StringBuffer();
 
-        this.codigoAssembler.append("; \\masm32\\bin\\ml /c /Zd /coff ");
-        this.codigoAssembler.append("; \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE ");
-        this.codigoAssembler.append(".386");
-        this.codigoAssembler.append(".model flat, stdcall");
-        this.codigoAssembler.append("option casemap :none");
-        this.codigoAssembler.append(";------------ INCLUDES ------------");
-        this.codigoAssembler.append("include \\masm32\\include\\windows.inc");
-        this.codigoAssembler.append("include \\masm32\\macros\\macros.asm");
-        this.codigoAssembler.append("include \\masm32\\include\\masm32.inc");
-        this.codigoAssembler.append("include \\masm32\\include\\kernel32.inc");
-        this.codigoAssembler.append("include \\masm32\\include\\user32.inc");
-        this.codigoAssembler.append("include \\masm32\\include\\gdi32.inc");
-        this.codigoAssembler.append(";------------ LIBRERÍAS ------------");
-        this.codigoAssembler.append("includelib \\masm32\\lib\\masm32.lib");
-        this.codigoAssembler.append("includelib \\masm32\\lib\\gdi32.lib");
-        this.codigoAssembler.append("includelib \\masm32\\lib\\kernel32.lib");
-        this.codigoAssembler.append("includelib \\masm32\\lib\\user32.lib");
+        this.codigoAssembler.append("; \\masm32\\bin\\ml /c /Zd /coff \n");
+        this.codigoAssembler.append("; \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE \n");
+        this.codigoAssembler.append(".386\n");
+        this.codigoAssembler.append(".model flat, stdcall\n");
+        this.codigoAssembler.append("option casemap :none\n\n");
+        this.codigoAssembler.append(";------------ INCLUDES ------------\n");
+        this.codigoAssembler.append("include \\masm32\\include\\windows.inc\n");
+        this.codigoAssembler.append("include \\masm32\\macros\\macros.asm\n");
+        this.codigoAssembler.append("include \\masm32\\include\\masm32.inc\n");
+        this.codigoAssembler.append("include \\masm32\\include\\kernel32.inc\n");
+        this.codigoAssembler.append("include \\masm32\\include\\user32.inc\n");
+        this.codigoAssembler.append("include \\masm32\\include\\gdi32.inc\n\n");
+        this.codigoAssembler.append(";------------ LIBRERÍAS ------------\n");
+        this.codigoAssembler.append("includelib \\masm32\\lib\\masm32.lib\n");
+        this.codigoAssembler.append("includelib \\masm32\\lib\\gdi32.lib\n");
+        this.codigoAssembler.append("includelib \\masm32\\lib\\kernel32.lib\n");
+        this.codigoAssembler.append("includelib \\masm32\\lib\\user32.lib\n");
         this.codigoAssembler.append("\n");
 
-        this.codigoAssembler.append(".DATA ");
+        this.codigoAssembler.append("\n.DATA\n");
         this.codigoAssembler.append(this.generarPuntoData());
 
-        this.codigoAssembler.append(".CODE");
+        this.codigoAssembler.append("\n.CODE\n");
         this.codigoAssembler.append(this.generarPuntoCode());
 
         return this.codigoAssembler.toString();
@@ -173,17 +173,17 @@ public class GeneradorCodigoAssembler {
     public String generarPuntoData() {
         StringBuffer puntoData = new StringBuffer();
 
-        puntoData.append("overflowSuma db \"Error: El resultado de la suma ejecutada no está dentro del rango permitido\" , 0");
-        puntoData.append("divisionPorCero db \"Error: La división por cero no es una operación válida\" , 0");
-        puntoData.append("recursionMutua db \"Error: Se encontró una recursión mutua en una invocación a una función.\" , 0");
+        puntoData.append("overflowSuma db \"Error: El resultado de la suma ejecutada no está dentro del rango permitido\" , 0\n");
+        puntoData.append("divisionPorCero db \"Error: La división por cero no es una operación válida\" , 0\n");
+        puntoData.append("recursionMutua db \"Error: Se encontró una recursión mutua en una invocación a una función.\" , 0\n");
         puntoData.append("aux_mem_2bytes dw ?\n");
 
-        this.codigoAssembler.append(";------------ VARIABLES ------------");
+        this.codigoAssembler.append("\n;------------ VARIABLES ------------\n");
 
         if (!this.getVariablesDeclaradas().isEmpty())
             puntoData.append(this.getVariablesDeclaradas());
 
-        puntoData.append(";------------ VARIABLES AUXILIARES ------------");
+        puntoData.append("\n;------------ VARIABLES AUXILIARES ------------\n");
 
         if (!this.getVariablesAuxiliaresDeclaradas().isEmpty())
             puntoData.append(this.getVariablesAuxiliaresDeclaradas());
@@ -202,7 +202,7 @@ public class GeneradorCodigoAssembler {
         puntoCode.append(this.generarStart());
 
         // Seteo de corte por error de overflow en la suma.
-        puntoCode.append("JMP @END_CODE");
+        puntoCode.append("\nJMP @END_CODE");
         puntoCode.append("@ERROR_OVERFLOW:");
         puntoCode.append("invoke MessageBox, NULL, addr overflowSuma, addr overflowSuma, MB_OK\n");
 
@@ -217,7 +217,7 @@ public class GeneradorCodigoAssembler {
         puntoCode.append("invoke MessageBox, NULL, addr recursionMutua, addr recursionMutua, MB_OK\n");
 
         // Fin de programa.
-        puntoCode.append("@END_CODE:");
+        puntoCode.append("\n@END_CODE:");
         puntoCode.append("invoke ExitProcess, 0\n");
         puntoCode.append("END START");
 
@@ -237,12 +237,12 @@ public class GeneradorCodigoAssembler {
 
             if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (8 bytes para LONG, 4 para SINGLE).
                 variables.append(entrada.getLexema());
-                if (entrada.getTipoToken().equals("LONG"))
+                if (entrada.getTipoVariable().equals("LONG"))
                     variables.append(" dq ? \n");
-                else if (entrada.getTipoToken().equals("SINGLE"))
+                else if (entrada.getTipoVariable().equals("SINGLE"))
                     variables.append(" dw ? \n");
             } else if (usoEntrada.equals(this.USO_CONSTANTE)) { // Si es CONSTANTE se agrega CTE y luego el tamaño de la misma, los cuales coinciden con los asignados para las variables.
-                if (entrada.getTipoToken().equals("LONG")) {
+                if (entrada.getTipoVariable().equals("LONG")) {
                     variables.append("Constante" + this.numeroConstante);
                     variables.append("dq ? \n");
                     variables.append(entrada.getLexema() + "\n");
@@ -265,24 +265,19 @@ public class GeneradorCodigoAssembler {
      */
     private String getVariablesAuxiliaresDeclaradas() {
         StringBuffer variablesAuxiliares = new StringBuffer();
-
-        variablesAuxiliares.append("aux_edx\n");
-
-        // Ver uso de siguiente variable
-        variablesAuxiliares.append("@0 dw 0\n");
-        //
+        variablesAuxiliares.append("aux_edx @0 dw 0\n");
 
         for (RegistroSimbolo entrada : this.tablaSimbolosAux) {
             String usoEntrada = entrada.getUso();
 
             if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (8 bytes para LONG, 4 para SINGLE).
                 variablesAuxiliares.append(entrada.getLexema());
-                if (entrada.getTipoToken().equals("LONG"))
+                if (entrada.getTipoVariable().equals("LONG"))
                     variablesAuxiliares.append(" dq ? \n");
-                else if (entrada.getTipoToken().equals("SINGLE"))
+                else if (entrada.getTipoVariable().equals("SINGLE"))
                     variablesAuxiliares.append(" dw ? \n");
             } else if (usoEntrada.equals(this.USO_CONSTANTE)) { // Si es CONSTANTE se agrega CTE y luego el tamaño de la misma, los cuales coinciden con los asignados para las variables.
-                if (entrada.getTipoToken().equals("LONG")) {
+                if (entrada.getTipoVariable().equals("LONG")) {
                     variablesAuxiliares.append("Constante" + this.numeroConstante);
                     variablesAuxiliares.append("dq ? \n");
                     variablesAuxiliares.append(entrada.getLexema() + "\n");
@@ -364,7 +359,7 @@ public class GeneradorCodigoAssembler {
             String simboloPolaca = polaca.getElemento(i).toString();
 
             for (RegistroSimbolo simboloTabla : tablaSimbolos) {
-                if (simboloTabla.getAmbito().equals(simboloPolaca) || this.isNumber(simboloPolaca)) {
+                if (simboloTabla.getAmbito().equals(simboloPolaca) || (this.isNumber(simboloPolaca) && simboloTabla.getLexema().equals(simboloPolaca))) {
                     pila.push(simboloTabla);
                     agregoAPila = true;
                     break;
@@ -387,7 +382,7 @@ public class GeneradorCodigoAssembler {
 
                     switch(simboloPolaca) {
                         case "+":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG")) { // Si los dos son LONG
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) { // Si los dos son LONG
                                 start.append(traductorInstrucciones.sumaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                                 auxReg.setTipoToken("LONG");
                             } else { // Todos los demás casos se realizando con suma en SINGLE.
@@ -399,7 +394,7 @@ public class GeneradorCodigoAssembler {
                             break;
 
                         case "-":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG")) {
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.restaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                                 auxReg.setTipoToken("LONG");
                             } else {
@@ -411,7 +406,7 @@ public class GeneradorCodigoAssembler {
                             break;
 
                         case "*":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG")) {
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.multiplicacionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                                 auxReg.setTipoToken("LONG");
                             } else {
@@ -423,7 +418,7 @@ public class GeneradorCodigoAssembler {
                             break;
 
                         case "/":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG")) {
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.divisionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                                 auxReg.setTipoToken("LONG");
                             } else {
@@ -435,7 +430,7 @@ public class GeneradorCodigoAssembler {
                             break;
 
                         case ":=":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.asignacionLONG(operando1.getLexema(), operando2.getLexema()));
                             else
                                 start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema()));
@@ -484,51 +479,51 @@ public class GeneradorCodigoAssembler {
                     // Se setea el próximo salto en contra condición para poder traducir los saltos a la rama del else.
                     switch(simboloPolaca) {
                         case ">=":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JL";
+                            this.proximoSalto = "JL ";
                             break;
                             
                         case "<=":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JG";
+                            this.proximoSalto = "JG ";
 
                             break;
                             
                         case "<>":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JE";
+                            this.proximoSalto = "JE ";
 
                             break;
                             
                         case "==":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JNE";
+                            this.proximoSalto = "JNE ";
 
                             break;
                             
                         case "<":
-                            if (operando1.getTipoToken().equals("LONG") && operando2.getTipoToken().equals("LONG"))
+                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JGE";
+                            this.proximoSalto = "JGE ";
 
                             break;
                             
@@ -538,7 +533,7 @@ public class GeneradorCodigoAssembler {
                             else
                                 start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
 
-                            this.proximoSalto = "JLE";
+                            this.proximoSalto = "JLE ";
 
                             break;
                     }
