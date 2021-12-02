@@ -384,48 +384,60 @@ public class GeneradorCodigoAssembler {
                         case "+":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) { // Si los dos son LONG
                                 start.append(traductorInstrucciones.sumaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
-                                auxReg.setTipoToken("LONG");
+                                auxReg.setTipoVariable("LONG");
                             } else { // Todos los demás casos se realizando con suma en SINGLE.
                                 start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
-                                auxReg.setTipoToken("SINGLE");
+                                auxReg.setTipoVariable("SINGLE");
                             }
 
+                            auxReg.setTipoToken("ID");
+                            auxReg.setLexema(variableAuxiliar);
+                            pila.push(auxReg);
                             tablaSimbolosAux.add(auxReg);
                             break;
 
                         case "-":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.restaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
-                                auxReg.setTipoToken("LONG");
+                                auxReg.setTipoVariable("LONG");
                             } else {
                                 start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
-                                auxReg.setTipoToken("SINGLE");
+                                auxReg.setTipoVariable("SINGLE");
                             }
 
+                            auxReg.setTipoToken("ID");
+                            auxReg.setLexema(variableAuxiliar);
+                            pila.push(auxReg);
                             tablaSimbolosAux.add(auxReg);
                             break;
 
                         case "*":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.multiplicacionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
-                                auxReg.setTipoToken("LONG");
+                                auxReg.setTipoVariable("LONG");
                             } else {
                                 start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
-                                auxReg.setTipoToken("SINGLE");
+                                auxReg.setTipoVariable("SINGLE");
                             }
 
+                            auxReg.setTipoToken("ID");
+                            auxReg.setLexema(variableAuxiliar);
+                            pila.push(auxReg);
                             tablaSimbolosAux.add(auxReg);
                             break;
 
                         case "/":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.divisionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
-                                auxReg.setTipoToken("LONG");
+                                auxReg.setTipoVariable("LONG");
                             } else {
                                 start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
-                                auxReg.setTipoToken("SINGLE");
+                                auxReg.setTipoVariable("SINGLE");
                             }
 
+                            auxReg.setTipoToken("ID");
+                            auxReg.setLexema(variableAuxiliar);
+                            pila.push(auxReg);
                             tablaSimbolosAux.add(auxReg);
                             break;
 
