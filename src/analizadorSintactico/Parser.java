@@ -602,7 +602,7 @@ final static String yyrule[] = {
 "tipo : SINGLE",
 };
 
-//#line 458 "gramatica.y"
+//#line 463 "gramatica.y"
 
 private AnalizadorLexico lexico;
 private AnalizadorSintactico sintactico;
@@ -912,7 +912,7 @@ case 41:
 {
                                         sintactico.setAmbitoTablaSimb(val_peek(2).ival);
                                         sintactico.setTipoVariableTablaSimb(val_peek(2).ival);
-                                        sintactico.setUsoTablaSimb(val_peek(2).ival, "VARIABLE");
+                                        sintactico.setUsoTablaSimb(val_peek(2).ival, "PARAMETRO");
                                         sintactico.agregarAPolaca("INIC_" + sintactico.getAmbitoFromTS(sintactico.obtenerReferencia()));
                                     }
 break;
@@ -921,7 +921,7 @@ case 42:
 {
                                                                     sintactico.setAmbitoTablaSimb(val_peek(3).ival);
                                                                     sintactico.setTipoVariableTablaSimb(val_peek(3).ival);
-                                                                    sintactico.setUsoTablaSimb(val_peek(3).ival, "VARIABLE");
+                                                                    sintactico.setUsoTablaSimb(val_peek(3).ival, "PARAMETRO");
                                                                     sintactico.agregarAPolaca("INIC_" + sintactico.getAmbitoFromTS(sintactico.obtenerReferencia()));
                                                                 }
 break;
@@ -1251,22 +1251,27 @@ break;
 case 113:
 //#line 363 "gramatica.y"
 {
-                        String tipo = sintactico.getTipoFromTS(val_peek(0).ival);
-                        if (tipo.equals("LONG"))
+                        sintactico.setTipo(sintactico.getTipoFromTS(val_peek(0).ival));
+                        if (sintactico.getTipo().equals("LONG"))
                             sintactico.verificarRangoEnteroLargo(val_peek(0).ival);
+
+                        sintactico.setTipoVariableTablaSimb(val_peek(0).ival);
+
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS(val_peek(0).ival));
                     }
 break;
 case 114:
-//#line 369 "gramatica.y"
+//#line 372 "gramatica.y"
 {
+                        sintactico.setTipo(sintactico.getTipoFromTS(val_peek(1).ival));
+                        sintactico.setTipoVariableTablaSimb(val_peek(1).ival);
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS(val_peek(0).ival));
                         sintactico.setNegativoTablaSimb(val_peek(0).ival);
                         sintactico.agregarAPolaca("-");
                     }
 break;
 case 115:
-//#line 374 "gramatica.y"
+//#line 379 "gramatica.y"
 {
                                 sintactico.setRefInvocacion(sintactico.referenciaCorrecta(val_peek(3).ival));
                                 if (sintactico.getRefInvocacion() == -1) {
@@ -1301,7 +1306,7 @@ case 115:
                             }
 break;
 case 116:
-//#line 406 "gramatica.y"
+//#line 411 "gramatica.y"
 {
                                 sintactico.setRefInvocacion(sintactico.referenciaCorrecta(val_peek(3).ival));
                                 if (sintactico.getRefInvocacion() == -1) {
@@ -1329,52 +1334,52 @@ case 116:
                             }
 break;
 case 117:
-//#line 433 "gramatica.y"
+//#line 438 "gramatica.y"
 { yyval.sval = new String("<"); }
 break;
 case 118:
-//#line 434 "gramatica.y"
+//#line 439 "gramatica.y"
 { yyval.sval = new String(">"); }
 break;
 case 119:
-//#line 435 "gramatica.y"
+//#line 440 "gramatica.y"
 { yyval.sval = new String("<="); }
 break;
 case 120:
-//#line 436 "gramatica.y"
+//#line 441 "gramatica.y"
 { yyval.sval = new String(">="); }
 break;
 case 121:
-//#line 437 "gramatica.y"
+//#line 442 "gramatica.y"
 { yyval.sval = new String("=="); }
 break;
 case 122:
-//#line 438 "gramatica.y"
+//#line 443 "gramatica.y"
 { yyval.sval = new String("<>"); }
 break;
 case 123:
-//#line 441 "gramatica.y"
+//#line 446 "gramatica.y"
 { yyval.sval = new String("&&"); }
 break;
 case 124:
-//#line 444 "gramatica.y"
+//#line 449 "gramatica.y"
 { yyval.sval = new String("||"); }
 break;
 case 125:
-//#line 447 "gramatica.y"
+//#line 452 "gramatica.y"
 {
                     sintactico.setTipo("LONG");
                     yyval.sval = new String("LONG");
                 }
 break;
 case 126:
-//#line 451 "gramatica.y"
+//#line 456 "gramatica.y"
 {
                     sintactico.setTipo("SINGLE");
                     yyval.sval = new String("SINGLE");
                 }
 break;
-//#line 1301 "Parser.java"
+//#line 1306 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

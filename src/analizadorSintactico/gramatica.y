@@ -115,13 +115,13 @@ encabezado_func : tipo FUNC ID '('  {
 parametro : tipo ID ')' BEGIN       {
                                         sintactico.setAmbitoTablaSimb($2.ival);
                                         sintactico.setTipoVariableTablaSimb($2.ival);
-                                        sintactico.setUsoTablaSimb($2.ival, "VARIABLE");
+                                        sintactico.setUsoTablaSimb($2.ival, "PARAMETRO");
                                         sintactico.agregarAPolaca("INIC_" + sintactico.getAmbitoFromTS(sintactico.obtenerReferencia()));
                                     }
           | tipo ID ')' bloque_sentencias_declarativas BEGIN    {
                                                                     sintactico.setAmbitoTablaSimb($2.ival);
                                                                     sintactico.setTipoVariableTablaSimb($2.ival);
-                                                                    sintactico.setUsoTablaSimb($2.ival, "VARIABLE");
+                                                                    sintactico.setUsoTablaSimb($2.ival, "PARAMETRO");
                                                                     sintactico.agregarAPolaca("INIC_" + sintactico.getAmbitoFromTS(sintactico.obtenerReferencia()));
                                                                 }
           ;
@@ -361,12 +361,17 @@ factor : ID         {
                                 sintactico.agregarAPolaca(sintactico.getAmbitoFromTS(ref));
                     }
        | CTE        {
-                        String tipo = sintactico.getTipoFromTS($1.ival);
-                        if (tipo.equals("LONG"))
+                        sintactico.setTipo(sintactico.getTipoFromTS($1.ival));
+                        if (sintactico.getTipo().equals("LONG"))
                             sintactico.verificarRangoEnteroLargo($1.ival);
+
+                        sintactico.setTipoVariableTablaSimb($1.ival);
+
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
                     }
        | '-' CTE    {
+                        sintactico.setTipo(sintactico.getTipoFromTS($1.ival));
+                        sintactico.setTipoVariableTablaSimb($1.ival);
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS($2.ival));
                         sintactico.setNegativoTablaSimb($2.ival);
                         sintactico.agregarAPolaca("-");
