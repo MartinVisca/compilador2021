@@ -359,21 +359,22 @@ public class AnalizadorSintactico {
         String ambitoIterador = this.ambito;
         String id = this.tablaSimbolos.get(referenciaATS).getLexema();
         // Se recorren todas las entradas de la tabla de símbolos buscando la referencia correcta
-        for (int i = 0; i < this.tablaSimbolos.size(); i++)
+        for (int i = 0; i < this.tablaSimbolos.size(); i++) {
             // Si los identificadores son iguales
-            if (this.tablaSimbolos.get(i).getLexema().equals(id))    // Habrá que agregar el uso = VARIABLE?
+            if (this.tablaSimbolos.get(i).getLexema().equals(id))  // Habrá que agregar el uso = VARIABLE?
                 while (ambitoIterador != "")
                     // Si tienen el mismo ámbito encontré la referencia y se retorna
                     if (this.tablaSimbolos.get(i).getAmbito().equals(id + "@" + ambitoIterador)) {
                         this.tablaSimbolos.remove(referenciaATS);
                         return i;
-                    }
-                    else
+                    } else
                         // Recorto el ámbito para seguir buscando la referencia
                         if (ambitoIterador.contains("@"))
                             ambitoIterador = ambitoIterador.substring(0, ambitoIterador.lastIndexOf("@"));
                         else
                             ambitoIterador = "";
+            ambitoIterador = this.ambito;
+        }
         // No se encontró la referencia, entonces la variable está fuera de alcance
         this.tablaSimbolos.remove(referenciaATS);
         return -1;
