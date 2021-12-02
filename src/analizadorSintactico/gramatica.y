@@ -149,7 +149,7 @@ declaracion_func : encabezado_func parametro bloque_sentencias_ejecutables_funci
                  | encabezado_func parametro RETURN '(' expresion ')' ';' END ';'                                       {
                                                                                                                             if (!sintactico.huboErrorFunc()) {
                                                                                                                                 sintactico.agregarAnalisis("Se reconoció una declaración de función. (Línea " + AnalizadorLexico.LINEA + ")");
-                                                                                                                                RegistroSimbolo tokenReturn = new RegistroSimbolo(sintactico.getLexemaFromTS(sintactico.obtenerReferencia()) + "ret", "ID");
+                                                                                                                                RegistroSimbolo tokenReturn = new RegistroSimbolo(sintactico.getLexemaFromTS(sintactico.obtenerReferencia()) + "_ret", "ID");
                                                                                                                                 tokenReturn.setTipoToken("ID");
                                                                                                                                 tokenReturn.setTipoVariable(sintactico.getTipoVariableFromTS(sintactico.obtenerReferencia()));
                                                                                                                                 tokenReturn.setUso("VARIABLE RETORNO");
@@ -329,6 +329,7 @@ expresion_and : expresion_relacional
 
 expresion_relacional : expresion
                      | expresion_relacional comparador expresion    { sintactico.agregarAPolaca($2.sval); }
+                     ;
 
 expresion : expresion '+' termino           {
                                                 sintactico.agregarAnalisis("Se reconoció una suma. (Línea " + AnalizadorLexico.LINEA + ")");
@@ -357,8 +358,7 @@ factor : ID         {
                         if (ref == -1)
                             sintactico.addErrorSintactico("ERROR SEMÁNTICO (Línea " + (AnalizadorLexico.LINEA) + "): la variable no fue declarada o se encuentra fuera de alcance.");
                         else
-                            if (sintactico.getUsoFromTS(ref).equals("VARIABLE"))
-                                sintactico.agregarAPolaca(sintactico.getAmbitoFromTS(ref));
+                            sintactico.agregarAPolaca(sintactico.getAmbitoFromTS(ref));
                     }
        | CTE        {
                         sintactico.setTipo(sintactico.getTipoFromTS($1.ival));
