@@ -1,12 +1,20 @@
 program
-    LONG a,b,c;
-BEGIN
-    a := 4;
-    b := 1;
-    c := 1;
-    IF (a > c) THEN
-        a := b + c;
-    ELSE
-        a := b - c;
-    ENDIF;
-END;
+    LONG y;
+    LONG a;
+    LONG b;
+    LONG FUNC f(LONG x)
+        LONG FUNC f1(LONG z)
+        LONG x;
+        BEGIN
+            x := 1;
+            RETURN(x);
+        END;
+    BEGIN
+        x := f1(a);
+        RETURN(x);
+    END;
+    BEGIN
+        a := 2;
+        b := 3;
+        y := f(a);
+    END;
