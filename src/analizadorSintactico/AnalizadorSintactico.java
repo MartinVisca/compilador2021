@@ -158,6 +158,12 @@ public class AnalizadorSintactico {
     public void agregarRegistroATS(RegistroSimbolo nuevo) { this.tablaSimbolos.add(nuevo); }
 
     /**
+     * Elimina una entrada de la tabla de símbolos
+     * @param referenciaATS
+     */
+    public void eliminarRegistroTS(int referenciaATS) { this.tablaSimbolos.remove(referenciaATS); }
+
+    /**
      * Agrega un elemento al final de la polaca.
      * @param elemento
      */
@@ -194,9 +200,7 @@ public class AnalizadorSintactico {
      * Devuelve el tope de la pila, eliminándolo de la misma.
      * @return
      */
-    public int popElementoPila() {
-        return this.pila.pop();
-    }
+    public int popElementoPila() { return this.pila.pop(); }
 
     /**
      * Agrega el índice de la función detectada por el Parser en la pila de referencias a funciones
@@ -254,6 +258,13 @@ public class AnalizadorSintactico {
     public String getTipoVariableFromTS(int indice) { return this.tablaSimbolos.get(indice).getTipoVariable(); }
 
     /**
+     * Devuelve la función a la que hace referencia el identificador
+     * @param indice
+     * @return
+     */
+    public String getFuncReferenciadaFromTS(int indice) { return this.tablaSimbolos.get(indice).getFuncionReferenciada(); }
+
+    /**
      * Método para obtener un token de la tabla de símbolos dado su indice.
      * @param indice
      * @return
@@ -278,6 +289,20 @@ public class AnalizadorSintactico {
      * @param indice
      */
     public void setTipoVariableTablaSimb(int indice) { this.tablaSimbolos.get(indice).setTipoVariable(this.tipo); }
+
+    /**
+     *
+     * @param indice
+     * @param nuevoTipo
+     */
+    public void setTipoVariableTablaSimb(int indice, String nuevoTipo) { this.tablaSimbolos.get(indice).setTipoVariable(nuevoTipo); }
+
+    /**
+     * Setea la función a la que hace referencia una función definida o una variable tipo FUNC
+     * @param indice
+     * @param ambitoFunc
+     */
+    public void setFuncReferenciadaTablaSimb(int indice, String ambitoFunc) { this.tablaSimbolos.get(indice).setFuncionReferenciada(ambitoFunc); }
 
     /**
      * Método para agregar el signo '-' a una constante negativa
@@ -336,7 +361,7 @@ public class AnalizadorSintactico {
                     else
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): existe una función declarada con ese nombre.");
                 } else {
-                    if (registroEnIPos.getUso().equals("VARIABLE"))
+                    if (registroEnIPos.getUso().equals("VARIABLE") || registroEnIPos.getUso().equals("PARAMETRO"))
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una variable con ese identificador.");
                     else
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
@@ -394,6 +419,18 @@ public class AnalizadorSintactico {
     }
 
     /**
+     * Devuelve el indice de la función a la que se hace referencia cuando se realiza una invocación
+     * @param funcRef
+     * @return
+     */
+    int getIndiceFuncRef(String funcRef) {
+        for (int i = 0; i < this.tablaSimbolos.size(); i++)
+            if (this.tablaSimbolos.get(i).getAmbito().equals(funcRef))
+                return i;
+        return -1;
+    }
+
+    /**
      * Método para imprimir la tabla de simbolos luego del análisis sintáctico
      */
     public void imprimirTablaSimbolos() {
@@ -403,7 +440,7 @@ public class AnalizadorSintactico {
             System.out.println("Tabla de símbolos vacía.");
         else {
             for (RegistroSimbolo simbolo : this.tablaSimbolos)
-                System.out.println("Tipo del símbolo: " + simbolo.getTipoToken() + " - Lexema: " + simbolo.getLexema() + " - Tipo Token: " + simbolo.getTipoToken() + " - Tipo Variable: " + simbolo.getTipoVariable() + " - Uso: " + simbolo.getUso() + " - Ambito: " + simbolo.getAmbito());
+                System.out.println("Tipo del símbolo: " + simbolo.getTipoToken() + " - Lexema: " + simbolo.getLexema() + " - Tipo Token: " + simbolo.getTipoToken() + " - Tipo Variable: " + simbolo.getTipoVariable() + " - Uso: " + simbolo.getUso() + " - Ambito: " + simbolo.getAmbito() + " - Func Ref: " + simbolo.getFuncionReferenciada());
         }
     }
 

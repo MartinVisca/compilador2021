@@ -6,18 +6,12 @@ import java.util.Objects;
 public class RegistroSimbolo {
 
     ///// ATRIBUTOS /////
-    private String lexema;          // Significado del símbolo; a qué equivale.
-    private String tipoToken;       // Indica el tipo de token.
-    private String tipoVariable;    // Tipo de la variable (FLOAT o LONGINT).
-    private String uso;             // Uso que se le da a la variable o símbolo.
-    private String ambito;          // Lugar de definición de la variable, siguiendo Name Mangling.
-    private String tipoPasaje;      // Sólo para parámetros; indica si es pasado por referencia o por copia-valor.
-    private boolean esParametro;    // Indica si el símbolo es un parámetro.
-
-
-    ///// CONSTANTES /////
-    private static final String PASAJE_PARAMETRO_POR_DEFECTO = "COPIA VALOR";
-
+    private String lexema;              // Significado del símbolo; a qué equivale.
+    private String tipoToken;           // Indica el tipo de token.
+    private String tipoVariable;        // Tipo de la variable (FLOAT o LONGINT).
+    private String uso;                 // Uso que se le da a la variable o símbolo.
+    private String ambito;              // Lugar de definición de la variable, siguiendo Name Mangling.
+    private String funcionReferenciada; // Utilizado para saber a qué función hace referencia una variable tipo FUNC
 
     ///// MÉTODOS /////
     /**
@@ -31,8 +25,7 @@ public class RegistroSimbolo {
         this.tipoVariable = "";
         this.uso = "";
         this.ambito = "";
-        this.tipoPasaje = "";
-        this.esParametro = false;
+        this.funcionReferenciada = "";
     }
 
 
@@ -57,13 +50,7 @@ public class RegistroSimbolo {
         return ambito;
     }
 
-    public String getTipoPasaje() {
-        return tipoPasaje;
-    }
-
-    public boolean getEsParametro() {
-        return esParametro;
-    }
+    public String getFuncionReferenciada() { return funcionReferenciada; }
 
     public void setLexema(String lexema) {
         this.lexema = lexema;
@@ -85,15 +72,7 @@ public class RegistroSimbolo {
         this.ambito = ambito;
     }
 
-    public void setTipoPasaje(String tipoPasaje) {
-        this.tipoPasaje = tipoPasaje;
-    }
-
-    public void setEsParametro(boolean esParametro) {
-        this.esParametro = esParametro;
-        this.tipoPasaje = this.PASAJE_PARAMETRO_POR_DEFECTO;
-    }
-
+    public void setFuncionReferenciada(String funcionReferenciada) { this.funcionReferenciada = funcionReferenciada; }
 
     /// MÉTODOS --> Funcionales al compilador ///
     /**
