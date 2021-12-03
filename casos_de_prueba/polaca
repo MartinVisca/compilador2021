@@ -1,12 +1,19 @@
 program
-    LONG a,b,c;
+    LONG a, b;
+    LONG FUNC f(LONG x)
+    LONG y, z;
+    BEGIN
+        x := x + z;
+        CONTRACT: (x > 3);
+        z := x;
+        RETURN (x + 1);
+    END;
 BEGIN
-    a := 4;
-    b := 1;
-    c := 1;
-    IF (a > c) THEN
-        a := b + c;
-    ELSE
-        a := b - c;
-    ENDIF;
+    b := 5;
+    TRY
+        a := f(b);
+    CATCH
+    BEGIN
+        a := 10;
+    END;
 END;
