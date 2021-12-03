@@ -33,10 +33,13 @@ public class InstruccionesAssembler {
      * @param auxiliar
      * @return
      */
-    public String sumaSINGLE(String a, String b, String auxiliar) {
+    public String sumaSINGLE(String a, String b, String auxiliar, Boolean primerOperando) {
         StringBuffer codigo = new StringBuffer();
 
-        codigo.append("FLD " + a + "\n");
+        if (primerOperando)
+            codigo.append("FILD " + a + "\n");
+        else
+            codigo.append("FLD " + a + "\n");
         codigo.append("FADD " + b + "\n");
         codigo.append("FSTP " + auxiliar + "\n");
         codigo.append("FXAM\n");
@@ -73,10 +76,13 @@ public class InstruccionesAssembler {
      * @param auxiliar
      * @return
      */
-    public String restaSINGLE(String a, String b, String auxiliar) {
+    public String restaSINGLE(String a, String b, String auxiliar, Boolean primerOperando) {
         StringBuffer codigo = new StringBuffer();
 
-        codigo.append("FLD " + a + "\n");
+        if (primerOperando)
+            codigo.append("FILD " + a + "\n");
+        else
+            codigo.append("FLD " + a + "\n");
         codigo.append("FSUB " + b + "\n");
         codigo.append("FSTP " + auxiliar + "\n");
 
@@ -108,10 +114,13 @@ public class InstruccionesAssembler {
      * @param auxiliar
      * @return
      */
-    public String multiplicacionSINGLE(String a, String b, String auxiliar) {
+    public String multiplicacionSINGLE(String a, String b, String auxiliar, Boolean primerOperando) {
         StringBuffer codigo = new StringBuffer();
 
-        codigo.append("FLD " + a + "\n");           // Se carga el valor de a en el tope de la pila.
+        if (primerOperando)
+            codigo.append("FILD " + a + "\n");
+        else
+            codigo.append("FLD " + a + "\n");       // Se carga el valor de a en el tope de la pila.
         codigo.append("FIMUL " + b + "\n");         // FIMUL por tener SINGLE valores negativos en su rango. Se utiliza el tope de la pila para hacer la operación.
         codigo.append("FSTP " + auxiliar + "\n");   // Guarda el tope de la pila en la var. auxiliar, desapilando el valor.
 
@@ -152,11 +161,14 @@ public class InstruccionesAssembler {
      * @param auxiliar
      * @return
      */
-    public String divisionSINGLE(String a, String b, String auxiliar) {
+    public String divisionSINGLE(String a, String b, String auxiliar, Boolean flagConversion, Boolean primerOperando) {
         StringBuffer codigo = new StringBuffer();
 
         // Control de división por cero.
-        codigo.append("FLD " + b + "\n");
+        if (flagConversion && !primerOperando)
+            codigo.append("FILD " + b + "\n");
+        else
+            codigo.append("FLD " + b + "\n");
         codigo.append("FLDZ\n");                    // Carga el número 0 en el tope de la pila.
         codigo.append("FCOM\n");                    // Compara el tope de ST(0) = 0 con ST(1) = b, a fin de determinar si el divisor es igual a cero.
         codigo.append("FSTSW aux_mem_2bytes\n");    // Almacena la palabra de estado en memoria, es decir, el determinante de la comparación anterior.
@@ -165,7 +177,10 @@ public class InstruccionesAssembler {
         codigo.append("JE @ERROR_DIVIDEZERO\n");
 
         // Ejecución de la división.
-        codigo.append("FLD " + a + "\n");
+        if (flagConversion && primerOperando)
+            codigo.append("FILD " + a + "\n");
+        else
+            codigo.append("FLD " + a + "\n");
         codigo.append("FIDIV " + b + "\n");
         codigo.append("FSTP " + auxiliar + "\n");
 
@@ -193,11 +208,14 @@ public class InstruccionesAssembler {
      * @param b
      * @return
      */
-    public String asignacionSINGLE(String a, String b) {
+    public String asignacionSINGLE(String a, String b, Boolean flagConversion) {
         StringBuffer codigo = new StringBuffer();
 
-        codigo.append("FLD " + b + "\n");
-        codigo.append("FSTP " + a + ", EAX\n");
+        if (!flagConversion)
+            codigo.append("FLD " + b + "\n");
+        else
+            codigo.append("FILD " + b + "\n");
+        codigo.append("FSTP " + a + "\n");
 
         return codigo.toString();
     }

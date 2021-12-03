@@ -401,16 +401,22 @@ public class GeneradorCodigoAssembler {
                 RegistroSimbolo auxReg = new RegistroSimbolo(variableAuxiliar, "ID");
 
                 if (this.operadoresBinarios.contains(simboloPolaca)) {
-                    RegistroSimbolo operando1 = pila.pop();
                     RegistroSimbolo operando2 = pila.pop();
+                    RegistroSimbolo operando1 = pila.pop();
 
                     switch(simboloPolaca) {
                         case "+":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) { // Si los dos son LONG
                                 start.append(traductorInstrucciones.sumaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                                 auxReg.setTipoVariable("LONG");
-                            } else { // Todos los demás casos se realizando con suma en SINGLE.
-                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                            } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE")) {
+                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                auxReg.setTipoVariable("SINGLE");
+                            } else if (operando2.getTipoVariable().equals("LONG")) {
+                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                auxReg.setTipoVariable("SINGLE");
+                            } else {
+                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true));
                                 auxReg.setTipoVariable("SINGLE");
                             }
 
@@ -424,8 +430,14 @@ public class GeneradorCodigoAssembler {
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.restaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                                 auxReg.setTipoVariable("LONG");
+                            } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE")) {
+                                start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                auxReg.setTipoVariable("SINGLE");
+                            } else if (operando2.getTipoVariable().equals("LONG")) {
+                                start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                auxReg.setTipoVariable("SINGLE");
                             } else {
-                                start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true));
                                 auxReg.setTipoVariable("SINGLE");
                             }
 
@@ -439,8 +451,14 @@ public class GeneradorCodigoAssembler {
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.multiplicacionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                                 auxReg.setTipoVariable("LONG");
+                            } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE")) {
+                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                auxReg.setTipoVariable("SINGLE");
+                            } else if (operando2.getTipoVariable().equals("LONG")) {
+                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                auxReg.setTipoVariable("SINGLE");
                             } else {
-                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true));
                                 auxReg.setTipoVariable("SINGLE");
                             }
 
@@ -454,8 +472,14 @@ public class GeneradorCodigoAssembler {
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
                                 start.append(traductorInstrucciones.divisionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
                                 auxReg.setTipoVariable("LONG");
+                            } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE")) {
+                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false, false));
+                                auxReg.setTipoVariable("SINGLE");
+                            } else if (operando2.getTipoVariable().equals("LONG")) {
+                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true, false));
+                                auxReg.setTipoVariable("SINGLE");
                             } else {
-                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true, true));
                                 auxReg.setTipoVariable("SINGLE");
                             }
 
@@ -468,8 +492,12 @@ public class GeneradorCodigoAssembler {
                         case ":=":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.asignacionLONG(operando1.getLexema(), operando2.getLexema()));
+                            else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE"))
+                                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema(), false));
+                            else if (operando2.getTipoVariable().equals("LONG"))
+                                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema(), true));
                             else
-                                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema()));
+                                analizadorSintactico.addErrorSintactico("ERROR SEMÁNTICO: No es posible realizar la conversión en la asignación. Los operandos tienen distinto tipo.");
 
                             break;
 
@@ -520,65 +548,37 @@ public class GeneradorCodigoAssembler {
                     RegistroSimbolo operando1 = pila.pop();
                     RegistroSimbolo operando2 = pila.pop();
 
+                    if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
+                        start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
+                    else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE"))
+                        start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
+                    else
+                        analizadorSintactico.addErrorSintactico("ERROR SEMÁNTICO: No es posible realizar comparaciones entre diferentes tipos.");
+
                     // Se setea el próximo salto en contra condición para poder traducir los saltos a la rama del else.
                     switch(simboloPolaca) {
                         case ">=":
-                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
-                            else
-                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
-
                             this.proximoSalto = "JL ";
                             break;
                             
                         case "<=":
-                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
-                            else
-                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
-
                             this.proximoSalto = "JG ";
-
                             break;
                             
                         case "<>":
-                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
-                            else
-                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
-
                             this.proximoSalto = "JE ";
-
                             break;
                             
                         case "==":
-                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
-                            else
-                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
-
                             this.proximoSalto = "JNE ";
-
                             break;
                             
                         case "<":
-                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
-                            else
-                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
-
                             this.proximoSalto = "JGE ";
-
                             break;
                             
                         case ">":
-                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
-                            else
-                                start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
-
                             this.proximoSalto = "JLE ";
-
                             break;
                     }
                 }
