@@ -28,6 +28,7 @@ public class GeneradorCodigoAssembler {
     private String proximoSalto;                                        // Determina el próximo tipo de salto a realizar
     private HashMap<String, String> cadenas;                            // Contiene las cadenas presentes en el código
     private HashMap<String, String> labels;                             // Estructura que contiene las labels que se van creando, a fin de poder identificarlas luego y colocarlas en sus lugares correspondientes
+    private HashMap<String, String> funciones;
 
     // Contadores para las constantes, cadenas y variables auxiliares
     private int numeroConstante;
@@ -68,6 +69,7 @@ public class GeneradorCodigoAssembler {
         this.proximoSalto = "";
         this.cadenas = new HashMap<>();
         this.labels = new HashMap<>();
+        this.funciones = new HashMap<>();
 
         // Inicialización de estructuras
         this.operadoresBinarios = new Vector<>();
@@ -87,6 +89,7 @@ public class GeneradorCodigoAssembler {
         this.operadoresUnarios.add("BI");       // Salto de la polaca
         this.operadoresUnarios.add("BF");       // Salto de la polaca
         this.operadoresUnarios.add("PRINT");
+        this.operadoresUnarios.add("CALL");     // Call a la función
 
         // Comparadores
         this.comparadores.add("==");
@@ -238,13 +241,13 @@ public class GeneradorCodigoAssembler {
             if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (8 bytes para LONG, 4 para SINGLE).
                 variables.append(entrada.getLexema());
                 if (entrada.getTipoVariable().equals("LONG"))
-                    variables.append(" dq ? \n");
+                    variables.append(" dd ? \n");
                 else if (entrada.getTipoVariable().equals("SINGLE"))
                     variables.append(" dw ? \n");
             } else if (usoEntrada.equals(this.USO_CONSTANTE)) { // Si es CONSTANTE se agrega CTE y luego el tamaño de la misma, los cuales coinciden con los asignados para las variables.
                 if (entrada.getTipoVariable().equals("LONG")) {
                     variables.append("Constante" + this.numeroConstante);
-                    variables.append("dq ? \n");
+                    variables.append("dd ? \n");
                     variables.append(entrada.getLexema() + "\n");
                     this.numeroConstante++;
                 }
@@ -260,7 +263,7 @@ public class GeneradorCodigoAssembler {
     }
 
     /**
-     *
+     * Convierte a Assembler las variables auxiliares que esten declaradas en la tabla de símbolos propia del analizador sintáctico.
      * @return
      */
     private String getVariablesAuxiliaresDeclaradas() {
@@ -273,13 +276,13 @@ public class GeneradorCodigoAssembler {
             if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (8 bytes para LONG, 4 para SINGLE).
                 variablesAuxiliares.append(entrada.getLexema());
                 if (entrada.getTipoVariable().equals("LONG"))
-                    variablesAuxiliares.append(" dq ? \n");
+                    variablesAuxiliares.append(" dd ? \n");
                 else if (entrada.getTipoVariable().equals("SINGLE"))
                     variablesAuxiliares.append(" dw ? \n");
             } else if (usoEntrada.equals(this.USO_CONSTANTE)) { // Si es CONSTANTE se agrega CTE y luego el tamaño de la misma, los cuales coinciden con los asignados para las variables.
                 if (entrada.getTipoVariable().equals("LONG")) {
                     variablesAuxiliares.append("Constante" + this.numeroConstante);
-                    variablesAuxiliares.append("dq ? \n");
+                    variablesAuxiliares.append("dd ? \n");
                     variablesAuxiliares.append(entrada.getLexema() + "\n");
                     this.numeroConstante++;
                 }
@@ -349,9 +352,27 @@ public class GeneradorCodigoAssembler {
             if (i < polaca.getSize() - 1)
                  nextSimbolo = polaca.getElemento(i + 1).toString();
 
-            if (this.isNumber(simboloPolaca) && (nextSimbolo.equals("BF") || nextSimbolo.equals("BI")) && !nextSimbolo.equals("")) {
+            if (this.isNumber(simboloPolaca)
+                    && (nextSimbolo.equals("BF") || nextSimbolo.equals("BI"))
+                    && !nextSimbolo.equals("")) {
                 String label = this.getNombreLabel();
                 this.labels.put(simboloPolaca, label);
+            }
+
+            if (simboloPolaca.contains("INIC")) {
+                String nombreFuncion = simboloPolaca.substring(5, simboloPolaca.length()).replace("@", "_");
+
+                this.labels.put(String.valueOf(i), "@" + nombreFuncion);
+                this.funciones.put("@" + nombreFuncion, String.valueOf(i));
+            }
+
+            if (simboloPolaca.contains("FIN")) {
+                String nombreFuncion = simboloPolaca.substring(4, simboloPolaca.length());
+
+                for (int j = 0; j < polaca.getSize(); j++) {
+                    if (polaca.getElemento(j).equals("CALL") && polaca.getElemento(j - 1).equals(nombreFuncion))
+                        this.labels.put(String.valueOf(i), "@CALL_" + j);
+                }
             }
         }
 
@@ -369,7 +390,10 @@ public class GeneradorCodigoAssembler {
             // Seteo la label en su posición
             if (this.labels.keySet().contains(String.valueOf(i))) {
                 String label = this.labels.get(String.valueOf(i));
-                start.append(label + "\n");
+                if (label.contains("CALL"))
+                    start.append("JMP " + label + "\n");
+                else
+                    start.append(label + "\n");
             }
 
             if (!agregoAPila) {
@@ -481,6 +505,14 @@ public class GeneradorCodigoAssembler {
                             numeroSalto = polaca.getElemento(i - 1).toString();
                             label = this.labels.get(numeroSalto);
                             start.append("JMP " + label + "\n");
+
+                            break;
+
+                        case "CALL":
+                            numeroSalto = this.funciones.get("@" + polaca.getElemento(i - 1).toString().replace("@", "_"));
+                            label = this.labels.get(numeroSalto);
+                            start.append("JMP " + label + "\n");
+                            start.append("@CALL_" + i + "\n");
 
                             break;
                     }
