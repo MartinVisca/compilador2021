@@ -191,6 +191,26 @@ public class GeneradorCodigoAssembler {
         return puntoData.toString();
     }
 
+
+    private void getConversionEnAssembler(RegistroSimbolo operando1, RegistroSimbolo operando2, StringBuffer start) {
+        if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("SINGLE")) {
+            start.append(traductorInstrucciones.convertirLONGaSINGLE(operando1.getLexema(), operando2.getLexema()));
+        } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("LONG")){
+
+        }
+    }
+
+    private void getAsignacionAssembler(RegistroSimbolo operando1, RegistroSimbolo operando2, StringBuffer start){
+        if (operando1.getTipoVariable().equals(operando2.getTipoVariable())) {
+            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
+                start.append(traductorInstrucciones.asignacionLONG(operando1.getLexema(), operando2.getLexema()));
+            else
+                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema()));
+        } else {
+            getConversionEnAssembler(operando1, operando2, start);
+        }
+    }
+
     /**
      * Generación de la sección .CODE del código Assembler.
      * @return
@@ -442,11 +462,7 @@ public class GeneradorCodigoAssembler {
                             break;
 
                         case ":=":
-                            if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.asignacionLONG(operando1.getLexema(), operando2.getLexema()));
-                            else
-                                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema()));
-
+                            getAsignacionAssembler(operando1, operando2, start);
                             break;
 
                         case "||":

@@ -270,4 +270,10 @@ public class InstruccionesAssembler {
 
         return codigo.toString();
     }
+
+    public String convertirLONGaSINGLE(String lexemaOperando1, String lexemaOperando2) {
+        StringBuffer codigo = new StringBuffer();
+        return codigo.append("FILD " + lexemaOperando2 + "\n").toString();
+    }
+
 }
