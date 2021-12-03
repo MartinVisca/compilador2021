@@ -268,7 +268,7 @@ public class GeneradorCodigoAssembler {
      */
     private String getVariablesAuxiliaresDeclaradas() {
         StringBuffer variablesAuxiliares = new StringBuffer();
-        variablesAuxiliares.append("aux_edx @0 dw 0\n");
+        variablesAuxiliares.append("aux_edx dw ?\n");
 
         for (RegistroSimbolo entrada : this.tablaSimbolosAux) {
             String usoEntrada = entrada.getUso();

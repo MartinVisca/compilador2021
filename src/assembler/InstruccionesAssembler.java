@@ -230,7 +230,7 @@ public class InstruccionesAssembler {
         StringBuffer codigo = new StringBuffer();
 
         codigo.append("MOV EAX, " + a + "\n");
-        codigo.append("CMP EAX, " + b + ", EAX\n");
+        codigo.append("CMP EAX, " + b + "\n");
 
         return codigo.toString();
     }
