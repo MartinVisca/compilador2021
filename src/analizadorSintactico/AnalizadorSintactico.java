@@ -158,6 +158,12 @@ public class AnalizadorSintactico {
     public void agregarRegistroATS(RegistroSimbolo nuevo) { this.tablaSimbolos.add(nuevo); }
 
     /**
+     * Elimina una entrada de la tabla de símbolos
+     * @param referenciaATS
+     */
+    public void eliminarRegistroTS(int referenciaATS) { this.tablaSimbolos.remove(referenciaATS); }
+
+    /**
      * Agrega un elemento al final de la polaca.
      * @param elemento
      */
@@ -336,7 +342,7 @@ public class AnalizadorSintactico {
                     else
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): existe una función declarada con ese nombre.");
                 } else {
-                    if (registroEnIPos.getUso().equals("VARIABLE"))
+                    if (registroEnIPos.getUso().equals("VARIABLE") || registroEnIPos.getUso().equals("PARAMETRO"))
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una variable con ese identificador.");
                     else
                         addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
