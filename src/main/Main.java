@@ -25,6 +25,10 @@ public class Main {
             GeneradorCodigoAssembler assembler = new GeneradorCodigoAssembler(sintactico);
             assembler.getCodigoAssembler();
 
+            sintactico.imprimirErroresLexicos();
+            sintactico.imprimirErroresSintacticos();
+            sintactico.imprimirPolaca();
+
         } catch(IOException e) {
             System.out.println("El archivo que se indica en la ruta ingresada no existe.");
         }

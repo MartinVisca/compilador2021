@@ -498,6 +498,7 @@ public class AnalizadorSintactico {
      * Imprime la polaca por pantalla. En caso de esta vacía, se imprime un mensaje indicándolo.
      */
     public void imprimirPolaca() {
+        System.out.println();
         System.out.println("----------POLACA INVERSA-----------");
         if (!polaca.esVacia())
             polaca.imprimirPolaca();
@@ -516,15 +517,15 @@ public class AnalizadorSintactico {
         if (parser.yyparse() == 0) {
             System.out.println("Ejecución del Parser finalizada.");
             //imprimirAnalisisLexico();
-            imprimirAnalisisSintactico();
+            //imprimirAnalisisSintactico();
             imprimirTablaSimbolos();
         }
         else
             System.out.println("Ejecución del Parser no finalizada.");
 
         //analizadorLexico.imprimirErrores();
-        this.imprimirErroresSintacticos();
-        this.imprimirPolaca();
+        //this.imprimirErroresSintacticos();
+        //this.imprimirPolaca();
         analizadorLexico.setPosArchivo(0);
         analizadorLexico.setBuffer("");
     }
