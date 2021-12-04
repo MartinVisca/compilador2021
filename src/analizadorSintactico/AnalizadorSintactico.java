@@ -357,14 +357,14 @@ public class AnalizadorSintactico {
             if (registroEnIPos.equalsByLexema(registroEnReferencia) && i != referenciaATS && registroEnIPos.tienenMismoAmbito(registroEnReferencia)) {
                 if (registroEnIPos.equalsByUso(registroEnReferencia)) {
                     if (registroEnIPos.getUso().equals("VARIABLE"))
-                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): existe una variable declarada con ese nombre.");
+                        addErrorSintactico("ERROR SEMÁNTICO (Línea " + analizadorLexico.LINEA + "): existe una variable declarada con ese nombre.");
                     else
-                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): existe una función declarada con ese nombre.");
+                        addErrorSintactico("ERROR SEMÁNTICO (Línea " + analizadorLexico.LINEA + "): existe una función declarada con ese nombre.");
                 } else {
                     if (registroEnIPos.getUso().equals("VARIABLE") || registroEnIPos.getUso().equals("PARAMETRO"))
-                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una variable con ese identificador.");
+                        addErrorSintactico("ERROR SEMÁNTICO (Línea " + analizadorLexico.LINEA + "): ya existe una variable con ese identificador.");
                     else
-                        addErrorSintactico("ERROR SINTÁCTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
+                        addErrorSintactico("ERROR SEMÁNTICO (Línea " + analizadorLexico.LINEA + "): ya existe una función con ese identificador.");
                 }
 
                 this.tablaSimbolos.remove(referenciaATS);
