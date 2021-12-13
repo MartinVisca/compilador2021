@@ -203,21 +203,22 @@ public class GeneradorCodigoAssembler {
 
         puntoCode.append("START:\n");
         puntoCode.append(this.generarStart());
+        puntoCode.append("JMP @END_CODE\n");
 
         // Seteo de corte por error de overflow en la suma.
-        puntoCode.append("\nJMP @END_CODE");
         puntoCode.append("@ERROR_OVERFLOW:");
         puntoCode.append("invoke MessageBox, NULL, addr overflowSuma, addr overflowSuma, MB_OK\n");
+        puntoCode.append("JMP @END_CODE\n");
 
         // Seteo de corte por error de división por cero.
-        puntoCode.append("JMP @END_CODE");
         puntoCode.append("@ERROR_DIVIDEZERO:");
         puntoCode.append("invoke MessageBox, NULL, addr divisionPorCero, addr divisionPorCero, MB_OK\n");
+        puntoCode.append("JMP @END_CODE\n");
 
         // Seteo de corte por error de overflow en la suma.
-        puntoCode.append("JMP @END_CODE");
         puntoCode.append("@ERROR_RECURSION_MUTUA:");
         puntoCode.append("invoke MessageBox, NULL, addr recursionMutua, addr recursionMutua, MB_OK\n");
+        puntoCode.append("JMP @END_CODE\n");
 
         // Fin de programa.
         puntoCode.append("\n@END_CODE:");
