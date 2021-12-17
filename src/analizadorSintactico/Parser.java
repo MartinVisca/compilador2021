@@ -629,7 +629,7 @@ final static String yyrule[] = {
 "tipo : SINGLE",
 };
 
-//#line 527 "gramatica.y"
+//#line 528 "gramatica.y"
 
 private AnalizadorLexico lexico;
 private AnalizadorSintactico sintactico;
@@ -1399,8 +1399,9 @@ case 117:
                                            sintactico.setRefInvocacion(indiceFuncRef);
                                        }
                                        /* Comparo tipos de parámetro formal con real*/
+                                       sintactico.setTipoVariableTablaSimb(val_peek(1).ival - 1, sintactico.getTipoFromTS(val_peek(1).ival -1));
                                        int refParamFormal = sintactico.getRefInvocacion() + 1;
-                                       if (!sintactico.getTipoVariableFromTS(refParamFormal).equals(sintactico.getTipoFromTS(val_peek(1).ival - 1))) {
+                                       if (!sintactico.getTipoVariableFromTS(refParamFormal).equals(sintactico.getTipoVariableFromTS(val_peek(1).ival - 1))) {
                                            sintactico.addErrorSintactico("ERROR SEMÁNTICO(Línea " + AnalizadorLexico.LINEA + "): Error en la invocación. El tipo del parámetro real no coincide con el tipo del parámetro formal.");
                                            sintactico.setErrorInvocacion(true);
                                        }
@@ -1423,52 +1424,52 @@ case 117:
                            }
 break;
 case 118:
-//#line 502 "gramatica.y"
+//#line 503 "gramatica.y"
 { yyval.sval = new String("<"); }
 break;
 case 119:
-//#line 503 "gramatica.y"
+//#line 504 "gramatica.y"
 { yyval.sval = new String(">"); }
 break;
 case 120:
-//#line 504 "gramatica.y"
+//#line 505 "gramatica.y"
 { yyval.sval = new String("<="); }
 break;
 case 121:
-//#line 505 "gramatica.y"
+//#line 506 "gramatica.y"
 { yyval.sval = new String(">="); }
 break;
 case 122:
-//#line 506 "gramatica.y"
+//#line 507 "gramatica.y"
 { yyval.sval = new String("=="); }
 break;
 case 123:
-//#line 507 "gramatica.y"
+//#line 508 "gramatica.y"
 { yyval.sval = new String("<>"); }
 break;
 case 124:
-//#line 510 "gramatica.y"
+//#line 511 "gramatica.y"
 { yyval.sval = new String("&&"); }
 break;
 case 125:
-//#line 513 "gramatica.y"
+//#line 514 "gramatica.y"
 { yyval.sval = new String("||"); }
 break;
 case 126:
-//#line 516 "gramatica.y"
+//#line 517 "gramatica.y"
 {
                     sintactico.setTipo("LONG");
                     yyval.sval = new String("LONG");
                 }
 break;
 case 127:
-//#line 520 "gramatica.y"
+//#line 521 "gramatica.y"
 {
                     sintactico.setTipo("SINGLE");
                     yyval.sval = new String("SINGLE");
                 }
 break;
-//#line 1395 "Parser.java"
+//#line 1396 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

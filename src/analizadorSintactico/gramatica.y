@@ -475,8 +475,9 @@ factor : ID         {
                                            sintactico.setRefInvocacion(indiceFuncRef);
                                        }
                                        // Comparo tipos de parámetro formal con real
+                                       sintactico.setTipoVariableTablaSimb($3.ival - 1, sintactico.getTipoFromTS($3.ival -1));
                                        int refParamFormal = sintactico.getRefInvocacion() + 1;
-                                       if (!sintactico.getTipoVariableFromTS(refParamFormal).equals(sintactico.getTipoFromTS($3.ival - 1))) {
+                                       if (!sintactico.getTipoVariableFromTS(refParamFormal).equals(sintactico.getTipoVariableFromTS($3.ival - 1))) {
                                            sintactico.addErrorSintactico("ERROR SEMÁNTICO(Línea " + AnalizadorLexico.LINEA + "): Error en la invocación. El tipo del parámetro real no coincide con el tipo del parámetro formal.");
                                            sintactico.setErrorInvocacion(true);
                                        }
