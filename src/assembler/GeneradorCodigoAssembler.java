@@ -15,6 +15,9 @@ public class GeneradorCodigoAssembler {
     private final static String USO_VARIABLE = "VARIABLE";
     private final static String USO_CONSTANTE = "CONSTANTE";
     private final static String USO_CADENA_CARACTERES = "CADENA DE CARACTERES";
+    private final static String USO_PARAMETRO = "PARAMETRO";
+    private final static String USO_VAR_RETORNO = "VARIABLE RETORNO";
+    private final static String USO_FUNCION = "FUNC";
     private final static String LABEL = "@LABEL_";
 
 
@@ -239,7 +242,10 @@ public class GeneradorCodigoAssembler {
         for (RegistroSimbolo entrada : tablaSimbolos) {
             String usoEntrada = entrada.getUso();
 
-            if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (8 bytes para LONG, 4 para SINGLE).
+            if (usoEntrada.equals(this.USO_VARIABLE)
+                || usoEntrada.equals(this.USO_FUNCION)
+                || usoEntrada.equals(this.USO_PARAMETRO)
+                || usoEntrada.equals(this.USO_VAR_RETORNO)) {
                 variables.append(entrada.getLexema());
                 if (entrada.getTipoVariable().equals("LONG"))
                     variables.append(" dd ? \n");
