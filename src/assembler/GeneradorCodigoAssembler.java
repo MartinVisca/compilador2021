@@ -203,7 +203,7 @@ public class GeneradorCodigoAssembler {
 
         puntoCode.append("START:\n");
         puntoCode.append(this.generarStart());
-        puntoCode.append("JMP @END_CODE\n");
+        puntoCode.append("JMP @END_CODE\n\n");
 
         // Seteo de corte por error de overflow en la suma.
         puntoCode.append("@ERROR_OVERFLOW:");
@@ -394,7 +394,7 @@ public class GeneradorCodigoAssembler {
                 if (label.contains("CALL"))
                     start.append("JMP " + label + "\n");
                 else
-                    start.append(label + "\n");
+                    start.append(label + ":\n");
             }
 
             if (!agregoAPila) {
@@ -403,7 +403,7 @@ public class GeneradorCodigoAssembler {
 
                 if (this.operadoresBinarios.contains(simboloPolaca)) {
                     RegistroSimbolo operando2 = pila.pop();
-                    RegistroSimbolo operando1 = pila.pop();
+                    RegistroSimbolo operando1 = pila.pop();     
 
                     switch(simboloPolaca) {
                         case "+":
@@ -492,10 +492,10 @@ public class GeneradorCodigoAssembler {
 
                         case ":=":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.asignacionLONG(operando1.getLexema(), operando2.getLexema()));
+                                start.append(traductorInstrucciones.asignacionLONG(operando2.getLexema(), operando1.getLexema()));
                             else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE"))
-                                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema(), false));
-                            else if (operando2.getTipoVariable().equals("LONG"))
+                                start.append(traductorInstrucciones.asignacionSINGLE(operando2.getLexema(), operando1.getLexema(), false));
+                            else if (operando1.getTipoVariable().equals("LONG"))
                                 start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema(), true));
                             else
                                 analizadorSintactico.addErrorSintactico("ERROR SEMÁNTICO: No es posible realizar la conversión en la asignación. Los operandos tienen distinto tipo.");
@@ -541,7 +541,7 @@ public class GeneradorCodigoAssembler {
                             numeroSalto = this.funciones.get("@" + polaca.getElemento(i - 1).toString().replace("@", "_"));
                             label = this.labels.get(numeroSalto);
                             start.append("JMP " + label + "\n");
-                            start.append("@CALL_" + i + "\n");
+                            start.append("@CALL_" + i + ":\n");
 
                             break;
                     }
