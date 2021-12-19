@@ -335,6 +335,23 @@ public class GeneradorCodigoAssembler {
         return true;
     }
 
+    private boolean hayCiclo(String ambito) {
+        String[] arrAmbito = ambito.split("@");
+        int i = arrAmbito.length-1;
+        boolean hayRecursion = false;
+        boolean hayCiclo = false;
+        while ((i > 0) && (!hayRecursion || (hayRecursion && !hayCiclo))) {
+            if (arrAmbito[i].equals(arrAmbito[0])) {
+                hayRecursion = true;
+            }
+            if (hayRecursion && (!arrAmbito[i].equals(arrAmbito[0]))) {
+                hayCiclo = true;
+            }
+            i--;
+        }
+        return hayCiclo;
+    }
+
     /**
      * Genera el cuerpo del START, perteneciente a .CODE.
      * @return
@@ -540,8 +557,12 @@ public class GeneradorCodigoAssembler {
                         case "CALL":
                             numeroSalto = this.funciones.get("@" + polaca.getElemento(i - 1).toString().replace("@", "_"));
                             label = this.labels.get(numeroSalto);
-                            start.append("JMP " + label + "\n");
-                            start.append("@CALL_" + i + ":\n");
+                            if(!hayCiclo(polaca.getElemento(i-1).toString())) {
+                                start.append("JMP " + label + "\n");
+                                start.append("@CALL_" + i + ":\n");
+                            } else {
+                                start.append("JMP @ERROR_RECURSION_MUTUA \n");
+                            }
 
                             break;
                     }
@@ -561,23 +582,23 @@ public class GeneradorCodigoAssembler {
                         case ">=":
                             this.proximoSalto = "JL ";
                             break;
-                            
+
                         case "<=":
                             this.proximoSalto = "JG ";
                             break;
-                            
+
                         case "<>":
                             this.proximoSalto = "JE ";
                             break;
-                            
+
                         case "==":
                             this.proximoSalto = "JNE ";
                             break;
-                            
+
                         case "<":
                             this.proximoSalto = "JGE ";
                             break;
-                            
+
                         case ">":
                             this.proximoSalto = "JLE ";
                             break;
