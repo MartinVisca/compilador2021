@@ -247,7 +247,7 @@ public class GeneradorCodigoAssembler {
                 || usoEntrada.equals(this.USO_PARAMETRO)
                 || usoEntrada.equals(this.USO_VAR_RETORNO)) {
                 variables.append(entrada.getLexema());
-                if (entrada.getTipoVariable().equals("LONG"))
+                if (entrada.getTipoVariable().equals("LONG") || entrada.getTipoVariable().equals(""))
                     variables.append(" dd ? \n");
                 else if (entrada.getTipoVariable().equals("SINGLE"))
                     variables.append(" dw ? \n");
