@@ -285,6 +285,13 @@ public class AnalizadorSintactico {
     public void setAmbitoTablaSimb(int indice) { this.tablaSimbolos.get(indice).setAmbito(this.tablaSimbolos.get(indice).getLexema() + "@" + this.ambito); }
 
     /**
+     * Modifica el ámbito de un elemento de la tabla de símbolos.
+     * @param indice
+     * @param lexema
+     */
+    public void setAmbitoTablaSimb(int indice, String lexema) { this.tablaSimbolos.get(indice).setAmbito(this.tablaSimbolos.get(indice).getLexema()); }
+
+    /**
      * Modifica el tipo de un elemento de la tabla de símbolos.
      * @param indice
      */

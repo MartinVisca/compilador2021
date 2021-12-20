@@ -629,7 +629,7 @@ final static String yyrule[] = {
 "tipo : SINGLE",
 };
 
-//#line 528 "gramatica.y"
+//#line 530 "gramatica.y"
 
 private AnalizadorLexico lexico;
 private AnalizadorSintactico sintactico;
@@ -1318,22 +1318,23 @@ case 114:
                             sintactico.verificarRangoEnteroLargo(val_peek(0).ival);
 
                         sintactico.setTipoVariableTablaSimb(val_peek(0).ival);
-
+                        sintactico.setAmbitoTablaSimb(val_peek(0).ival, sintactico.getLexemaFromTS(val_peek(0).ival));
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS(val_peek(0).ival));
                     }
 break;
 case 115:
 //#line 409 "gramatica.y"
 {
-                        sintactico.setTipo(sintactico.getTipoFromTS(val_peek(1).ival));
-                        sintactico.setTipoVariableTablaSimb(val_peek(1).ival);
+                        sintactico.setTipo(sintactico.getTipoFromTS(val_peek(0).ival));
+                        sintactico.setTipoVariableTablaSimb(val_peek(0).ival);
+                        sintactico.setAmbitoTablaSimb(val_peek(0).ival, sintactico.getLexemaFromTS(val_peek(0).ival));
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS(val_peek(0).ival));
                         sintactico.setNegativoTablaSimb(val_peek(0).ival);
                         sintactico.agregarAPolaca("-");
                     }
 break;
 case 116:
-//#line 416 "gramatica.y"
+//#line 417 "gramatica.y"
 {
                                int referencia = sintactico.referenciaCorrecta(val_peek(3).ival);
                                if (referencia == -1) {
@@ -1382,7 +1383,7 @@ case 116:
                            }
 break;
 case 117:
-//#line 462 "gramatica.y"
+//#line 463 "gramatica.y"
 {
                                int referencia = sintactico.referenciaCorrecta(val_peek(3).ival);
                                if (referencia == -1) {
@@ -1400,6 +1401,7 @@ case 117:
                                        }
                                        /* Comparo tipos de parámetro formal con real*/
                                        sintactico.setTipoVariableTablaSimb(val_peek(1).ival - 1, sintactico.getTipoFromTS(val_peek(1).ival -1));
+                                       sintactico.setAmbitoTablaSimb(val_peek(1).ival - 1, sintactico.getLexemaFromTS(val_peek(1).ival - 1));
                                        int refParamFormal = sintactico.getRefInvocacion() + 1;
                                        if (!sintactico.getTipoVariableFromTS(refParamFormal).equals(sintactico.getTipoVariableFromTS(val_peek(1).ival - 1))) {
                                            sintactico.addErrorSintactico("ERROR SEMÁNTICO(Línea " + AnalizadorLexico.LINEA + "): Error en la invocación. El tipo del parámetro real no coincide con el tipo del parámetro formal.");
@@ -1424,52 +1426,52 @@ case 117:
                            }
 break;
 case 118:
-//#line 503 "gramatica.y"
+//#line 505 "gramatica.y"
 { yyval.sval = new String("<"); }
 break;
 case 119:
-//#line 504 "gramatica.y"
+//#line 506 "gramatica.y"
 { yyval.sval = new String(">"); }
 break;
 case 120:
-//#line 505 "gramatica.y"
+//#line 507 "gramatica.y"
 { yyval.sval = new String("<="); }
 break;
 case 121:
-//#line 506 "gramatica.y"
+//#line 508 "gramatica.y"
 { yyval.sval = new String(">="); }
 break;
 case 122:
-//#line 507 "gramatica.y"
+//#line 509 "gramatica.y"
 { yyval.sval = new String("=="); }
 break;
 case 123:
-//#line 508 "gramatica.y"
+//#line 510 "gramatica.y"
 { yyval.sval = new String("<>"); }
 break;
 case 124:
-//#line 511 "gramatica.y"
+//#line 513 "gramatica.y"
 { yyval.sval = new String("&&"); }
 break;
 case 125:
-//#line 514 "gramatica.y"
+//#line 516 "gramatica.y"
 { yyval.sval = new String("||"); }
 break;
 case 126:
-//#line 517 "gramatica.y"
+//#line 519 "gramatica.y"
 {
                     sintactico.setTipo("LONG");
                     yyval.sval = new String("LONG");
                 }
 break;
 case 127:
-//#line 521 "gramatica.y"
+//#line 523 "gramatica.y"
 {
                     sintactico.setTipo("SINGLE");
                     yyval.sval = new String("SINGLE");
                 }
 break;
-//#line 1396 "Parser.java"
+//#line 1398 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

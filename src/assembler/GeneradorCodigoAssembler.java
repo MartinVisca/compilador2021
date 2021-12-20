@@ -246,7 +246,7 @@ public class GeneradorCodigoAssembler {
                 || usoEntrada.equals(this.USO_FUNCION)
                 || usoEntrada.equals(this.USO_PARAMETRO)
                 || usoEntrada.equals(this.USO_VAR_RETORNO)) {
-                variables.append(entrada.getLexema());
+                variables.append(entrada.getAmbito());
                 if (entrada.getTipoVariable().equals("LONG") || entrada.getTipoVariable().equals(""))
                     variables.append(" dd ? \n");
                 else if (entrada.getTipoVariable().equals("SINGLE"))
@@ -432,16 +432,16 @@ public class GeneradorCodigoAssembler {
                     switch(simboloPolaca) {
                         case "+":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) { // Si los dos son LONG
-                                start.append(traductorInstrucciones.sumaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                start.append(traductorInstrucciones.sumaLONG(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar));
                                 auxReg.setTipoVariable("LONG");
                             } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE")) {
-                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, false));
                                 auxReg.setTipoVariable("SINGLE");
                             } else if (operando2.getTipoVariable().equals("LONG")) {
-                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, false));
                                 auxReg.setTipoVariable("SINGLE");
                             } else {
-                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true));
+                                start.append(traductorInstrucciones.sumaSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, true));
                                 auxReg.setTipoVariable("SINGLE");
                             }
 
@@ -453,16 +453,16 @@ public class GeneradorCodigoAssembler {
 
                         case "-":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
-                                start.append(traductorInstrucciones.restaLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                start.append(traductorInstrucciones.restaLONG(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar));
                                 auxReg.setTipoVariable("LONG");
                             } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE")) {
-                                start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                start.append(traductorInstrucciones.restaSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, false));
                                 auxReg.setTipoVariable("SINGLE");
                             } else if (operando2.getTipoVariable().equals("LONG")) {
-                                start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                start.append(traductorInstrucciones.restaSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, false));
                                 auxReg.setTipoVariable("SINGLE");
                             } else {
-                                start.append(traductorInstrucciones.restaSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true));
+                                start.append(traductorInstrucciones.restaSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, true));
                                 auxReg.setTipoVariable("SINGLE");
                             }
 
@@ -474,16 +474,16 @@ public class GeneradorCodigoAssembler {
 
                         case "*":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
-                                start.append(traductorInstrucciones.multiplicacionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                start.append(traductorInstrucciones.multiplicacionLONG(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar));
                                 auxReg.setTipoVariable("LONG");
                             } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE")) {
-                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, false));
                                 auxReg.setTipoVariable("SINGLE");
                             } else if (operando2.getTipoVariable().equals("LONG")) {
-                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false));
+                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, false));
                                 auxReg.setTipoVariable("SINGLE");
                             } else {
-                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true));
+                                start.append(traductorInstrucciones.multiplicacionSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, true));
                                 auxReg.setTipoVariable("SINGLE");
                             }
 
@@ -495,16 +495,16 @@ public class GeneradorCodigoAssembler {
 
                         case "/":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG")) {
-                                start.append(traductorInstrucciones.divisionLONG(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                                start.append(traductorInstrucciones.divisionLONG(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar));
                                 auxReg.setTipoVariable("LONG");
                             } else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE")) {
-                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, false, false));
+                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, false, false));
                                 auxReg.setTipoVariable("SINGLE");
                             } else if (operando2.getTipoVariable().equals("LONG")) {
-                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true, false));
+                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, true, false));
                                 auxReg.setTipoVariable("SINGLE");
                             } else {
-                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getLexema(), operando2.getLexema(), variableAuxiliar, true, true));
+                                start.append(traductorInstrucciones.divisionSINGLE(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar, true, true));
                                 auxReg.setTipoVariable("SINGLE");
                             }
 
@@ -516,22 +516,22 @@ public class GeneradorCodigoAssembler {
 
                         case ":=":
                             if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.asignacionLONG(operando2.getLexema(), operando1.getLexema()));
+                                start.append(traductorInstrucciones.asignacionLONG(operando2.getAmbito(), operando1.getAmbito()));
                             else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE"))
-                                start.append(traductorInstrucciones.asignacionSINGLE(operando2.getLexema(), operando1.getLexema(), false));
+                                start.append(traductorInstrucciones.asignacionSINGLE(operando2.getAmbito(), operando1.getAmbito(), false));
                             else if (operando1.getTipoVariable().equals("LONG"))
-                                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getLexema(), operando2.getLexema(), true));
+                                start.append(traductorInstrucciones.asignacionSINGLE(operando1.getAmbito(), operando2.getAmbito(), true));
                             else
                                 analizadorSintactico.addErrorSintactico("ERROR SEMÁNTICO: No es posible realizar la conversión en la asignación. Los operandos tienen distinto tipo.");
 
                             break;
 
                         case "||":
-                            start.append(traductorInstrucciones.OR(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                            start.append(traductorInstrucciones.OR(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar));
                             break;
 
                         case "&&":
-                            start.append(traductorInstrucciones.AND(operando1.getLexema(), operando2.getLexema(), variableAuxiliar));
+                            start.append(traductorInstrucciones.AND(operando1.getAmbito(), operando2.getAmbito(), variableAuxiliar));
                             break;
                     }
                 } else if (this.operadoresUnarios.contains(simboloPolaca)) {
@@ -574,9 +574,9 @@ public class GeneradorCodigoAssembler {
                     RegistroSimbolo operando2 = pila.pop();
 
                     if (operando1.getTipoVariable().equals("LONG") && operando2.getTipoVariable().equals("LONG"))
-                        start.append(traductorInstrucciones.comparadorLONG(operando1.getLexema(), operando2.getLexema()));
+                        start.append(traductorInstrucciones.comparadorLONG(operando1.getAmbito(), operando2.getAmbito()));
                     else if (operando1.getTipoVariable().equals("SINGLE") && operando2.getTipoVariable().equals("SINGLE"))
-                        start.append(traductorInstrucciones.comparadorSINGLE(operando1.getLexema(), operando2.getLexema()));
+                        start.append(traductorInstrucciones.comparadorSINGLE(operando1.getAmbito(), operando2.getAmbito()));
                     else
                         analizadorSintactico.addErrorSintactico("ERROR SEMÁNTICO: No es posible realizar comparaciones entre diferentes tipos.");
 

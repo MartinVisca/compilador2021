@@ -403,12 +403,13 @@ factor : ID         {
                             sintactico.verificarRangoEnteroLargo($1.ival);
 
                         sintactico.setTipoVariableTablaSimb($1.ival);
-
+                        sintactico.setAmbitoTablaSimb($1.ival, sintactico.getLexemaFromTS($1.ival));
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS($1.ival));
                     }
        | '-' CTE    {
-                        sintactico.setTipo(sintactico.getTipoFromTS($1.ival));
-                        sintactico.setTipoVariableTablaSimb($1.ival);
+                        sintactico.setTipo(sintactico.getTipoFromTS($2.ival));
+                        sintactico.setTipoVariableTablaSimb($2.ival);
+                        sintactico.setAmbitoTablaSimb($2.ival, sintactico.getLexemaFromTS($2.ival));
                         sintactico.agregarAPolaca(sintactico.getLexemaFromTS($2.ival));
                         sintactico.setNegativoTablaSimb($2.ival);
                         sintactico.agregarAPolaca("-");
@@ -476,6 +477,7 @@ factor : ID         {
                                        }
                                        // Comparo tipos de parámetro formal con real
                                        sintactico.setTipoVariableTablaSimb($3.ival - 1, sintactico.getTipoFromTS($3.ival -1));
+                                       sintactico.setAmbitoTablaSimb($3.ival - 1, sintactico.getLexemaFromTS($3.ival - 1));
                                        int refParamFormal = sintactico.getRefInvocacion() + 1;
                                        if (!sintactico.getTipoVariableFromTS(refParamFormal).equals(sintactico.getTipoVariableFromTS($3.ival - 1))) {
                                            sintactico.addErrorSintactico("ERROR SEMÁNTICO(Línea " + AnalizadorLexico.LINEA + "): Error en la invocación. El tipo del parámetro real no coincide con el tipo del parámetro formal.");
