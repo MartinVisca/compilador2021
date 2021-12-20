@@ -328,7 +328,7 @@ public class GeneradorCodigoAssembler {
      * @param cadena
      * @return
      */
-    public static boolean isNumber(String cadena) {
+    public static boolean isLong(String cadena) {
         if (cadena == null)
             return false;
 
@@ -341,21 +341,22 @@ public class GeneradorCodigoAssembler {
         return true;
     }
 
-    private boolean hayCiclo(String ambito) {
-        String[] arrAmbito = ambito.split("@");
-        int i = arrAmbito.length-1;
-        boolean hayRecursion = false;
-        boolean hayCiclo = false;
-        while ((i > 0) && (!hayRecursion || (hayRecursion && !hayCiclo))) {
-            if (arrAmbito[i].equals(arrAmbito[0])) {
-                hayRecursion = true;
-            }
-            if (hayRecursion && (!arrAmbito[i].equals(arrAmbito[0]))) {
-                hayCiclo = true;
-            }
-            i--;
+    /**
+     * Chequea si la cadena es un número flotante.
+     * @param cadena
+     * @return
+     */
+    public static boolean isSingle(String cadena) {
+        if (cadena == null)
+            return false;
+
+        try {
+            Float number = Float.parseFloat(cadena);
+        } catch (NumberFormatException nfe) {
+            return false;
         }
-        return hayCiclo;
+
+        return true;
     }
 
     /**
@@ -376,7 +377,7 @@ public class GeneradorCodigoAssembler {
             if (i < polaca.getSize() - 1)
                  nextSimbolo = polaca.getElemento(i + 1).toString();
 
-            if (this.isNumber(simboloPolaca)
+            if (this.isLong(simboloPolaca)
                     && (nextSimbolo.equals("BF") || nextSimbolo.equals("BI"))
                     && !nextSimbolo.equals("")) {
                 String label = this.getNombreLabel();
@@ -404,7 +405,7 @@ public class GeneradorCodigoAssembler {
             String simboloPolaca = polaca.getElemento(i).toString();
 
             for (RegistroSimbolo simboloTabla : tablaSimbolos) {
-                if (simboloTabla.getAmbito().equals(simboloPolaca) || (this.isNumber(simboloPolaca) && simboloTabla.getLexema().equals(simboloPolaca))) {
+                if (simboloTabla.getAmbito().equals(simboloPolaca) || ((this.isLong(simboloPolaca) || this.isSingle(simboloPolaca)) && simboloTabla.getLexema().equals(simboloPolaca))) {
                     pila.push(simboloTabla);
                     agregoAPila = true;
                     break;
@@ -563,12 +564,8 @@ public class GeneradorCodigoAssembler {
                         case "CALL":
                             numeroSalto = this.funciones.get("@" + polaca.getElemento(i - 1).toString().replace("@", "_"));
                             label = this.labels.get(numeroSalto);
-                            if(!hayCiclo(polaca.getElemento(i-1).toString())) {
-                                start.append("JMP " + label + "\n");
-                                start.append("@CALL_" + i + ":\n");
-                            } else {
-                                start.append("JMP @ERROR_RECURSION_MUTUA \n");
-                            }
+                            start.append("JMP " + label + "\n");
+                            start.append("@CALL_" + i + ":\n");
 
                             break;
                     }
