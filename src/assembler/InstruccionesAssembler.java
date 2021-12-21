@@ -140,7 +140,7 @@ public class InstruccionesAssembler {
         // Control de división por cero.
         codigo.append("MOV EAX, " + b + "\n");
         codigo.append("CMP " + b + ", 0\n");
-        codigo.append("JE @LABEL_DIVIDEZERO\n");        // Si el divisor es igual a cero, lanzo error.
+        codigo.append("JE @ERROR_DIVIDEZERO\n");        // Si el divisor es igual a cero, lanzo error.
 
         // Ejecución de la división.
         codigo.append("MOV aux_edx, EDX\n");            // Inicializo la variable auxiliar.
@@ -149,7 +149,7 @@ public class InstruccionesAssembler {
         codigo.append("MOV EBX, " + b + "\n");
         codigo.append("IDIV EBX\n");                    // IDIV por tener que contemplar valores negativos. La operación toma el valor en EAX y lo divide por lo alojado en EBX.
         codigo.append("MOV EDX, aux_edx\n");            // Guardo el resto de la división en EDX.
-        codigo.append("MOV " + auxiliar + ", EAX/n");
+        codigo.append("MOV " + auxiliar + ", EAX\n");
 
         return codigo.toString();
     }
