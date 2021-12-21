@@ -73,6 +73,7 @@ public class GeneradorCodigoAssembler {
         this.cadenas = new HashMap<>();
         this.labels = new HashMap<>();
         this.funciones = new HashMap<>();
+        this.codigoAssembler = new StringBuffer();
 
         // Inicialización de estructuras
         this.operadoresBinarios = new Vector<>();
@@ -128,7 +129,9 @@ public class GeneradorCodigoAssembler {
             BufferedWriter bw = new BufferedWriter(writer);
 
             // Escribo el código generado en el archivo y lo cierro
-            bw.write(this.generarAssembler());
+            String code = this.generarAssemblerCode();
+            String data = this.generarAssemblerData();
+            bw.write(data + code);
             bw.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,12 +141,10 @@ public class GeneradorCodigoAssembler {
     }
 
     /**
-     * Método que genera el cuerpo del código Assembler.
+     * Método que genera la primera parte del cuerpo del código Assembler.
      * @return
      */
-    public String generarAssembler() {
-        this.codigoAssembler = new StringBuffer();
-
+    public String generarAssemblerData() {
         this.codigoAssembler.append("; \\masm32\\bin\\ml /c /Zd /coff \n");
         this.codigoAssembler.append("; \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE \n");
         this.codigoAssembler.append(".386\n");
@@ -166,10 +167,20 @@ public class GeneradorCodigoAssembler {
         this.codigoAssembler.append("\n.DATA\n");
         this.codigoAssembler.append(this.generarPuntoData());
 
-        this.codigoAssembler.append("\n.CODE\n");
-        this.codigoAssembler.append(this.generarPuntoCode());
-
         return this.codigoAssembler.toString();
+    }
+
+    /**
+     * Método que genera la primera parte del cuerpo del código Assembler.
+     * @return
+     */
+    public String generarAssemblerCode() {
+        StringBuffer assemblerCode = new StringBuffer();
+
+        assemblerCode.append("\n.CODE\n");
+        assemblerCode.append(this.generarPuntoCode());
+
+        return assemblerCode.toString();
     }
 
     /**
@@ -279,25 +290,12 @@ public class GeneradorCodigoAssembler {
 
         for (RegistroSimbolo entrada : this.tablaSimbolosAux) {
             String usoEntrada = entrada.getUso();
+            variablesAuxiliares.append(entrada.getLexema());
 
-            if (usoEntrada.equals(this.USO_VARIABLE)) { // Si es VARIABLE se agrega el lexema de la misma y el tamaño asignado (8 bytes para LONG, 4 para SINGLE).
-                variablesAuxiliares.append(entrada.getLexema());
-                if (entrada.getTipoVariable().equals("LONG"))
-                    variablesAuxiliares.append(" dd ? \n");
-                else if (entrada.getTipoVariable().equals("SINGLE"))
-                    variablesAuxiliares.append(" dw ? \n");
-            } else if (usoEntrada.equals(this.USO_CONSTANTE)) { // Si es CONSTANTE se agrega CTE y luego el tamaño de la misma, los cuales coinciden con los asignados para las variables.
-                if (entrada.getTipoVariable().equals("LONG")) {
-                    variablesAuxiliares.append("Constante" + this.numeroConstante);
-                    variablesAuxiliares.append("dd ? \n");
-                    variablesAuxiliares.append(entrada.getLexema() + "\n");
-                    this.numeroConstante++;
-                }
-            } else if (usoEntrada.equals(this.USO_CADENA_CARACTERES)) { // Si es CADENA se agrega la cadena con un tamaño predefinido de 1 byte.
-                variablesAuxiliares.append("Cadena" + this.numeroCadena + " db ? \n");
-                variablesAuxiliares.append(entrada.getLexema() + ", 0 \n");
-                this.numeroCadena++;
-            }
+            if (entrada.getTipoVariable().equals("LONG"))
+                variablesAuxiliares.append(" dd ? \n");
+            else if (entrada.getTipoVariable().equals("SINGLE"))
+                variablesAuxiliares.append(" dw ? \n");
         }
 
         return variablesAuxiliares.toString();
@@ -448,7 +446,7 @@ public class GeneradorCodigoAssembler {
                             auxReg.setTipoToken("ID");
                             auxReg.setLexema(variableAuxiliar);
                             pila.push(auxReg);
-                            tablaSimbolosAux.add(auxReg);
+                            this.tablaSimbolosAux.add(auxReg);
                             break;
 
                         case "-":
