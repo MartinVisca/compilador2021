@@ -445,6 +445,7 @@ public class GeneradorCodigoAssembler {
 
                             auxReg.setTipoToken("ID");
                             auxReg.setLexema(variableAuxiliar);
+                            auxReg.setAmbito(variableAuxiliar);
                             pila.push(auxReg);
                             this.tablaSimbolosAux.add(auxReg);
                             break;
@@ -466,6 +467,7 @@ public class GeneradorCodigoAssembler {
 
                             auxReg.setTipoToken("ID");
                             auxReg.setLexema(variableAuxiliar);
+                            auxReg.setAmbito(variableAuxiliar);
                             pila.push(auxReg);
                             tablaSimbolosAux.add(auxReg);
                             break;
@@ -487,6 +489,7 @@ public class GeneradorCodigoAssembler {
 
                             auxReg.setTipoToken("ID");
                             auxReg.setLexema(variableAuxiliar);
+                            auxReg.setAmbito(variableAuxiliar);
                             pila.push(auxReg);
                             tablaSimbolosAux.add(auxReg);
                             break;
@@ -508,6 +511,7 @@ public class GeneradorCodigoAssembler {
 
                             auxReg.setTipoToken("ID");
                             auxReg.setLexema(variableAuxiliar);
+                            auxReg.setAmbito(variableAuxiliar);
                             pila.push(auxReg);
                             tablaSimbolosAux.add(auxReg);
                             break;
