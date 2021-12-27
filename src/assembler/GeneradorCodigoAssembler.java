@@ -542,7 +542,7 @@ public class GeneradorCodigoAssembler {
 
                     switch (simboloPolaca) {
                         case "PRINT":
-                            String nombreCadena = this.cadenas.get(pila.pop().getLexema());
+                            String nombreCadena = this.cadenas.get(pila.pop().getAmbito());
 
                             start.append("invoke MessageBox, NULL, addr " + nombreCadena + ", addr " + nombreCadena + ", MB_OK\n");
                             start.append("invoke ExitProcess, 0\n");

@@ -242,6 +242,7 @@ asignacion : ID op_asignacion expresion ';'      {
 salida : PRINT '(' CADENA ')' ';'     {
                                             sintactico.agregarAnalisis("Se reconoció una impresión por pantalla de una cadena. (Línea " + AnalizadorLexico.LINEA + ")");
                                             sintactico.setUsoTablaSimb($3.ival, "CADENA DE CARACTERES");
+                                            sintactico.setAmbitoTablaSimb($3.ival, sintactico.getLexemaFromTS($3.ival));
                                             sintactico.agregarAPolaca(sintactico.getLexemaFromTS($3.ival));
                                             sintactico.agregarAPolaca("PRINT");
                                       }

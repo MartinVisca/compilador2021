@@ -629,7 +629,7 @@ final static String yyrule[] = {
 "tipo : SINGLE",
 };
 
-//#line 530 "gramatica.y"
+//#line 531 "gramatica.y"
 
 private AnalizadorLexico lexico;
 private AnalizadorSintactico sintactico;
@@ -1077,68 +1077,69 @@ case 56:
 {
                                             sintactico.agregarAnalisis("Se reconoció una impresión por pantalla de una cadena. (Línea " + AnalizadorLexico.LINEA + ")");
                                             sintactico.setUsoTablaSimb(val_peek(2).ival, "CADENA DE CARACTERES");
+                                            sintactico.setAmbitoTablaSimb(val_peek(2).ival, sintactico.getLexemaFromTS(val_peek(2).ival));
                                             sintactico.agregarAPolaca(sintactico.getLexemaFromTS(val_peek(2).ival));
                                             sintactico.agregarAPolaca("PRINT");
                                       }
 break;
 case 57:
-//#line 248 "gramatica.y"
+//#line 249 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de la impresión de cadena."); }
 break;
 case 58:
-//#line 249 "gramatica.y"
+//#line 250 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cierre erróneo de la lista de parámetros de PRINT."); }
 break;
 case 59:
-//#line 250 "gramatica.y"
+//#line 251 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los parámetros de PRINT deben estar entre paréntesis."); }
 break;
 case 60:
-//#line 251 "gramatica.y"
+//#line 252 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se esperaba PRINT, se encontró '('."); }
 break;
 case 61:
-//#line 252 "gramatica.y"
+//#line 253 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta declarar una cadena para PRINT."); }
 break;
 case 62:
-//#line 255 "gramatica.y"
-{ sintactico.agregarAnalisis("Se reconoció una sentencia IF. (Línea " + AnalizadorLexico.LINEA + ")"); }
-break;
-case 63:
 //#line 256 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una sentencia IF. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
-case 64:
+case 63:
 //#line 257 "gramatica.y"
+{ sintactico.agregarAnalisis("Se reconoció una sentencia IF. (Línea " + AnalizadorLexico.LINEA + ")"); }
+break;
+case 64:
+//#line 258 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición de IF debe estar entre paréntesis."); }
 break;
 case 65:
-//#line 258 "gramatica.y"
+//#line 259 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta paréntesis de cierre en la lista de parámetros."); }
 break;
 case 66:
-//#line 259 "gramatica.y"
+//#line 260 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta la declaración de THEN."); }
 break;
 case 67:
-//#line 260 "gramatica.y"
+//#line 261 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta cierre de ENDIF."); }
 break;
 case 68:
-//#line 261 "gramatica.y"
+//#line 262 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de ENDIF."); }
 break;
 case 69:
-//#line 262 "gramatica.y"
+//#line 263 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta cierre de ENDIF."); }
 break;
 case 70:
-//#line 263 "gramatica.y"
+//#line 264 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de ENDIF."); }
 break;
 case 71:
-//#line 266 "gramatica.y"
+//#line 267 "gramatica.y"
 {
                                         sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), String.valueOf(sintactico.getSizePolaca() + 2));   /* Desapila dirección incompleta y completa el destino de BF*/
                                         sintactico.agregarAPolaca(" ");                               /* Crea paso incompleto*/
@@ -1147,15 +1148,15 @@ case 71:
                                     }
 break;
 case 72:
-//#line 274 "gramatica.y"
+//#line 275 "gramatica.y"
 { sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), String.valueOf(sintactico.getSizePolaca())); }
 break;
 case 73:
-//#line 277 "gramatica.y"
+//#line 278 "gramatica.y"
 { sintactico.pushElementoPila(sintactico.getSizePolaca()); }
 break;
 case 74:
-//#line 280 "gramatica.y"
+//#line 281 "gramatica.y"
 {
                                                                                                 sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
                                                                                                 if (sintactico.tieneSentBreak()) {
@@ -1168,7 +1169,7 @@ case 74:
                                                                                             }
 break;
 case 75:
-//#line 290 "gramatica.y"
+//#line 291 "gramatica.y"
 {
                                                                                                 sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
                                                                                                 sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), String.valueOf(sintactico.getSizePolaca() + 2)); /* Desapila dirección incompleta y completa el destino de BF*/
@@ -1177,7 +1178,7 @@ case 75:
                                                                                             }
 break;
 case 76:
-//#line 296 "gramatica.y"
+//#line 297 "gramatica.y"
 {
                                                                                                 sintactico.agregarAnalisis("Se reconoció una declaración de loop while. (Línea " + AnalizadorLexico.LINEA + ")");
                                                                                                 sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), String.valueOf(sintactico.getSizePolaca() + 2)); /* Desapila dirección incompleta y completa el destino de BF*/
@@ -1186,58 +1187,58 @@ case 76:
                                                                                             }
 break;
 case 81:
-//#line 308 "gramatica.y"
+//#line 309 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): los bloques TRY/CATCH no pueden anidarse"); }
 break;
 case 82:
-//#line 311 "gramatica.y"
+//#line 312 "gramatica.y"
 {
                                                                                     /* Desapila dirección incompleta y completa el destino de BF*/
                                                                                     sintactico.agregarAPolacaEnPos(sintactico.popElementoPila(), String.valueOf(sintactico.getSizePolaca()));
                                                                                 }
 break;
 case 83:
-//#line 315 "gramatica.y"
+//#line 316 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): se leyó un BEGIN sin previo reconocimiento de CATCH."); }
 break;
 case 84:
-//#line 318 "gramatica.y"
+//#line 319 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció un bloque TRY/CATCH. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 85:
-//#line 319 "gramatica.y"
+//#line 320 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): el cuerpo de CATCH no se inicializó con BEGIN."); }
 break;
 case 86:
-//#line 320 "gramatica.y"
+//#line 321 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): cuerpo de CATCH mal cerrado; falta END."); }
 break;
 case 87:
-//#line 321 "gramatica.y"
+//#line 322 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de END."); }
 break;
 case 93:
-//#line 333 "gramatica.y"
+//#line 334 "gramatica.y"
 { sintactico.agregarAnalisis("Se reconoció una definición de contrato. (Línea " + AnalizadorLexico.LINEA + ")"); }
 break;
 case 94:
-//#line 334 "gramatica.y"
+//#line 335 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): la condición debe estar entre paréntesis."); }
 break;
 case 95:
-//#line 335 "gramatica.y"
+//#line 336 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): CONTRACT debe tener al menos una condición como parámetro."); }
 break;
 case 96:
-//#line 336 "gramatica.y"
+//#line 337 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta el paréntesis de cierre para los parámetros de CONTRACT."); }
 break;
 case 97:
-//#line 337 "gramatica.y"
+//#line 338 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de los parámetros de CONTRACT."); }
 break;
 case 98:
-//#line 340 "gramatica.y"
+//#line 341 "gramatica.y"
 {
                                     sintactico.agregarAnalisis("Se reconoció una sentencia de BREAK. (Línea " + AnalizadorLexico.LINEA + ")");
                                     sintactico.agregarAPolaca(" ");                               /* Crea paso incompleto*/
@@ -1247,11 +1248,11 @@ case 98:
                                }
 break;
 case 99:
-//#line 347 "gramatica.y"
+//#line 348 "gramatica.y"
 { sintactico.addErrorSintactico("ERROR SINTÁCTICO (Línea " + AnalizadorLexico.LINEA + "): falta ';' luego de BREAK."); }
 break;
 case 100:
-//#line 350 "gramatica.y"
+//#line 351 "gramatica.y"
 {
                                 sintactico.agregarAPolaca(" ");
                                 sintactico.pushElementoPila(sintactico.getSizePolaca() - 1);
@@ -1259,47 +1260,47 @@ case 100:
                             }
 break;
 case 102:
-//#line 358 "gramatica.y"
+//#line 359 "gramatica.y"
 { sintactico.agregarAPolaca(val_peek(1).sval); }
 break;
 case 104:
-//#line 362 "gramatica.y"
+//#line 363 "gramatica.y"
 { sintactico.agregarAPolaca(val_peek(1).sval); }
 break;
 case 106:
-//#line 366 "gramatica.y"
+//#line 367 "gramatica.y"
 { sintactico.agregarAPolaca(val_peek(1).sval); }
 break;
 case 107:
-//#line 369 "gramatica.y"
+//#line 370 "gramatica.y"
 {
                                                 sintactico.agregarAnalisis("Se reconoció una suma. (Línea " + AnalizadorLexico.LINEA + ")");
                                                 sintactico.agregarAPolaca("+");
                                             }
 break;
 case 108:
-//#line 373 "gramatica.y"
+//#line 374 "gramatica.y"
 {
                                                 sintactico.agregarAnalisis("Se reconoció una resta. (Línea " + AnalizadorLexico.LINEA + ")");
                                                 sintactico.agregarAPolaca("-");
                                             }
 break;
 case 110:
-//#line 380 "gramatica.y"
+//#line 381 "gramatica.y"
 {
                                                 sintactico.agregarAnalisis("Se reconoció una multiplicación. (Línea " + AnalizadorLexico.LINEA + ")");
                                                 sintactico.agregarAPolaca("*");
                                             }
 break;
 case 111:
-//#line 384 "gramatica.y"
+//#line 385 "gramatica.y"
 {
                                                 sintactico.agregarAnalisis("Se reconoció una división. (Línea " + AnalizadorLexico.LINEA + ")");
                                                 sintactico.agregarAPolaca("/");
                                             }
 break;
 case 113:
-//#line 391 "gramatica.y"
+//#line 392 "gramatica.y"
 {
                         int ref = sintactico.referenciaCorrecta(val_peek(0).ival);
                         if (ref == -1)
@@ -1311,7 +1312,7 @@ case 113:
                     }
 break;
 case 114:
-//#line 400 "gramatica.y"
+//#line 401 "gramatica.y"
 {
                         sintactico.setTipo(sintactico.getTipoFromTS(val_peek(0).ival));
                         if (sintactico.getTipo().equals("LONG"))
@@ -1323,7 +1324,7 @@ case 114:
                     }
 break;
 case 115:
-//#line 409 "gramatica.y"
+//#line 410 "gramatica.y"
 {
                         sintactico.setTipo(sintactico.getTipoFromTS(val_peek(0).ival));
                         sintactico.setTipoVariableTablaSimb(val_peek(0).ival);
@@ -1334,7 +1335,7 @@ case 115:
                     }
 break;
 case 116:
-//#line 417 "gramatica.y"
+//#line 418 "gramatica.y"
 {
                                int referencia = sintactico.referenciaCorrecta(val_peek(3).ival);
                                if (referencia == -1) {
@@ -1383,7 +1384,7 @@ case 116:
                            }
 break;
 case 117:
-//#line 463 "gramatica.y"
+//#line 464 "gramatica.y"
 {
                                int referencia = sintactico.referenciaCorrecta(val_peek(3).ival);
                                if (referencia == -1) {
@@ -1426,52 +1427,52 @@ case 117:
                            }
 break;
 case 118:
-//#line 505 "gramatica.y"
+//#line 506 "gramatica.y"
 { yyval.sval = new String("<"); }
 break;
 case 119:
-//#line 506 "gramatica.y"
+//#line 507 "gramatica.y"
 { yyval.sval = new String(">"); }
 break;
 case 120:
-//#line 507 "gramatica.y"
+//#line 508 "gramatica.y"
 { yyval.sval = new String("<="); }
 break;
 case 121:
-//#line 508 "gramatica.y"
+//#line 509 "gramatica.y"
 { yyval.sval = new String(">="); }
 break;
 case 122:
-//#line 509 "gramatica.y"
+//#line 510 "gramatica.y"
 { yyval.sval = new String("=="); }
 break;
 case 123:
-//#line 510 "gramatica.y"
+//#line 511 "gramatica.y"
 { yyval.sval = new String("<>"); }
 break;
 case 124:
-//#line 513 "gramatica.y"
+//#line 514 "gramatica.y"
 { yyval.sval = new String("&&"); }
 break;
 case 125:
-//#line 516 "gramatica.y"
+//#line 517 "gramatica.y"
 { yyval.sval = new String("||"); }
 break;
 case 126:
-//#line 519 "gramatica.y"
+//#line 520 "gramatica.y"
 {
                     sintactico.setTipo("LONG");
                     yyval.sval = new String("LONG");
                 }
 break;
 case 127:
-//#line 523 "gramatica.y"
+//#line 524 "gramatica.y"
 {
                     sintactico.setTipo("SINGLE");
                     yyval.sval = new String("SINGLE");
                 }
 break;
-//#line 1398 "Parser.java"
+//#line 1399 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
