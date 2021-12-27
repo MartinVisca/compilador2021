@@ -22,8 +22,11 @@ public class Main {
             AnalizadorLexico lexico = new AnalizadorLexico(entrada);
             AnalizadorSintactico sintactico = new AnalizadorSintactico(lexico, parser);
             sintactico.start();
-            GeneradorCodigoAssembler assembler = new GeneradorCodigoAssembler(sintactico);
-            assembler.getCodigoAssembler();
+
+            if (sintactico.getListaErroresSintacticos().isEmpty() && lexico.getListaErrores().isEmpty()) {
+                GeneradorCodigoAssembler assembler = new GeneradorCodigoAssembler(sintactico);
+                assembler.getCodigoAssembler();
+            }
 
             sintactico.imprimirErroresLexicos();
             sintactico.imprimirErroresSintacticos();

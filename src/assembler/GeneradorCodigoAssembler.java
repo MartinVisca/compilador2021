@@ -270,8 +270,8 @@ public class GeneradorCodigoAssembler {
                     this.numeroConstante++;
                 }
             } else if (usoEntrada.equals(this.USO_CADENA_CARACTERES)) { // Si es CADENA se agrega la cadena con un tamaño predefinido de 1 byte.
-                variables.append("Cadena" + this.numeroCadena + " db ? \n");
-                variables.append(entrada.getLexema() + ", 0 \n");
+                variables.append("Cadena" + this.numeroCadena + " db ? \n"); // PARA MESSAGE BOX
+                //variables.append(entrada.getLexema() + ", 0 \n"); // PARA MESSAGE BOX
                 this.cadenas.put(entrada.getLexema(), "Cadena" + this.numeroCadena);
                 this.numeroCadena++;
             }
@@ -542,10 +542,12 @@ public class GeneradorCodigoAssembler {
 
                     switch (simboloPolaca) {
                         case "PRINT":
-                            String nombreCadena = this.cadenas.get(pila.pop().getAmbito());
+                            start.append("print chr$(\"" + pila.pop().getAmbito() + "\", 13, 10)\n"); // OPCION CON PRINT
 
-                            start.append("invoke MessageBox, NULL, addr " + nombreCadena + ", addr " + nombreCadena + ", MB_OK\n");
-                            start.append("invoke ExitProcess, 0\n");
+                            // OPCION MESSAGE BOX
+                            //String nombreCadena = this.cadenas.get(pila.pop().getLexema());
+                            //start.append("invoke MessageBox, NULL, addr " + nombreCadena + ", addr " + nombreCadena + ", MB_OK\n");
+                            //start.append("invoke ExitProcess, 0\n");
 
                             break;
 
