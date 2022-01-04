@@ -130,6 +130,7 @@ public class GeneradorCodigoAssembler {
 
             // Escribo el código generado en el archivo y lo cierro
             String code = this.generarAssemblerCode();
+            this.numeroCadena = 0;
             String data = this.generarAssemblerData();
             bw.write(data + code);
             bw.close();
@@ -235,7 +236,7 @@ public class GeneradorCodigoAssembler {
         puntoCode.append("JMP @END_CODE\n");
 
         // Fin de programa.
-        puntoCode.append("\n@END_CODE:");
+        puntoCode.append("\n@END_CODE:\n");
         puntoCode.append("invoke ExitProcess, 0\n");
         puntoCode.append("END START");
 
@@ -270,10 +271,8 @@ public class GeneradorCodigoAssembler {
                     this.numeroConstante++;
                 }
             } else if (usoEntrada.equals(this.USO_CADENA_CARACTERES)) { // Si es CADENA se agrega la cadena con un tamaño predefinido de 1 byte.
-                variables.append("Cadena" + this.numeroCadena + " db ? \n"); // PARA MESSAGE BOX
-                //variables.append(entrada.getLexema() + ", 0 \n"); // PARA MESSAGE BOX
-                this.cadenas.put(entrada.getLexema(), "Cadena" + this.numeroCadena);
-                this.numeroCadena++;
+                String nombreCadena = this.cadenas.get(entrada.getLexema());
+                variables.append(nombreCadena + " db \"" + entrada.getLexema() + "\", 0 \n"); // PARA MESSAGE BOX
             }
         }
 
@@ -366,6 +365,15 @@ public class GeneradorCodigoAssembler {
         PolacaInversa polaca = this.analizadorSintactico.getPolaca();
         Vector<RegistroSimbolo> tablaSimbolos = analizadorSintactico.getTablaSimbolos();
         Boolean agregoAPila = false;
+
+        for (RegistroSimbolo entrada : tablaSimbolos) {
+            String usoEntrada = entrada.getUso();
+
+            if (usoEntrada.equals(this.USO_CADENA_CARACTERES)) {
+                this.cadenas.put(entrada.getLexema(), "Cadena" + this.numeroCadena);
+                this.numeroCadena++;
+            }
+        }
 
         // Cargo el hash con los labels y las direcciones de salto
         for (int i = 0; i < polaca.getSize(); i++) {
@@ -542,12 +550,12 @@ public class GeneradorCodigoAssembler {
 
                     switch (simboloPolaca) {
                         case "PRINT":
-                            start.append("print chr$(\"" + pila.pop().getAmbito() + "\", 13, 10)\n"); // OPCION CON PRINT
+                            //start.append("print chr$(\"" + pila.pop().getAmbito() + "\", 13, 10)\n"); // OPCION CON PRINT
 
                             // OPCION MESSAGE BOX
-                            //String nombreCadena = this.cadenas.get(pila.pop().getLexema());
-                            //start.append("invoke MessageBox, NULL, addr " + nombreCadena + ", addr " + nombreCadena + ", MB_OK\n");
-                            //start.append("invoke ExitProcess, 0\n");
+                            String nombreCadena = this.cadenas.get(pila.pop().getLexema());
+                            start.append("invoke MessageBox, NULL, addr " + nombreCadena + ", addr " + nombreCadena + ", MB_OK\n");
+                            start.append("invoke ExitProcess, 0\n");
 
                             break;
 
